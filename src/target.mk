@@ -1,2 +1,2 @@
-TARGET = ms.lin
+TARGET = ms.exe
 
