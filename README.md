@@ -1,9 +1,9 @@
-# EnKF_multiscale
+# EnKF_MS
 
 test code
 
 <p align="center">
-<img src="doc/advection.png" width="610"> <img src="doc/RENS.png" width="610">
+<img src="doc/MS.png" width="610"> <img src="doc/RENS.png" width="610">
 </p>
 
 # Installation:
@@ -28,7 +28,7 @@ After cloning, the directory structure should look like:
 .
 ├── EnKF_analysis
 ├── EnKF_sampling
-└── EnKF_advection
+└── EnKF_MS
 ```
 
 ### 1b. Advanced installation
@@ -39,11 +39,11 @@ Next clone the repositories and set upstream to the original repositories where
 you need to replace <userid> with your github userid
 
 ```bash
-git clone git@github.com:<userid>/EnKF_advection.git
-pushd EnKF_advection
-git remote add upstream https://github.com/geirev/EnKF_advection
+git clone git@github.com:<userid>/EnKF_MS.git
+pushd EnKF_MS
+git remote add upstream https://github.com/geirev/EnKF_MS
 #or, if you have set up git-ssh
-#git remote add upstream git://github.com:geirev/EnKF_advection
+#git remote add upstream git://github.com:geirev/EnKF_MS
 popd
 
 git clone git@github.com:<userid>/EnKF_analysis.git
@@ -90,10 +90,10 @@ cd EnKF_sampling/lib
 ```
 
 then compile and place all the `.o` files as well as `libanalysis.a` into
-the `build` directory of the `EnKR_advection` repository using:
+the `build` directory of the `EnKF_MS` repository using:
 
 ```bash
-make BUILD=../../EnKF_advection/build
+make BUILD=../../EnKF_MS/build
 ```
 
 ## 4. Compile the `EnKF_analysis` library
@@ -105,23 +105,23 @@ cd EnKF_analysis/lib
 ```
 
 then compile and place all the `.o` files as well as `libanalysis.a` into the
-`build` directory of the `EnKR_advection` repository using:
+`build` directory of the `EnKF_MS` repository using:
 
 ```bash
-make BUILD=../../EnKF_advection/build
+make BUILD=../../EnKF_MS/build
 ```
 
 **Note:** The `EnKF_analysis` repository depends on the `EnKF_sampling`
 repository and therefore must be compiled second!
 
-## 5. Compile the `EnKF_advection` library
+## 5. Compile the `EnKF_MS` library
 
 ### Linux
 
-Navigate to the `src` folder of the `EnKF_advection` repository:
+Navigate to the `src` folder of the `EnKF_MS` repository:
 
 ```bash
-cd EnKF_advection/src
+cd EnKF_MS/src
 ```
 
 then compile and install the executable in the target directory, defaulting to
@@ -133,13 +133,13 @@ make BINDIR=$HOME/bin
 
 ### Mac
 
-Navigate to the `src` folder of the `EnKF_advection` repository:
+Navigate to the `src` folder of the `EnKF_MS` repository:
 
 ```bash
-cd EnKF_advection/src
+cd EnKF_MS/src
 ```
 
-then edit the following line in `EnKF_advection/src/makefile` from:
+then edit the following line in `EnKF_MS/src/makefile` from:
 
 ```bash
 LIBS = ./libsampling.a ./libenkfanalysis.a -llapack -lblas -llapack /usr/lib/x86_64-linux-gnu/libfftw3.so.3
@@ -162,38 +162,38 @@ make BINDIR=$HOME/bin
 
 ### Linux
 
-Navigate to the `test` directory of the `EnKF_advection` repository:
+Navigate to the `test` directory of the `EnKF_MS` repository:
 
 ```bash
-cd EnKF_advection/test
+cd EnKF_MS/test
 ```
 
 and run:
 
 ```bash
-advect.lin
+ms.exe
 ```
 
 ### Mac
 
-Create the `/usr/local/bin` directory which allows the `advection2` command to be ran
+Create the `/usr/local/bin` directory which allows the `MS2` command to be ran
 from anywhere on the local file system:
 
 ```bash
 mkdir -p /usr/local/bin
 ```
 
-then create a symlink for `$HOME/bin/advect.lin` to `/usr/local/bin`
+then create a symlink for `$HOME/bin/ms.exe` to `/usr/local/bin`
 
 ```bash
-ln -s $HOME/bin/advect.lin /usr/local/bin/
+ln -s $HOME/bin/ms.exe /usr/local/bin/
 ```
 
 then run the project:
 
 ```bash
-cd EnKF_advection/test
-ms.lin
+cd EnKF_MS/test
+ms.exe
 ```
 
 ## 7. Plotting
