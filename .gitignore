@@ -1,0 +1,4 @@
+build
+test/*
+!test/infile.in
+!test/p.gnu

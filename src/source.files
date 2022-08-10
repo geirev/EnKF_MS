@@ -1,0 +1,21 @@
+MODULES = \
+	m_advect.F90\
+	m_analyt0.F90\
+	m_dumpsol.F90\
+	m_enkf.F90\
+	m_ensemblemean.F90\
+	m_ensemblevariance.F90\
+	m_getD.F90\
+	m_measurements.F90\
+	m_model.F90\
+	m_obs_pert.F90\
+	mod_dimensions.F90\
+	mod_observation.F90\
+	mod_shapiro.F90\
+	mod_state.F90\
+	m_randphase.F90\
+	m_set_random_seed2.F90
+
+F90FILES = \
+	main.F90
+
