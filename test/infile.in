@@ -1,5 +1,5 @@
  1000                             ! Ensemble size
- 100                             ! Number of timesteps
+ 1000                             ! Number of timesteps
  0.1                             ! Advection speed of ocean model
  60.0                             ! Smoothness of ocean model
  20.0                             ! Smoothness of atmos model
@@ -8,13 +8,13 @@
  1.0                             ! Initial variance of atmos ensemble
  0.0                             ! system variance for ocean model
  0.0                             ! system variance for atmos model
- 0.02                             ! measurement errors for ocean measurements
- 0.03                             ! measurement errors for atmos measurements
+ 0.25                             ! measurement errors for ocean measurements
+ 0.25                             ! measurement errors for atmos measurements
  10                              ! number of ocean observations
- 50                              ! number of atmos observations
+ 40                              ! number of atmos observations
  10.0                             ! time between observations
  T                               ! regenerate the observations
- 11                              ! EnKF analysis mode (Perturbed obs: 11 using R, 13 using E; SQRT 21, 23)
+ 13                              ! EnKF analysis mode (Perturbed obs: 11 using R, 13 using E; SQRT 21, 23; skip analysis 00)
  0.99                            ! use truncation in svd
  diagonal                        ! diagonal or gaussian
  4.0                             ! decorrelation length of meaurement errors in gaussian case

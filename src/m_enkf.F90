@@ -50,6 +50,7 @@ subroutine enkf(mem,nrens,obs,nroceanobs,nratmosobs,mode_analysis,truncation,cov
 
    integer  nrobs
    nrobs=nroceanobs+nratmosobs
+   if (mode_analysis == 0) return
 
 ! Local analysis variables
 !   integer l,icall

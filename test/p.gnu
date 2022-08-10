@@ -187,174 +187,35 @@ set nogrid
 
 set xlabel  "distance (x)"
 
+set terminal wxt size 1600,800
+
+# Initial condition
 set title "Time (t=0)"
 p 'sol_0000I.dat' u 1:2 linestyle 1 title "Reference ocean",\
   'sol_0000I.dat' u 1:3 linestyle 3 title "Reference atmos",\
   'sol_0000I.dat' u 1:4 linestyle 2 title "Estimated ocean",\
   'sol_0000I.dat' u 1:5 linestyle 4 title "Estimated atmos"
-pause -1
+pause 0.1
 
-set title "Time (t=10)"
-p     'sol_0010F.dat' u 1:2 linestyle 1 title  "Reference ocean",\
-      'sol_0010F.dat' u 1:3 linestyle 3 title  "Reference atmos",\
-      'sol_0010F.dat' u 1:4 linestyle 2 title  "Estimated ocean",\
-      'sol_0010F.dat' u 1:5 linestyle 4 title  "Estimated atmos",\
- 'oceanobs_0010.dat'  u 1:2 with points pt 7 ps 1.0 lc rgb pack(27,158,119)  title "observed  ocean",\
- 'atmosobs_0010.dat'  u 1:2 with points pt 6 ps 1.0 lc rgb pack(231,41,138)  title "observed  atmos"
-pause -1
-p     'sol_0010A.dat' u 1:2 linestyle 1 title  "Reference ocean",\
-      'sol_0010A.dat' u 1:3 linestyle 3 title  "Reference atmos",\
-      'sol_0010A.dat' u 1:4 linestyle 2 title  "Estimated ocean",\
-      'sol_0010A.dat' u 1:5 linestyle 4 title  "Estimated atmos",\
- 'oceanobs_0010.dat'  u 1:2 with points pt 7 ps 1.0 lc rgb pack(27,158,119)  title "observed  ocean",\
- 'atmosobs_0010.dat'  u 1:2 with points pt 6 ps 1.0 lc rgb pack(231,41,138)  title "observed  atmos"
-pause -1
+# Uncomment for generating pdf files
+#set terminal pdfcairo enhanced font  "Arial,26" size 10in,7in lw 0.8 rounded
+do for [var=10:1000:10] {
+   xx="000"
+   if (var > 9) {xx="00"}
+   if (var > 99) {xx="0"}
+   if (var > 999) {xx=""}
 
-set title "Time (t=20)"
-p     'sol_0020F.dat' u 1:2 linestyle 1 title  "Reference ocean",\
-      'sol_0020F.dat' u 1:3 linestyle 3 title  "Reference atmos",\
-      'sol_0020F.dat' u 1:4 linestyle 2 title  "Estimated ocean",\
-      'sol_0020F.dat' u 1:5 linestyle 4 title  "Estimated atmos",\
- 'oceanobs_0020.dat'  u 1:2 with points pt 7 ps 1.0 lc rgb pack(27,158,119)  title "observed  ocean",\
- 'atmosobs_0020.dat'  u 1:2 with points pt 6 ps 1.0 lc rgb pack(231,41,138)  title "observed  atmos"
-pause -1
-p     'sol_0020A.dat' u 1:2 linestyle 1 title  "Reference ocean",\
-      'sol_0020A.dat' u 1:3 linestyle 3 title  "Reference atmos",\
-      'sol_0020A.dat' u 1:4 linestyle 2 title  "Estimated ocean",\
-      'sol_0020A.dat' u 1:5 linestyle 4 title  "Estimated atmos",\
- 'oceanobs_0020.dat'  u 1:2 with points pt 7 ps 1.0 lc rgb pack(27,158,119)  title "observed  ocean",\
- 'atmosobs_0020.dat'  u 1:2 with points pt 6 ps 1.0 lc rgb pack(231,41,138)  title "observed  atmos"
+   list = "F A"
+   do for [yy in list] {
+      set title "Time (t=".var."".yy.")"
+     #set output "sol_".xx."".var."".yy.".pdf"
+      plot  "sol_".xx."".var."".yy.".dat" u 1:2 linestyle 1 title  "Reference ocean",\
+            "sol_".xx."".var."".yy.".dat" u 1:3 linestyle 3 title  "Reference atmos",\
+            "sol_".xx."".var."".yy.".dat" u 1:4 linestyle 2 title  "Estimated ocean",\
+            "sol_".xx."".var."".yy.".dat" u 1:5 linestyle 4 title  "Estimated atmos",\
+       "oceanobs_".xx."".var.".dat"  u 1:2 with points pt 7 ps 1.0 lc rgb pack(27,158,119)  title "Observed  ocean",\
+       "atmosobs_".xx."".var.".dat"  u 1:2 with points pt 7 ps 1.0 lc rgb pack(231,41,138)  title "Observed  atmos"
+      pause 0.1
+   }
+}
 
-pause -1
-set title "Time (t=30)"
-p     'sol_0030F.dat' u 1:2 linestyle 1 title  "Reference ocean",\
-      'sol_0030F.dat' u 1:3 linestyle 3 title  "Reference atmos",\
-      'sol_0030F.dat' u 1:4 linestyle 2 title  "Estimated ocean",\
-      'sol_0030F.dat' u 1:5 linestyle 4 title  "Estimated atmos",\
- 'oceanobs_0030.dat'  u 1:2 with points pt 7 ps 1.0 lc rgb pack(27,158,119)  title "observed  ocean",\
- 'atmosobs_0030.dat'  u 1:2 with points pt 6 ps 1.0 lc rgb pack(231,41,138)  title "observed  atmos"
-pause -1
-p     'sol_0030A.dat' u 1:2 linestyle 1 title  "Reference ocean",\
-      'sol_0030A.dat' u 1:3 linestyle 3 title  "Reference atmos",\
-      'sol_0030A.dat' u 1:4 linestyle 2 title  "Estimated ocean",\
-      'sol_0030A.dat' u 1:5 linestyle 4 title  "Estimated atmos",\
- 'oceanobs_0030.dat'  u 1:2 with points pt 7 ps 1.0 lc rgb pack(27,158,119)  title "observed  ocean",\
- 'atmosobs_0030.dat'  u 1:2 with points pt 6 ps 1.0 lc rgb pack(231,41,138)  title "observed  atmos"
-pause -1
-
-set title "Time (t)=40"
-p     'sol_0040F.dat' u 1:2 linestyle 1 title  "Reference ocean",\
-      'sol_0040F.dat' u 1:3 linestyle 3 title  "Reference atmos",\
-      'sol_0040F.dat' u 1:4 linestyle 2 title  "Estimated ocean",\
-      'sol_0040F.dat' u 1:5 linestyle 4 title  "Estimated atmos",\
- 'oceanobs_0040.dat'  u 1:2 with points pt 7 ps 1.0 lc rgb pack(27,158,119)  title "observed  ocean",\
- 'atmosobs_0040.dat'  u 1:2 with points pt 6 ps 1.0 lc rgb pack(231,41,138)  title "observed  atmos"
-pause -1
-p     'sol_0040A.dat' u 1:2 linestyle 1 title  "Reference ocean",\
-      'sol_0040A.dat' u 1:3 linestyle 3 title  "Reference atmos",\
-      'sol_0040A.dat' u 1:4 linestyle 2 title  "Estimated ocean",\
-      'sol_0040A.dat' u 1:5 linestyle 4 title  "Estimated atmos",\
- 'oceanobs_0040.dat'  u 1:2 with points pt 7 ps 1.0 lc rgb pack(27,158,119)  title "observed  ocean",\
- 'atmosobs_0040.dat'  u 1:2 with points pt 6 ps 1.0 lc rgb pack(231,41,138)  title "observed  atmos"
-pause -1
-
-set title "Time (t)=50"
-p     'sol_0050F.dat' u 1:2 linestyle 1 title  "Reference ocean",\
-      'sol_0050F.dat' u 1:3 linestyle 3 title  "Reference atmos",\
-      'sol_0050F.dat' u 1:4 linestyle 2 title  "Estimated ocean",\
-      'sol_0050F.dat' u 1:5 linestyle 4 title  "Estimated atmos",\
- 'oceanobs_0050.dat'  u 1:2 with points pt 7 ps 1.0 lc rgb pack(27,158,119)  title "observed  ocean",\
- 'atmosobs_0050.dat'  u 1:2 with points pt 6 ps 1.0 lc rgb pack(231,41,138)  title "observed  atmos"
-pause -1
-p     'sol_0050A.dat' u 1:2 linestyle 1 title  "Reference ocean",\
-      'sol_0050A.dat' u 1:3 linestyle 3 title  "Reference atmos",\
-      'sol_0050A.dat' u 1:4 linestyle 2 title  "Estimated ocean",\
-      'sol_0050A.dat' u 1:5 linestyle 4 title  "Estimated atmos",\
- 'oceanobs_0050.dat'  u 1:2 with points pt 7 ps 1.0 lc rgb pack(27,158,119)  title "observed  ocean",\
- 'atmosobs_0050.dat'  u 1:2 with points pt 6 ps 1.0 lc rgb pack(231,41,138)  title "observed  atmos"
-pause -1
-
-set title "Time (t)=60"
-p     'sol_0060F.dat' u 1:2 linestyle 1 title  "Reference ocean",\
-      'sol_0060F.dat' u 1:3 linestyle 3 title  "Reference atmos",\
-      'sol_0060F.dat' u 1:4 linestyle 2 title  "Estimated ocean",\
-      'sol_0060F.dat' u 1:5 linestyle 4 title  "Estimated atmos",\
- 'oceanobs_0060.dat'  u 1:2 with points pt 7 ps 1.0 lc rgb pack(27,158,119)  title "observed  ocean",\
- 'atmosobs_0060.dat'  u 1:2 with points pt 6 ps 1.0 lc rgb pack(231,41,138)  title "observed  atmos"
-pause -1
-p     'sol_0060A.dat' u 1:2 linestyle 1 title  "Reference ocean",\
-      'sol_0060A.dat' u 1:3 linestyle 3 title  "Reference atmos",\
-      'sol_0060A.dat' u 1:4 linestyle 2 title  "Estimated ocean",\
-      'sol_0060A.dat' u 1:5 linestyle 4 title  "Estimated atmos",\
- 'oceanobs_0060.dat'  u 1:2 with points pt 7 ps 1.0 lc rgb pack(27,158,119)  title "observed  ocean",\
- 'atmosobs_0060.dat'  u 1:2 with points pt 6 ps 1.0 lc rgb pack(231,41,138)  title "observed  atmos"
-pause -1
-
-set title "Time (t)=70"
-p     'sol_0070F.dat' u 1:2 linestyle 1 title  "Reference ocean",\
-      'sol_0070F.dat' u 1:3 linestyle 3 title  "Reference atmos",\
-      'sol_0070F.dat' u 1:4 linestyle 2 title  "Estimated ocean",\
-      'sol_0070F.dat' u 1:5 linestyle 4 title  "Estimated atmos",\
- 'oceanobs_0070.dat'  u 1:2 with points pt 7 ps 1.0 lc rgb pack(27,158,119)  title "observed  ocean",\
- 'atmosobs_0070.dat'  u 1:2 with points pt 6 ps 1.0 lc rgb pack(231,41,138)  title "observed  atmos"
-pause -1
-p     'sol_0070A.dat' u 1:2 linestyle 1 title  "Reference ocean",\
-      'sol_0070A.dat' u 1:3 linestyle 3 title  "Reference atmos",\
-      'sol_0070A.dat' u 1:4 linestyle 2 title  "Estimated ocean",\
-      'sol_0070A.dat' u 1:5 linestyle 4 title  "Estimated atmos",\
- 'oceanobs_0070.dat'  u 1:2 with points pt 7 ps 1.0 lc rgb pack(27,158,119)  title "observed  ocean",\
- 'atmosobs_0070.dat'  u 1:2 with points pt 6 ps 1.0 lc rgb pack(231,41,138)  title "observed  atmos"
-pause -1
-
-set title "Time (t)=80"
-p     'sol_0080F.dat' u 1:2 linestyle 1 title  "Reference ocean",\
-      'sol_0080F.dat' u 1:3 linestyle 3 title  "Reference atmos",\
-      'sol_0080F.dat' u 1:4 linestyle 2 title  "Estimated ocean",\
-      'sol_0080F.dat' u 1:5 linestyle 4 title  "Estimated atmos",\
- 'oceanobs_0080.dat'  u 1:2 with points pt 7 ps 1.0 lc rgb pack(27,158,119)  title "observed  ocean",\
- 'atmosobs_0080.dat'  u 1:2 with points pt 6 ps 1.0 lc rgb pack(231,41,138)  title "observed  atmos"
-pause -1
-p     'sol_0080A.dat' u 1:2 linestyle 1 title  "Reference ocean",\
-      'sol_0080A.dat' u 1:3 linestyle 3 title  "Reference atmos",\
-      'sol_0080A.dat' u 1:4 linestyle 2 title  "Estimated ocean",\
-      'sol_0080A.dat' u 1:5 linestyle 4 title  "Estimated atmos",\
- 'oceanobs_0080.dat'  u 1:2 with points pt 7 ps 1.0 lc rgb pack(27,158,119)  title "observed  ocean",\
- 'atmosobs_0080.dat'  u 1:2 with points pt 6 ps 1.0 lc rgb pack(231,41,138)  title "observed  atmos"
-pause -1
-
-set title "Time (t)=90"
-p     'sol_0090F.dat' u 1:2 linestyle 1 title  "Reference ocean",\
-      'sol_0090F.dat' u 1:3 linestyle 3 title  "Reference atmos",\
-      'sol_0090F.dat' u 1:4 linestyle 2 title  "Estimated ocean",\
-      'sol_0090F.dat' u 1:5 linestyle 4 title  "Estimated atmos",\
- 'oceanobs_0090.dat'  u 1:2 with points pt 7 ps 1.0 lc rgb pack(27,158,119)  title "observed  ocean",\
- 'atmosobs_0090.dat'  u 1:2 with points pt 6 ps 1.0 lc rgb pack(231,41,138)  title "observed  atmos"
-pause -1
-p     'sol_0090A.dat' u 1:2 linestyle 1 title  "Reference ocean",\
-      'sol_0090A.dat' u 1:3 linestyle 3 title  "Reference atmos",\
-      'sol_0090A.dat' u 1:4 linestyle 2 title  "Estimated ocean",\
-      'sol_0090A.dat' u 1:5 linestyle 4 title  "Estimated atmos",\
- 'oceanobs_0090.dat'  u 1:2 with points pt 7 ps 1.0 lc rgb pack(27,158,119)  title "observed  ocean",\
- 'atmosobs_0090.dat'  u 1:2 with points pt 6 ps 1.0 lc rgb pack(231,41,138)  title "observed  atmos"
-pause -1
-
-set title "Time (t)=100"
-p     'sol_0100F.dat' u 1:2 linestyle 1 title  "Reference ocean",\
-      'sol_0100F.dat' u 1:3 linestyle 3 title  "Reference atmos",\
-      'sol_0100F.dat' u 1:4 linestyle 2 title  "Estimated ocean",\
-      'sol_0100F.dat' u 1:5 linestyle 4 title  "Estimated atmos",\
- 'oceanobs_0100.dat'  u 1:2 with points pt 7 ps 1.0 lc rgb pack(27,158,119)  title "observed  ocean",\
- 'atmosobs_0100.dat'  u 1:2 with points pt 6 ps 1.0 lc rgb pack(231,41,138)  title "observed  atmos"
-pause -1
-p     'sol_0100A.dat' u 1:2 linestyle 1 title  "Reference ocean",\
-      'sol_0100A.dat' u 1:3 linestyle 3 title  "Reference atmos",\
-      'sol_0100A.dat' u 1:4 linestyle 2 title  "Estimated ocean",\
-      'sol_0100A.dat' u 1:5 linestyle 4 title  "Estimated atmos",\
- 'oceanobs_0100.dat'  u 1:2 with points pt 7 ps 1.0 lc rgb pack(27,158,119)  title "observed  ocean",\
- 'atmosobs_0100.dat'  u 1:2 with points pt 6 ps 1.0 lc rgb pack(231,41,138)  title "observed  atmos"
-pause -1
-
-
-set terminal pdfcairo enhanced font  "Arial,26" size 10in,7in lw 0.8 rounded
-set output "sol0010F.pdf"
-rep

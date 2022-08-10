@@ -13,8 +13,8 @@ contains
    integer i,ia,ib
    type(state) new
    real, parameter :: o2a=0.01
-   real, parameter :: a2o=0.01
-   real, parameter :: b1=0.00
+   real, parameter :: a2o=0.00
+   real, parameter :: b1=0.001
    real, parameter :: b2=0.00
    if (leuler) then
       do i=1,nx
