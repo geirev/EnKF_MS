@@ -3,7 +3,7 @@
 test code
 
 <p align="center">
-<img src="doc/MS.png" width="10"> <img src="doc/RENS.png" width="10">
+<img src="doc/example.png" width="600">
 </p>
 
 # Installation:

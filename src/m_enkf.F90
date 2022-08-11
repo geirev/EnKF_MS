@@ -109,8 +109,8 @@ subroutine enkf(mem,nrens,obs,nroceanobs,nratmosobs,mode_analysis,truncation,cov
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Compute innovation D'=D-HA
    D=D-S
-   write(*,*)'D:'
-   write(*,'(10F10.4)')S(1:10,1:10)
+!   write(*,*)'D:'
+!   write(*,'(10F10.4)')S(1:10,1:10)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Compute mean(HA)
@@ -127,8 +127,8 @@ subroutine enkf(mem,nrens,obs,nroceanobs,nratmosobs,mode_analysis,truncation,cov
    do j=1,nrens
       S(:,j)=S(:,j)-meanS(:)
    enddo
-   write(*,*)'S:'
-   write(*,'(10F10.4)')S(1:10,1:10)
+!   write(*,*)'S:'
+!   write(*,'(10F10.4)')S(1:10,1:10)
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -155,8 +155,8 @@ subroutine enkf(mem,nrens,obs,nroceanobs,nratmosobs,mode_analysis,truncation,cov
       print '(a,a)','       enkf: lowrank R using covariance model: ',trim(covmodel)
       R=matmul(E,transpose(E))/float(nrens-1)
    endif
-   write(*,*)'R:'
-   write(*,'(10F10.4)')R(1:10,1:10)
+!   write(*,*)'R:'
+!   write(*,'(10F10.4)')R(1:10,1:10)
 
 
    allocate(innovation(nrobs))
