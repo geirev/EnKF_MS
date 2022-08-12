@@ -1,9 +1,8 @@
 module m_dumpsol
-use mod_state
-use mod_observation
 contains
 subroutine dumpsol(time,ana,ave,var,nx,dx,obs,nroceanobs,nratmosobs,mem,nrens,xx)
-
+   use mod_state
+   use mod_observation
    implicit none
    integer, intent(in) :: nx
    integer, intent(in) :: nrens
