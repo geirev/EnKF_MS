@@ -4,12 +4,12 @@
  20.0                             ! Smoothness of ocean model
  60.0                             ! Smoothness of atmos model
  T                                ! Fix samples (mean zero and variance one)
- 1.0                              ! Initial variance of ocean ensemble
- 1.0                              ! Initial variance of atmos ensemble
- 0.01                           ! System variance for ocean model
- 0.01                           ! System variance for atmos model
- 0.25                             ! Measurement errors for ocean measurements
- 0.25                             ! Measurement errors for atmos measurements
+ 1.0                              ! Initial standard deviation of ocean ensemble
+ 1.0                              ! Initial standard deviation of atmos ensemble
+ 0.03                             ! System standard deviation for ocean model
+ 0.03                             ! System standard deviation for atmos model
+ 0.3                              ! Measurement standard deviation for ocean measurements
+ 0.3                              ! Measurement standard deviation for atmos measurements
  40                               ! Number of ocean observations
  10                               ! Number of atmos observations
  10.0                             ! Time between observations

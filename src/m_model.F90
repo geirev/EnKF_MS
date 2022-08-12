@@ -20,10 +20,10 @@ contains
       do i=1,nx
          ia=mod(i-2+nx,nx)+1
          ib=mod(i,nx)+1
-         !new%atmos(i) = mem%atmos(i) - dt*u%atmos*(mem%atmos(ib)-mem%atmos(ia))/2. &
+         !new%atmos(i) = mem%atmos(i) - dt*u%atmos*(mem%atmos(ib)-mem%atmos(ia))/(2.0*dx) &
          new%atmos(i) = mem%atmos(ia) &
                       + dt*o2a*mem%ocean(i) - dt*b1*mem%atmos(i)
-         new%ocean(i) = mem%ocean(i) - dt*u%ocean*(mem%ocean(ib)-mem%ocean(ia))/2. &
+         new%ocean(i) = mem%ocean(i) - dt*u%ocean*(mem%ocean(ib)-mem%ocean(ia))/(2.0*dx) &
                       + dt*a2o*mem%atmos(i) - dt*b2*mem%ocean(i)
       enddo
    else

@@ -78,12 +78,12 @@ program main
       read(10,*)rh%ocean           ; print *,'rh%ocean=    ',rh%ocean
       read(10,*)rh%atmos           ; print *,'rh%atmos=    ',rh%atmos
       read(10,'(1x,l1)')samp_fix   ; print *,'samp_fix=    ',samp_fix
-      read(10,*)inivar%ocean       ; print *,'inivar%ocean=',inivar%ocean
-      read(10,*)inivar%atmos       ; print *,'inivar%atmos=',inivar%atmos
-      read(10,*)sysvar%ocean       ; print *,'sysvar%ocean=',sysvar%ocean
-      read(10,*)sysvar%atmos       ; print *,'sysvar%atmos=',sysvar%atmos
-      read(10,*)obsvar%ocean       ; print *,'obsvar%ocean=',obsvar%ocean
-      read(10,*)obsvar%atmos       ; print *,'obsvar%atmos=',obsvar%atmos
+      read(10,*)inivar%ocean       ; print *,'inistd%ocean=',inivar%ocean
+      read(10,*)inivar%atmos       ; print *,'inistd%atmos=',inivar%atmos
+      read(10,*)sysvar%ocean       ; print *,'sysstd%ocean=',sysvar%ocean
+      read(10,*)sysvar%atmos       ; print *,'sysstd%atmos=',sysvar%atmos
+      read(10,*)obsvar%ocean       ; print *,'obsstd%ocean=',obsvar%ocean
+      read(10,*)obsvar%atmos       ; print *,'obsstd%atmos=',obsvar%atmos
       read(10,*)nro         ; print *,'nro=  ',nro
       read(10,*)nra         ; print *,'nra=  ',nra
       read(10,*)obsdt              ; print *,'obsdt=       ',obsdt
@@ -98,6 +98,15 @@ program main
       read(10,*)local,obs_radius,obs_truncation; print *,'localization=',local,obs_radius,obs_truncation
    close(10)
 
+! Standard deviation to variance
+   inivar%ocean=inivar%ocean**2
+   inivar%atmos=inivar%atmos**2
+   sysvar%ocean=sysvar%ocean**2
+   sysvar%atmos=sysvar%atmos**2
+   obsvar%ocean=obsvar%ocean**2
+   obsvar%atmos=obsvar%atmos**2
+
+! We assume constant atmospheric velocity equal to one
    u%atmos=1.0
 
    call set_random_seed2
