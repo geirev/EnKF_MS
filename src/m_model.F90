@@ -15,7 +15,7 @@ contains
    real, parameter :: o2a=0.01
    real, parameter :: a2o=0.00
    real, parameter :: b1=0.001
-   real, parameter :: b2=0.00
+   real, parameter :: b2=0.001
    if (leuler) then
       do i=1,nx
          ia=mod(i-2+nx,nx)+1

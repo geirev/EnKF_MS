@@ -3,8 +3,6 @@ program main
    use mod_state        ! Defines model state
    use mod_observation  ! Defines observation state
    use m_set_random_seed2
-!   use m_advect
-!   use m_analyt0
    use m_model
    use m_pseudo1D
    use m_fixsample1D
@@ -192,13 +190,8 @@ program main
       do j=1,nrens
          call model(mem(j),old(j),u,dx,dt,leuler)
 
-!         call analyt0(mem(j)%atmos,nx,u%atmos)
-!         call advect(mem(j)%ocean,dt,dx,u%ocean,2)
-
       enddo
       call model(ana,old(0),u,dx,dt,leuler)
-!      call analyt0(ana%atmos,nx,u%atmos)
-!      call advect(ana%ocean,dt,dx,u%ocean,2)
 
 ! System noise
       if (sysvar%ocean > 0.0 .or. sysvar%atmos > 0.0) then

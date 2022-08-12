@@ -18,30 +18,28 @@ ana	main.F90	/^   type(state) ana /;"	v	program:main
 analyt0	m_analyt0.F90	/^subroutine analyt0(/;"	s	module:m_analyt0
 assign_state	mod_state.F90	/^   subroutine assign_state(/;"	s	module:mod_state
 ave	main.F90	/^   type(state) ave /;"	v	program:main
-covmodel	main.F90	/^   character(len=8) covmodel$/;"	v	program:main
+covmodel	main.F90	/^   character(len=8) covmodel /;"	v	program:main
 d	mod_observation.F90	/^      real d$/;"	k	type:observation
-dobs	main.F90	/^   real dobs$/;"	v	program:main
-dt	main.F90	/^   real dt /;"	v	program:main
+deltaobs	main.F90	/^   real deltaobs /;"	v	program:main
+dt	main.F90	/^   real, parameter :: dt=/;"	v	program:main
 dumpsol	m_dumpsol.F90	/^subroutine dumpsol(/;"	s	module:m_dumpsol
-dx	main.F90	/^   real dx /;"	v	program:main
+dx	main.F90	/^   real, parameter :: dx=/;"	v	program:main
 enkf	m_enkf.F90	/^subroutine enkf(/;"	s	module:m_enkf
 ensemblemean	m_ensemblemean.F90	/^subroutine ensemblemean(/;"	s	module:m_ensemblemean
 ensemblevariance	m_ensemblevariance.F90	/^subroutine ensemblevariance(/;"	s	module:m_ensemblevariance
 getD	m_getD.F90	/^subroutine getD(/;"	s	module:m_getD
 i	main.F90	/^   in/;"	v	program:main
-iadv	main.F90	/^   integer iadv /;"	v	program:main
-iens	main.F90	/^   integer iens,/;"	v	program:main
 inflate	main.F90	/^   integer inflate /;"	v	program:main
 infmult	main.F90	/^   real infmult /;"	v	program:main
 inivar	main.F90	/^   type(substate) inivar$/;"	v	program:main
-iobs	main.F90	/^   integer iens,i,j,m,k,iobs /;"	v	program:main
-iprtint	main.F90	/^   integer iprtint /;"	v	program:main
-j	main.F90	/^   integer iens,i,j,/;"	v	program:main
-k	main.F90	/^   integer iens,i,j,m,k,/;"	v	program:main
-local	main.F90	/^   integer local$/;"	v	program:main
+iobs	main.F90	/^   integer iobs /;"	v	program:main
+j	main.F90	/^   integer i,j,/;"	v	program:main
+k	main.F90	/^   integer i,j,m,k$/;"	v	program:main
+leuler	main.F90	/^   logical leuler$/;"	v	program:main
+local	main.F90	/^   integer local /;"	v	program:main
 lrandrot	main.F90	/^   logical :: lrandrot=/;"	v	program:main
 lsymsqrt	main.F90	/^   logical :: lsymsqrt=/;"	v	program:main
-m	main.F90	/^   integer iens,i,j,m,/;"	v	program:main
+m	main.F90	/^   integer i,j,m,/;"	v	program:main
 m_advect	m_advect.F90	/^module m_advect$/;"	m
 m_analyt0	m_analyt0.F90	/^module m_analyt0$/;"	m
 m_dumpsol	m_dumpsol.F90	/^module m_dumpsol$/;"	m
@@ -50,36 +48,36 @@ m_ensemblemean	m_ensemblemean.F90	/^module m_ensemblemean$/;"	m
 m_ensemblevariance	m_ensemblevariance.F90	/^module m_ensemblevariance$/;"	m
 m_getD	m_getD.F90	/^module m_getD$/;"	m
 m_measurements	m_measurements.F90	/^module m_measurements$/;"	m
+m_model	m_model.F90	/^module m_model$/;"	m
 m_obs_pert	m_obs_pert.F90	/^module m_obs_pert$/;"	m
-m_random_normal	m_random_normal.F90	/^module m_random_normal$/;"	m
 m_randphase	m_randphase.F90	/^module m_randphase$/;"	m
 m_set_random_seed2	m_set_random_seed2.F90	/^module m_set_random_seed2$/;"	m
 main	main.F90	/^program main$/;"	p
 measurements	m_measurements.F90	/^subroutine measurements(/;"	s	module:m_measurements
 mem	main.F90	/^   type(state), allocatable :: mem(/;"	v	program:main
-mesopt	main.F90	/^   character(len=9) mesopt$/;"	v	program:main
 mkobs	main.F90	/^   logical mkobs /;"	v	program:main
 mod_dimensions	mod_dimensions.F90	/^module mod_dimensions$/;"	m
 mod_observation	mod_observation.F90	/^module mod_observation$/;"	m
 mod_shapiro	mod_shapiro.F90	/^module mod_shapiro$/;"	m
 mod_state	mod_state.F90	/^module mod_state$/;"	m
 mode_analysis	main.F90	/^   integer mode_analysis /;"	v	program:main
-nratmosobs	main.F90	/^   integer nratmosobs /;"	v	program:main
+model	m_model.F90	/^   subroutine model(/;"	s	module:m_model
+ndim	mod_dimensions.F90	/^   integer, parameter :: ndim=/;"	v	module:mod_dimensions
+nra	main.F90	/^   integer nra /;"	v	program:main
 nrens	main.F90	/^   integer nrens /;"	v	program:main
+nro	main.F90	/^   integer nro /;"	v	program:main
 nrobs	main.F90	/^   integer nrobs /;"	v	program:main
-nrobst	main.F90	/^   integer nrobst$/;"	v	program:main
-nroceanobs	main.F90	/^   integer nroceanobs /;"	v	program:main
 nrt	main.F90	/^   integer nrt /;"	v	program:main
 nx	mod_dimensions.F90	/^   integer, parameter :: nx=/;"	v	module:mod_dimensions
 obs	main.F90	/^   type(obse/;"	v	program:main
 obs_pert	m_obs_pert.F90	/^subroutine obs_pert(/;"	s	module:m_obs_pert
-obs_radius	main.F90	/^   real obs_radius,/;"	v	program:main
-obs_truncation	main.F90	/^   real obs_radius,obs_truncation$/;"	v	program:main
+obs_radius	main.F90	/^   real obs_radius /;"	v	program:main
+obs_truncation	main.F90	/^   real obs_truncation /;"	v	program:main
 obsdt	main.F90	/^   real obsdt /;"	v	program:main
 observation	mod_observation.F90	/^   type observation$/;"	t	module:mod_observation
 obsvar	main.F90	/^   type(substate) obsvar$/;"	v	program:main
-pos	mod_observation.F90	/^      real pos$/;"	k	type:observation
-random_normal	m_random_normal.F90	/^subroutine random_normal(/;"	s	module:m_random_normal
+old	main.F90	/^   type(state), allocatable :: old(/;"	v	program:main
+pos	mod_observation.F90	/^      integer pos$/;"	k	type:observation
 randphase	m_randphase.F90	/^subroutine randphase(/;"	s	module:m_randphase
 rd	main.F90	/^   real rd /;"	v	program:main
 real_state_mult	mod_state.F90	/^   function real_state_mult(/;"	f	module:mod_state
@@ -91,7 +89,6 @@ shfact	mod_shapiro.F90	/^subroutine shfact(/;"	s	module:mod_shapiro
 shfilt	mod_shapiro.F90	/^subroutine shfilt(/;"	s	module:mod_shapiro
 shfilt2D	mod_shapiro.F90	/^subroutine shfilt2D(/;"	s	module:mod_shapiro
 sqrt_state	mod_state.F90	/^   function sqrt_state(/;"	f	module:mod_state
-startsol	main.F90	/^   integer startsol /;"	v	program:main
 state	mod_state.F90	/^   type state$/;"	t	module:mod_state
 state_real_mult	mod_state.F90	/^   function state_real_mult(/;"	f	module:mod_state
 state_state_mult	mod_state.F90	/^   function state_state_mult(/;"	f	module:mod_state
@@ -100,7 +97,7 @@ subtract_state	mod_state.F90	/^   function subtract_state(/;"	f	module:mod_state
 sysnoise	main.F90	/^   type(state), allocatable :: sysnoise(/;"	v	program:main
 sysvar	main.F90	/^   type(substate) sysvar$/;"	v	program:main
 time	main.F90	/^   real time$/;"	v	program:main
-truncation	main.F90	/^   real truncation$/;"	v	program:main
+truncation	main.F90	/^   real truncation /;"	v	program:main
 u	main.F90	/^   type(sub/;"	v	program:main
 var	main.F90	/^   type(state) var /;"	v	program:main
 var	mod_observation.F90	/^      real var$/;"	k	type:observation

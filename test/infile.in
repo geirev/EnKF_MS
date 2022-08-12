@@ -6,8 +6,8 @@
  T                                ! Fix samples (mean zero and variance one)
  1.0                              ! Initial variance of ocean ensemble
  1.0                              ! Initial variance of atmos ensemble
- 0.0                              ! System variance for ocean model
- 0.0                              ! System variance for atmos model
+ 0.01                           ! System variance for ocean model
+ 0.01                           ! System variance for atmos model
  0.25                             ! Measurement errors for ocean measurements
  0.25                             ! Measurement errors for atmos measurements
  40                               ! Number of ocean observations
