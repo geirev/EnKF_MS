@@ -61,7 +61,8 @@ git remote add upstream https://github.com/geirev/EnKF_sampling
 popd
 ```
 
-If you are new to Git, read the section <a href="https://github.com/geirev/EnKF_seir#git-instructions">Git instructions</a>
+If you are new to Git, read the section <a href="https://github.com/geirev/EnKF_seir#git-instructions">Git instructions</a> but assume master
+replaced with main.
 
 ## 2. Required Packages
 
@@ -199,3 +200,5 @@ ms.exe
 ## 7. Plotting
 Check the Solution/p.gnu file 
 
+## 8. Code standards
+The code follows the standard  <a href="https://github.com/geirev/EnKF_seir#code-standards">Code standards</a>
