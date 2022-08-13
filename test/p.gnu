@@ -170,9 +170,11 @@ pack( r, g, b ) = 2**16*r + 2**8*g + b
 set key noautotitle
 set size 1.0, 1.0
 set style line  1 lt 1 lw 1 pt 3 ps 0 linecolor rgb pack(179,226,205)  # 41 light green
-set style line  2 lt 1 lw 3 pt 3 ps 0 linecolor rgb pack(27,158,119)   # 25 dark green
+set style line  2 lt 1 lw 4 pt 3 ps 0 linecolor rgb pack(27,158,119)   # 25 dark green
+set style line  22 lt 1 lw 1 pt 3 ps 0 linecolor rgb pack(27,158,119)   # 25 dark green
 set style line  3 lt 1 lw 1 pt 3 ps 0 linecolor rgb pack(244,202,220)  # 44 light red
-set style line  4 lt 1 lw 3 pt 3 ps 0 linecolor rgb pack(231,41,138)   # 28 dark red
+set style line  4 lt 1 lw 4 pt 3 ps 0 linecolor rgb pack(231,41,138)   # 28 dark red
+set style line  44 lt 1 lw 1 pt 3 ps 0 linecolor rgb pack(231,41,138)   # 28 dark red
 set style line  5 lt 1 lw 3 pt 3 ps 0 linecolor rgb pack(203,213,232)   # 43 light blue
 set style line  6 lt 1 lw 3 pt 3 ps 0 linecolor rgb pack(117,112,179)   # 27 dark blue
 set style line  7 lt 1 lw 3 pt 3 ps 0 linecolor rgb pack(204,204,204)   # 48 light gray
@@ -181,7 +183,7 @@ set style line  9 lt 1 lw 3 pt 3 ps 0 linecolor rgb pack(253,205,172)   # 42 lig
 set style line 10 lt 1 lw 3 pt 3 ps 0 linecolor rgb pack(217,95,2)     # 26 dark orange
 set autoscale
 set yrange [ -4 : 4 ] noreverse nowriteback
-set xrange [ 0.0 : 1000 ] noreverse nowriteback
+set xrange [ 0.0 : 1023 ] noreverse nowriteback
 set style data linespoints
 set nogrid
 
@@ -189,16 +191,23 @@ set xlabel  "distance (x)"
 
 set terminal wxt size 1600,800
 
+pdfout=0
+
+if (pdfout == 1) {set terminal pdfcairo enhanced font  "Arial,15" size 10in,7in lw 1.0 rounded}
+
+set style fill transparent solid 0.4 noborder
 # Initial condition
 set title "Time (t=0)"
-p 'sol_0000I.dat' u 1:2 linestyle 1 title "Reference ocean",\
-  'sol_0000I.dat' u 1:3 linestyle 3 title "Reference atmos",\
+if (pdfout = 1) {set output "sol_0000I.pdf"}
+p 'sol_0000I.dat' u 1:($4+2*$6):($4-2*$6) with filledcurve fc rgb pack(179,226,205) ,\
+  'sol_0000I.dat' u 1:($5+2*$7):($5-2*$7) with filledcurve fc rgb pack(244,202,220) ,\
+  'sol_0000I.dat' u 1:2 linestyle 22 title "Reference ocean",\
+  'sol_0000I.dat' u 1:3 linestyle 44 title "Reference atmos",\
   'sol_0000I.dat' u 1:4 linestyle 2 title "Estimated ocean",\
   'sol_0000I.dat' u 1:5 linestyle 4 title "Estimated atmos"
-pause 0.1
+pause 2.0
 
 # Uncomment for generating pdf files
-#set terminal pdfcairo enhanced font  "Arial,26" size 10in,7in lw 0.8 rounded
 do for [var=10:1000:10] {
    xx="000"
    if (var > 9) {xx="00"}
@@ -208,14 +217,15 @@ do for [var=10:1000:10] {
    list = "F A"
    do for [yy in list] {
       set title "Time (t=".var."".yy.")"
-     #set output "sol_".xx."".var."".yy.".pdf"
-      plot  "sol_".xx."".var."".yy.".dat" u 1:2 linestyle 1 title  "Reference ocean",\
-            "sol_".xx."".var."".yy.".dat" u 1:3 linestyle 3 title  "Reference atmos",\
-            "sol_".xx."".var."".yy.".dat" u 1:4 linestyle 2 title  "Estimated ocean",\
-            "sol_".xx."".var."".yy.".dat" u 1:5 linestyle 4 title  "Estimated atmos",\
-       "oceanobs_".xx."".var.".dat"  u 1:2 with points pt 7 ps 1.0 lc rgb pack(27,158,119)  title "Observed  ocean",\
-       "atmosobs_".xx."".var.".dat"  u 1:2 with points pt 7 ps 1.0 lc rgb pack(231,41,138)  title "Observed  atmos"
+      if (pdfout = 1) {set output "sol_".xx."".var."".yy.".pdf"}
+      plot  "sol_".xx."".var."".yy.".dat" u 1:($4+2*$6):($4-2*$6) with filledcurve fc rgb pack(179,226,205) ,\
+            "sol_".xx."".var."".yy.".dat" u 1:($5+2*$7):($5-2*$7) with filledcurve fc rgb pack(244,202,220) ,\
+            "sol_".xx."".var."".yy.".dat" u 1:2 linestyle 22 title  "Ref ocean",\
+            "sol_".xx."".var."".yy.".dat" u 1:3 linestyle 44 title  "Ref atmos",\
+            "sol_".xx."".var."".yy.".dat" u 1:4 linestyle 2 title  "Est ocean",\
+            "sol_".xx."".var."".yy.".dat" u 1:5 linestyle 4 title  "Est atmos",\
+            "oceanobs_".xx."".var.".dat"  u 1:2:(2*$3)  w yerr pt 7 ps 1.0 lc rgb pack(27,158,119) title "Obs ocean",\
+            "atmosobs_".xx."".var.".dat"  u 1:2:(2*$3)  w yerr pt 7 ps 1.0 lc rgb pack(231,41,138) title "Obs atmos"
       pause 0.1
    }
 }
-
