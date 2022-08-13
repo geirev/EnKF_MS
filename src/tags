@@ -18,6 +18,7 @@ ana	main.F90	/^   type(state) ana /;"	v	program:main
 analyt0	m_analyt0.F90	/^subroutine analyt0(/;"	s	module:m_analyt0
 assign_state	mod_state.F90	/^   subroutine assign_state(/;"	s	module:mod_state
 ave	main.F90	/^   type(state) ave /;"	v	program:main
+cov	main.F90	/^   type(state) cov(/;"	v	program:main
 covmodel	main.F90	/^   character(len=8) covmodel /;"	v	program:main
 d	mod_observation.F90	/^      real d$/;"	k	type:observation
 deltaobs	main.F90	/^   real deltaobs /;"	v	program:main
@@ -25,6 +26,7 @@ dt	main.F90	/^   real, parameter :: dt=/;"	v	program:main
 dumpsol	m_dumpsol.F90	/^subroutine dumpsol(/;"	s	module:m_dumpsol
 dx	main.F90	/^   real, parameter :: dx=/;"	v	program:main
 enkf	m_enkf.F90	/^subroutine enkf(/;"	s	module:m_enkf
+ensemblecovariance	m_ensemblecovariance.F90	/^subroutine ensemblecovariance(/;"	s	module:m_ensemblecovariance
 ensemblemean	m_ensemblemean.F90	/^subroutine ensemblemean(/;"	s	module:m_ensemblemean
 ensemblevariance	m_ensemblevariance.F90	/^subroutine ensemblevariance(/;"	s	module:m_ensemblevariance
 getD	m_getD.F90	/^subroutine getD(/;"	s	module:m_getD
@@ -44,6 +46,7 @@ m_advect	m_advect.F90	/^module m_advect$/;"	m
 m_analyt0	m_analyt0.F90	/^module m_analyt0$/;"	m
 m_dumpsol	m_dumpsol.F90	/^module m_dumpsol$/;"	m
 m_enkf	m_enkf.F90	/^module m_enkf$/;"	m
+m_ensemblecovariance	m_ensemblecovariance.F90	/^module m_ensemblecovariance$/;"	m
 m_ensemblemean	m_ensemblemean.F90	/^module m_ensemblemean$/;"	m
 m_ensemblevariance	m_ensemblevariance.F90	/^module m_ensemblevariance$/;"	m
 m_getD	m_getD.F90	/^module m_getD$/;"	m

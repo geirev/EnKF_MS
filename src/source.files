@@ -3,6 +3,7 @@ MODULES = \
 	m_analyt0.F90\
 	m_dumpsol.F90\
 	m_enkf.F90\
+	m_ensemblecovariance.F90\
 	m_ensemblemean.F90\
 	m_ensemblevariance.F90\
 	m_getD.F90\

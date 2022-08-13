@@ -9,6 +9,7 @@ program main
    use m_dumpsol
    use m_ensemblemean
    use m_ensemblevariance
+   use m_ensemblecovariance
    use m_enkf
    use m_measurements
    implicit none
@@ -17,9 +18,10 @@ program main
    type(state), allocatable :: mem(:)
    type(state), allocatable :: old(:)
    type(state), allocatable :: sysnoise(:)
-   type(state) ana  ! analytical solution
-   type(state) ave  ! ensemble average
-   type(state) var  ! ensemble variance
+   type(state) ana     ! analytical solution
+   type(state) ave     ! ensemble average
+   type(state) var     ! ensemble variance
+   type(state) cov(2)  ! ensemble covariance for two points
    real, allocatable :: samples(:,:)
 
    type(observation), allocatable :: obs(:)
@@ -180,7 +182,8 @@ program main
 
    call ensemblemean(mem,ave,nrens)
    call ensemblevariance(mem,ave,var,nrens)
-   call dumpsol(time,ana,ave,var,nx,dx,obs,nro,nra,mem,nrens,'I')
+   call ensemblecovariance(mem,ave,cov,nrens)
+   call dumpsol(time,ana,ave,var,cov,nx,dx,obs,nro,nra,mem,nrens,'I')
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Time stepping
@@ -226,7 +229,8 @@ program main
 
          call ensemblemean(mem,ave,nrens)
          call ensemblevariance(mem,ave,var,nrens)
-         call dumpsol(time,ana,ave,var,nx,dx,obs,nro,nra,mem,nrens,'F')
+         call ensemblecovariance(mem,ave,cov,nrens)
+         call dumpsol(time,ana,ave,var,cov,nx,dx,obs,nro,nra,mem,nrens,'F')
 
          call enkf(mem,nrens,obs,nro,nra,mode_analysis,&
                   &truncation,covmodel,dx,rh,Rexact,rd,lrandrot,lsymsqrt,&
@@ -234,7 +238,8 @@ program main
 
          call ensemblemean(mem,ave,nrens)
          call ensemblevariance(mem,ave,var,nrens)
-         call dumpsol(time,ana,ave,var,nx,dx,obs,nro,nra,mem,nrens,'A')
+         call ensemblecovariance(mem,ave,cov,nrens)
+         call dumpsol(time,ana,ave,var,cov,nx,dx,obs,nro,nra,mem,nrens,'A')
 
       endif
 

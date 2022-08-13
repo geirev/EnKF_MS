@@ -1,6 +1,6 @@
 module m_dumpsol
 contains
-subroutine dumpsol(time,ana,ave,var,nx,dx,obs,nroceanobs,nratmosobs,mem,nrens,xx)
+subroutine dumpsol(time,ana,ave,var,cov,nx,dx,obs,nroceanobs,nratmosobs,mem,nrens,xx)
    use mod_state
    use mod_observation
    implicit none
@@ -14,6 +14,7 @@ subroutine dumpsol(time,ana,ave,var,nx,dx,obs,nroceanobs,nratmosobs,mem,nrens,xx
    type(state), intent(in) :: ana
    type(state), intent(in) :: ave
    type(state), intent(in) :: var
+   type(state), intent(in) :: cov(2)
    type(state) :: std
    type(observation), intent(in) :: obs(nroceanobs+nratmosobs)
    integer i,m
@@ -38,9 +39,17 @@ subroutine dumpsol(time,ana,ave,var,nx,dx,obs,nroceanobs,nratmosobs,mem,nrens,xx
 
    open(10,file='Solution/sol_'//trim(outtag)//xx//'.dat')
       std=sqrt(var)
-      write(10,'(7a10)')'         x',' Ref_Ocean',' Ref_Atmos',' Est_Ocean',' Est_Atmos',' Std_Ocean',' Std_Atmos'
+      write(10,'(11a10)')'          x','  Ref_Ocean','  Ref_Atmos',&
+                                       '  Est_Ocean','  Est_Atmos',&
+                                       '  Std_Ocean','  Std_Atmos',&
+                                       ' Cov1_Ocean',' Cov1_Atmos',&
+                                       ' Cov2_Ocean',' Cov2_Atmos'
       do i=1,nx
-         write(10,'(7f10.4)')real(i-1)*dx,ana%ocean(i),ana%atmos(i),ave%ocean(i),ave%atmos(i),std%ocean(i),std%atmos(i)
+         write(10,'(11f11.4)')real(i-1)*dx,ana%ocean(i),ana%atmos(i),&
+                                           ave%ocean(i),ave%atmos(i),&
+                                           std%ocean(i),std%atmos(i),&
+                                           cov(1)%ocean(i),cov(1)%atmos(i),&
+                                           cov(2)%ocean(i),cov(2)%atmos(i)
       enddo
    close(10)
 

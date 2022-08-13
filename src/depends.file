@@ -4,6 +4,7 @@ m_advect.o:      MODEL.CPP
 main.o:      makefile
 main.o:      m_dumpsol.o
 main.o:      m_enkf.o
+main.o:      m_ensemblecovariance.o
 main.o:      m_ensemblemean.o
 main.o:      m_ensemblevariance.o
 main.o:      m_fixsample1D.o
@@ -28,6 +29,10 @@ m_enkf.o:      mod_dimensions.o
 m_enkf.o:      MODEL.CPP
 m_enkf.o:      mod_observation.o
 m_enkf.o:      mod_state.o
+m_ensemblecovariance.o:      makefile
+m_ensemblecovariance.o:      mod_dimensions.o
+m_ensemblecovariance.o:      MODEL.CPP
+m_ensemblecovariance.o:      mod_state.o
 m_ensemblemean.o:      makefile
 m_ensemblemean.o:      MODEL.CPP
 m_ensemblemean.o:      mod_state.o
