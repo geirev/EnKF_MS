@@ -182,7 +182,7 @@ set style line  8 lt 1 lw 3 pt 3 ps 0 linecolor rgb pack(102,102,102)   # 32 dar
 set style line  9 lt 1 lw 3 pt 3 ps 0 linecolor rgb pack(253,205,172)   # 42 light orange
 set style line 10 lt 1 lw 3 pt 3 ps 0 linecolor rgb pack(217,95,2)     # 26 dark orange
 set autoscale
-set yrange [ -4 : 4 ] noreverse nowriteback
+set yrange [ -5 : 5 ] noreverse nowriteback
 set xrange [ 0.0 : 1023 ] noreverse nowriteback
 set style data linespoints
 set nogrid
@@ -195,16 +195,18 @@ pdfout=0
 
 if (pdfout == 1) {set terminal pdfcairo enhanced font  "Arial,15" size 10in,7in lw 1.0 rounded}
 
+shift=2
+nstd=2
 set style fill transparent solid 0.4 noborder
 # Initial condition
 set title "Time (t=0)"
 if (pdfout = 1) {set output "sol_0000I.pdf"}
-p 'sol_0000I.dat' u 1:($4+2*$6):($4-2*$6) with filledcurve fc rgb pack(179,226,205) ,\
-  'sol_0000I.dat' u 1:($5+2*$7):($5-2*$7) with filledcurve fc rgb pack(244,202,220) ,\
-  'sol_0000I.dat' u 1:2 linestyle 22 title "Reference ocean",\
-  'sol_0000I.dat' u 1:3 linestyle 44 title "Reference atmos",\
-  'sol_0000I.dat' u 1:4 linestyle 2 title "Estimated ocean",\
-  'sol_0000I.dat' u 1:5 linestyle 4 title "Estimated atmos"
+p 'sol_0000I.dat' u 1:(-shift+$4+2*$6):(-shift+$4-nstd*$6) with filledcurve fc rgb pack(179,226,205) ,\
+  'sol_0000I.dat' u 1:(shift+$5+2*$7):(shift+$5-nstd*$7) with filledcurve fc rgb pack(244,202,220) ,\
+  'sol_0000I.dat' u 1:(-shift+$2) linestyle 22 title "Reference ocean",\
+  'sol_0000I.dat' u 1:(shift+$3) linestyle 44 title "Reference atmos",\
+  'sol_0000I.dat' u 1:(-shift+$4) linestyle 2 title "Estimated ocean",\
+  'sol_0000I.dat' u 1:(shift+$5) linestyle 4 title "Estimated atmos"
 pause 2.0
 
 # Uncomment for generating pdf files
@@ -218,14 +220,14 @@ do for [var=10:1000:10] {
    do for [yy in list] {
       set title "Time (t=".var."".yy.")"
       if (pdfout = 1) {set output "sol_".xx."".var."".yy.".pdf"}
-      plot  "sol_".xx."".var."".yy.".dat" u 1:($4+2*$6):($4-2*$6) with filledcurve fc rgb pack(179,226,205) ,\
-            "sol_".xx."".var."".yy.".dat" u 1:($5+2*$7):($5-2*$7) with filledcurve fc rgb pack(244,202,220) ,\
-            "sol_".xx."".var."".yy.".dat" u 1:2 linestyle 22 title  "Ref ocean",\
-            "sol_".xx."".var."".yy.".dat" u 1:3 linestyle 44 title  "Ref atmos",\
-            "sol_".xx."".var."".yy.".dat" u 1:4 linestyle 2 title  "Est ocean",\
-            "sol_".xx."".var."".yy.".dat" u 1:5 linestyle 4 title  "Est atmos",\
-            "oceanobs_".xx."".var.".dat"  u 1:2:(2*$3)  w yerr pt 7 ps 1.0 lc rgb pack(27,158,119) title "Obs ocean",\
-            "atmosobs_".xx."".var.".dat"  u 1:2:(2*$3)  w yerr pt 7 ps 1.0 lc rgb pack(231,41,138) title "Obs atmos"
+      plot  "sol_".xx."".var."".yy.".dat" u 1:(-shift+$4+nstd*$6):(-shift+$4-nstd*$6) with filledcurve fc rgb pack(179,226,205) ,\
+            "sol_".xx."".var."".yy.".dat" u 1:(shift+$5+nstd*$7):(shift+$5-nstd*$7) with filledcurve fc rgb pack(244,202,220) ,\
+            "sol_".xx."".var."".yy.".dat" u 1:(-shift+$2) linestyle 22 title  "Ref ocean",\
+            "sol_".xx."".var."".yy.".dat" u 1:(shift+$3) linestyle 44 title  "Ref atmos",\
+            "sol_".xx."".var."".yy.".dat" u 1:(-shift+$4) linestyle 2 title  "Est ocean",\
+            "sol_".xx."".var."".yy.".dat" u 1:(shift+$5) linestyle 4 title  "Est atmos",\
+            "oceanobs_".xx."".var.".dat"  u 1:(-shift+$2):(nstd*$3)  w yerr pt 7 ps 1.0 lc rgb pack(27,158,119) title "Obs ocean",\
+            "atmosobs_".xx."".var.".dat"  u 1:(shift+$2):(nstd*$3)  w yerr pt 7 ps 1.0 lc rgb pack(231,41,138) title "Obs atmos"
       pause 0.1
    }
 }
