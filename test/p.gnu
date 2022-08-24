@@ -191,14 +191,14 @@ set xlabel  "distance (x)"
 
 set terminal wxt size 1600,1000
 
-pdfout=1   # Make pdf files
+pdfout=0   # Make pdf files
 shift=4    # Shifting the y positions of the solutions
 cshift=0   # Shifting the y-positions of the covariances
 covs=10     # Scaling up the covariance functions
 nstd=2     # Number of std dev for uncertainties
 f(value, left, right) = (value < left || value > right ? 1/0 : value)
 
-if (pdfout == 0) {set terminal pdfcairo enhanced font  "Arial,15" size 10in,7in lw 1.0 rounded}
+if (pdfout == 1) {set terminal pdfcairo enhanced font  "Arial,15" size 10in,7in lw 1.0 rounded}
 
 set arrow from 340,-6 to 340,6, graph 1 nohead
 set arrow from 681,-6 to 681,6, graph 1 nohead
@@ -217,7 +217,7 @@ p 'sol_0000I.dat' u 1:(-shift+$4+2*$6):(-shift+$4-nstd*$6) with filledcurve fc r
   'sol_0000I.dat' u (f($1,241,441)):(cshift+0.2*covs*$9) linestyle 22 title  "Cov  o-a",\
   'sol_0000I.dat' u (f($1,582,782)):(-cshift+0.2*covs*$10) linestyle 44 title  "Cov a-o",\
   'sol_0000I.dat' u (f($1,582,782)):(cshift+0.2*covs*$11) linestyle 4 title  "Cov a-a"
-pause 4
+pause -1
 
 do for [var=10:1000:10] {
    xx="000"
