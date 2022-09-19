@@ -1,20 +1,24 @@
 module m_model
+   use mod_dimensions
+   use mod_state
+   type(substate) u                      ! Model velocity
+   type(substate) rh                     ! Decorrelation lengths of ocean and atmosphere
+   real, parameter :: dx=1.0             ! Horizontal grid spacing
+   real, parameter :: dt=1.0             ! Time step of atmospheric model
+
 contains
-   subroutine model(mem,old,u,dx,dt,leuler)
+   subroutine model(mem,old,leuler)
    use mod_dimensions
    use mod_state
    implicit none
    type(state),     intent(inout):: mem
    type(state),     intent(inout):: old
-   type(substate),  intent(in)   :: u
-   real,            intent(in)   :: dx
-   real,            intent(in)   :: dt
    logical,         intent(in)   :: leuler
    integer i,ia,ib
    type(state) new
-   real, parameter :: o2a=0.02
+   real, parameter :: o2a=0.01
    real, parameter :: a2o=0.00
-   real, parameter :: b1=0.001
+   real, parameter :: b1=0.003
    real, parameter :: b2=0.001
    if (leuler) then
       do i=1,nx

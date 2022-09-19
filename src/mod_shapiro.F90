@@ -8,12 +8,12 @@ subroutine shfact(n,sh)
 !-------------------------------------------------------------------
 !      This routine calculates the factors in the general formula
 !      for the Shapiro filter, given as
-!       
+!
 !                                      (-1)^{n+j-1}(2n)!
-!        y(i)=x(i) + \Sum_{j=0}^{2n} { -------------------- } 
+!        y(i)=x(i) + \Sum_{j=0}^{2n} { -------------------- }
 !                                       2^{2n} j!  (2n-j)!
-!      
-!      which is calculated from equation (39) in 
+!
+!      which is calculated from equation (39) in
 !      (The multi-dimensional Crowley advection scheme,
 !      Piotr K. Smolarkiewicz, Monthley weater review,
 !      volume 110, pages 1968-1983, december 1982)
@@ -30,24 +30,18 @@ subroutine shfact(n,sh)
 !                          geir@nrsc.no
 !
 !-------------------------------------------------------------------
-   if (n.gt.8) then
+   if (.not.(n==1 .or. n==2 .or. n==4 .or. n== 8 )) then
       write(*,*)'Error in "shfact"'
-      write(*,100)'n is to large (>8): n=',n
+      write(*,'(a,i3)')'Invalid order of filter (1, 2, 4, 8): n=',n
       stop
-   endif
-   if (amod(alog(float(n)),alog(2.0)).ne.0.0) then
-      write(*,*)'Error in "shfact"'
-      write(*,100)'Invalid order of filter: n=',n
- 100 format(' ',a,i2)
-   stop
    endif
 
    ff=2.0**(2*n)
-       
-       
+
+
    f2n=1
    do j=1,2*n
-      f2n=f2n*float(j)
+      f2n=f2n*real(j)
    enddo
 
    fj=1
@@ -57,11 +51,11 @@ subroutine shfact(n,sh)
 !        calculates (2n-j)! for each j
          f2nj=1
          do i=1,2*n-j
-            f2nj=f2nj*float(i)
+            f2nj=f2nj*real(i)
          enddo
 
 !        calculates j!
-         fj=fj*float(j)
+         fj=fj*real(j)
 !        calculates the factors
          sh(j)=(-1.0)**(n+j-1) *real( f2n/(ff*fj*f2nj) )
    enddo
@@ -96,11 +90,11 @@ subroutine shfilt(n,sh,ndim,x,incx,y,incy,shdim)
 !
 !-------------------------------------------------------------------
    if (n.le.0) return
-       
+
    y(1)=x(1)
    y(ndim)=x(ndim)
 
-   if ((incx.eq.1).and.(incy.eq.1)) then 
+   if ((incx.eq.1).and.(incy.eq.1)) then
 !        code for both increments equal to 1
       do i=2,n
          sum=0.0
@@ -122,7 +116,7 @@ subroutine shfilt(n,sh,ndim,x,incx,y,incy,shdim)
          enddo
          y(i)=(1.0+sh(n))*x(i)+sum
       enddo
-            
+
       do i=ndim-n+1,ndim-1
          sum=0.0
          do j=0,n-1
@@ -147,10 +141,10 @@ subroutine shfilt(n,sh,ndim,x,incx,y,incy,shdim)
          do j=0,n-1
             sum=sum+sh(j)*(x(ix+(n-j)*incx)+x(ix-(n-j)*incx))
          enddo
-           
+
          y(iy)=(1.0+sh(n))*x(ix)+sum
       enddo
-   endif 
+   endif
 end subroutine shfilt
 
 subroutine shfilt2D(ish,sh,shdim,field,nx,ny)
@@ -179,5 +173,5 @@ subroutine shfilt2D(ish,sh,shdim,field,nx,ny)
    enddo
    deallocate(x,y)
 end subroutine
-  
+
 end module

@@ -1,150 +1,125 @@
 program main
-   use mod_dimensions   ! Defines state dimension
-   use mod_state        ! Defines model state
-   use mod_observation  ! Defines observation state
-   use m_set_random_seed2
-   use m_model
-   use m_pseudo1D
-   use m_fixsample1D
-   use m_dumpsol
-   use m_ensemblemean
-   use m_ensemblevariance
-   use m_ensemblecovariance
-   use m_enkf
-   use m_measurements
+   use mod_dimensions                      ! Defines state dimension
+   use mod_state                           ! Defines model state
+   use mod_observation                     ! Defines observation state
+   use m_readinfile                        ! Reading infile.in
+   use m_set_random_seed2                  ! Sets new random seed unless 'seed.dat' exists
+   use m_model                             ! Model time stepping
+   use m_pseudo1D                          ! Samples pseudo-random fields in 1-D
+   use m_fixsample1D                       ! Ensures zero mean and unit variance of sampled ensembles
+   use m_obsxloc                           ! Computes x position of measurements
+   use m_obstloc                           ! Computes time of measurements
+   use m_obscount                          ! Counts the number of measurements in a DA window
+   use m_obspoints                         ! Saves the measurement locations in space and time for plotting
+   use m_dumpsol                           ! Saves outputs for gnuplot animations (p.gnu)
+   use m_ensemblemean                      ! Compute ensemble mean at current time (from mem)
+   use m_ensemblevariance                  ! Compute ensemble variance at current time (from mem)
+   use m_ensemblecovariance                ! Compute ensemble covariance at current time (from mem)
+   use m_enkfprep                          ! Setting up predicted measurements and matrices for analysis
+   use m_random                            ! Generate random normal numbers
+   use m_tecfld                            ! Tecplot output (not used)
+   use mod_shapiro                         ! Shapiro filter in case it is needed
+   use m_windowstat                        ! Compute ensemble mean and variance in a DA window (from win)
+   use m_covstat                           ! Computes space time covariances in case you have a lot of memory
+   use m_gnuplot                           ! Generate space time plots for plotting in gnuplot (c.gnu)
    implicit none
 
-! state variables
-   type(state), allocatable :: mem(:)
-   type(state), allocatable :: old(:)
-   type(state), allocatable :: sysnoise(:)
-   type(state) ana     ! analytical solution
-   type(state) ave     ! ensemble average
-   type(state) var     ! ensemble variance
-   type(state) cov(2)  ! ensemble covariance for two points
-   real, allocatable :: samples(:,:)
+   type(state), allocatable :: full(:,:)   ! The ensemble of realizations over the whole simulation
+   type(state), allocatable :: win(:,:)    ! The ensemble of realizations over an assimilation window.
+   type(state), allocatable :: winana(:)   ! The analytical solution over an assimilation window.
+   type(state), allocatable :: mem(:)      ! The ensemble of realizations
+   type(state), allocatable :: old(:)      ! The ensemble of realizations in previous time step used in Leapfrog
+   type(state), allocatable :: sysnoise(:) ! The ensemble of sampled system noise updated every timestep
+   type(state) ana                         ! analytical solution
+   type(state) anaold                      ! analytical solution in previous time step used in Leapfrog
+   type(state) ave                         ! ensemble average
+   type(state) var                         ! ensemble variance
+   type(state) cov(2)                      ! ensemble covariance for two points
 
-   type(observation), allocatable :: obs(:)
+   real, allocatable :: samples(:,:)       ! work array used when sampling in pseudo1D
 
-! Variables read from infile
-   integer nrt                           ! Number of timesteps
-   type(substate) u
-   type(substate) rh
-   type(substate) inivar
-   type(substate) sysvar
-   type(substate) obsvar
+! Spacew time statistics diagnostic variables
+   type(state), allocatable :: mean(:)     ! ensemble average as a function of space and time
+   type(state), allocatable :: stdt(:)     ! ensemble std dev as a function of space and time
+   type(state), allocatable :: covo(:)     ! ensemble std dev as a function of space and time
+   type(state), allocatable :: cova(:)     ! ensemble std dev as a function of space and time
 
+! Observation location variables
+   integer, allocatable :: obsoloc(:)      ! location of ocean observations in space
+   integer, allocatable :: obsaloc(:)      ! location of atmos observations in space
+   integer, allocatable :: obsotimes(:)    ! location of ocean observations in time
+   integer, allocatable :: obsatimes(:)    ! location of atmos observations in time
 
-   real, parameter :: dx=1.0             ! horizontal grid spacing
-   real, parameter :: dt=1.0             ! Time step of atmospheric model
-   integer nrens                         ! ensemble size
-   integer mode_analysis                 ! 1 standard, 2 fixed R
-   logical samp_fix
+   type(observation), allocatable :: obs(:)! Stores all observation information in a DA window
 
-   integer nro                    ! Number of ocean measurement per assimilation time
-   integer nra                    ! Number of atmos measurement per assimilation time
-   integer nrobs                         ! Total number of measurement per assimilation time
-   logical mkobs                         ! Create or read measurements
-   logical Rexact                        ! Use exact(true) or lowrank(false) R matrix
-   real obsdt                            ! time between assimilation times
-   logical :: lrandrot=.true.            ! random rotation in SQRT schemes
-   logical :: lsymsqrt=.true.            ! Always use the symmetrical square root rather than one-sided
-   real deltaobs                         ! distance between observations
+! EnKF analysis variables
+   real, allocatable :: S(:,:)             ! Predicted meaurements anomalies
+   real, allocatable :: E(:,:)             ! Measurement perturbations
+   real, allocatable :: D(:,:)             ! Innovations
+   real, allocatable :: R(:,:)             ! Measurement error covariance matrix
+   real, allocatable :: meanS(:)           ! Mean of predicted measurements
+   real, allocatable :: innov(:)           ! Mean innovation 
 
-! inflation
-   integer inflate                       ! 0--no inflation, 1--constant inflation, 2--adaptive inflation
-   real infmult                          ! constant inflation or adjustment of adaptive inflation
+! Shapiro filter variables
+   real, allocatable :: x(:)               ! work array for shapiro filter (input)
+   real, allocatable :: y(:)               ! work array for shapiro filter (output)
 
-! local analysis
-   integer local                         ! 0-no localization, 1-distance based, 2-adaptive
-   real obs_radius                       ! Number of grid cells for including measurements (distance based)
-   real obs_truncation                   ! Correlations for truncating measurements in adaptive scheme
-
-! parameters for analysis scheme
-   real truncation                       ! Truncation of singular values
-   character(len=8) covmodel             ! Diagonal or Gaussian measurement error covariance model
-   real rd                               ! Horizontal correlation of observation errors in Gaussian case
 
 ! other variables
-   integer i,j,m,k
-   integer iobs                          ! Counting assimilation steps (counter for records in obs.uf)
+   integer tini                            ! start time of an assimilation window
+   integer tfin                            ! end   time of an assimilation window
+   integer nrobs                           ! Total number of measurement per assimilation window
+   logical leuler                          ! Euler timestepping if true
+
+   integer j,k,l
    real time
-   logical leuler
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-! reading input data
-   open(10,file='infile.in')
-      read(10,*)nrens              ; print *,'nrens=       ',nrens
-      read(10,*)nrt                ; print *,'nrt=         ',nrt
-      read(10,*)u%ocean            ; print *,'u%ocean=     ',u%ocean
-      read(10,*)rh%ocean           ; print *,'rh%ocean=    ',rh%ocean
-      read(10,*)rh%atmos           ; print *,'rh%atmos=    ',rh%atmos
-      read(10,'(1x,l1)')samp_fix   ; print *,'samp_fix=    ',samp_fix
-      read(10,*)inivar%ocean       ; print *,'inistd%ocean=',inivar%ocean
-      read(10,*)inivar%atmos       ; print *,'inistd%atmos=',inivar%atmos
-      read(10,*)sysvar%ocean       ; print *,'sysstd%ocean=',sysvar%ocean
-      read(10,*)sysvar%atmos       ; print *,'sysstd%atmos=',sysvar%atmos
-      read(10,*)obsvar%ocean       ; print *,'obsstd%ocean=',obsvar%ocean
-      read(10,*)obsvar%atmos       ; print *,'obsstd%atmos=',obsvar%atmos
-      read(10,*)nro         ; print *,'nro=  ',nro
-      read(10,*)nra         ; print *,'nra=  ',nra
-      read(10,*)obsdt              ; print *,'obsdt=       ',obsdt
-      read(10,'(1x,l1)')mkobs      ; print *,'mkobs=       ',mkobs
-      read(10,*)mode_analysis      ; print *,'mode_ana=    ',mode_analysis
-      read(10,*)truncation        ; print *,'truncation=  ',truncation
-      read(10,'(1x,a)')covmodel   ; print *,'covmodel=    ',trim(covmodel)
-      read(10,*)rd                ; print *,'rd      =    ',rd
-      read(10,'(1x,l1)')Rexact    ; print *,'Rexact=      ',Rexact
-      read(10,'(1x,l1)')lrandrot  ; print *,'lrandrot=    ',lrandrot
-      read(10,*)inflate,infmult   ; print *,'inflation=   ',inflate,infmult
-      read(10,*)local,obs_radius,obs_truncation; print *,'localization=',local,obs_radius,obs_truncation
-   close(10)
-
-! Standard deviation to variance
-   inivar%ocean=inivar%ocean**2
-   inivar%atmos=inivar%atmos**2
-   sysvar%ocean=sysvar%ocean**2
-   sysvar%atmos=sysvar%atmos**2
-   obsvar%ocean=obsvar%ocean**2
-   obsvar%atmos=obsvar%atmos**2
-
-! We assume constant atmospheric velocity equal to one
-   u%atmos=1.0
+   call readinfile()
 
    call set_random_seed2
 
    call system('rm -f eigenvalues.dat')
+   call system('rm -f obsloc?.dat')
+   call system('touch obsloca.dat obsloco.dat')
 
+! Now that we know all dimensions, allocate the main arrays
+   if (lglobstat) allocate (full(0:nrt,nrens))
+   allocate (win(0:nrw,nrens))
+   allocate (winana(0:nrw))
+   allocate (mean(0:nrt))
+   allocate (stdt(0:nrt))
+   allocate (covo(0:nrt))
+   allocate (cova(0:nrt))
    allocate (mem(nrens))
-   allocate (old(0:nrens))
+   allocate (old(nrens))
    allocate (sysnoise(nrens))
    allocate (samples(nx,nrens))
 
-   nrobs=nro+nra
-   allocate (obs(nrobs))
+   allocate (obsoloc(nro))
+   allocate (obsaloc(nra))
+   allocate (obsotimes(nrt))
+   allocate (obsatimes(nrt))
 
-   iobs=0
+! Shapiro filter
+   if (nsh > 0) then
+      allocate (x(nx))
+      allocate (y(nx))
+   endif
+
    time=0.0
 
-
-
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-! Allocate and define measurement setup
+! Uniformly distributed measurements for ocean and atmosphere in space and time
+   print *,'Ocean observation locations'
+   call obsxloc(nro,obsoloc)
+   call obstloc(nrt,obst0o,obsdto,obsotimes)
+   call obspoints('obsloco',obsotimes,nrt,obsoloc,nro)
 
-! Uniformly distributed measurements for ocean
-   deltaobs=nint(real(nx)/real(nro))
-   obs(1)%pos=nint(deltaobs/2.0)
-   do m=2,nro
-      obs(m)%pos=min(nint(obs(1)%pos+real(m-1)*deltaobs) , nx)
-   enddo
+   print *,'Atmos observation locations'
+   call obsxloc(nra,obsaloc)
+   call obstloc(nrt,obst0a,obsdta,obsatimes)
+   call obspoints('obsloca',obsatimes,nrt,obsaloc,nra)
 
-! Uniformly distributed measurements for atmosphere
-   deltaobs=nint(real(nx)/real(nra))
-   i=nro
-   obs(i+1)%pos=nint(deltaobs/2.0)
-   do m=2,nra
-      obs(i+m)%pos=min(nint(obs(i+1)%pos+real(m-1)*deltaobs) , nx)
-   enddo
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! The true solution smooth pseudo random field drawn from  N(0,1,rh).
@@ -177,74 +152,126 @@ program main
       mem(j)%ocean=ave%ocean + sqrt(inivar%ocean)*mem(j)%ocean
       mem(j)%atmos=ave%atmos + sqrt(inivar%atmos)*mem(j)%atmos
    enddo
-
    print *,'main: ensemble ok'
 
+   nrobs=0
    call ensemblemean(mem,ave,nrens)
    call ensemblevariance(mem,ave,var,nrens)
    call ensemblecovariance(mem,ave,cov,nrens)
-   call dumpsol(time,ana,ave,var,cov,nx,dx,obs,nro,nra,mem,nrens,'I')
+   call dumpsol(time,ana,ave,var,cov,nx,dx,obs,nrobs,mem,nrens,'I')
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-! Time stepping
+! Loop over assimilation windows
    print *,'main: start time stepping'
-   do k=1,nrt
-      time=time+dt
-      print '(a,i6,f10.2)','timestep ',k,time
+   do l=1,nrwindows                                   ! Integrate model over the assimilation window
+      winana(0)=ana                                   ! store reference solution at tini in winana
+      win(0,:)=mem(:)                                 ! store ensemble at tini in win
+      tini=(l-1)*nrw                                  ! time at beginning of assimilation window
+      tfin=l*nrw                                      ! time at end of assimilation window
+      print '(a,i3.3,a,i5.5,a,i5.5)','DA window number ',l,' running from ',tini,' to ',tfin
+      leuler=.true.                                   ! first timestep of each window is Euler step
+      do k=1,nrw                                      ! timestep loop over assimilation window
+         if (k>1) leuler=.false.
+         time=real((l-1)*nrw+k)
+         print '(a,f10.2,a,i3,a,i4,a,l1)','time= ',time,', window=',l,', timestep=',k,' Euler step=',leuler
+
 
 ! Advection
-      if (k==1 .or. mod(time-dt,obsdt).lt.0.05*dt) then
-         leuler=.true.
-      else
-         leuler=.false.
-      endif
-      print *,'euler:',leuler
-      do j=1,nrens
-         call model(mem(j),old(j),u,dx,dt,leuler)
-
-      enddo
-      call model(ana,old(0),u,dx,dt,leuler)
+         do j=1,nrens
+            call model(mem(j),old(j),leuler)
+         enddo
+         call model(ana,anaold,leuler)
 
 ! System noise
-      if (sysvar%ocean > 0.0 .or. sysvar%atmos > 0.0) then
-         call pseudo1D(samples,nx,nrens,rh%ocean,dx,nx)
-         if (samp_fix) call fixsample1D(samples,nx,nrens)
-         do j=1,nrens
-            mem(j)%ocean=mem(j)%ocean+sqrt(2.0*sysvar%ocean*dt)*samples(:,j)
-         enddo
+         if (sysvar%ocean > 0.0) then
+            call pseudo1D(samples,nx,nrens,rh%ocean,dx,nx)
+            if (samp_fix) call fixsample1D(samples,nx,nrens)
+            do j=1,nrens
+               mem(j)%ocean=mem(j)%ocean+sqrt(2.0*sysvar%ocean*dt)*samples(:,j)
+            enddo
+         endif
+         if (sysvar%atmos > 0.0) then
+            call pseudo1D(samples,nx,nrens,rh%atmos,dx,nx)
+            if (samp_fix) call fixsample1D(samples,nx,nrens)
+            do j=1,nrens
+               mem(j)%atmos=mem(j)%atmos+sqrt(2.0*sysvar%atmos*dt)*samples(:,j)
+            enddo
+         endif
 
-         call pseudo1D(samples,nx,nrens,rh%atmos,dx,nx)
-         if (samp_fix) call fixsample1D(samples,nx,nrens)
-         do j=1,nrens
-            mem(j)%atmos=mem(j)%atmos+sqrt(2.0*sysvar%atmos*dt)*samples(:,j)
-         enddo
-      endif
+! Shapiro filter in case we need it
+         if (nsh > 0) then
+            x=mem(j)%ocean
+            call  shfilt(nsh,sh,nx,x,1,y,1,nsh)
+            mem(j)%ocean=y
+            x=mem(j)%atmos
+            call  shfilt(nsh,sh,nx,x,1,y,1,nsh)
+            mem(j)%atmos=y
+         endif
 
+! Store ensemble and reference solution for window
+         win(k,:)=mem(:)
+         winana(k)=ana
+      enddo
+
+
+! Counting the number of measurements in the current DA window
+      nrobs=obscount(nrt,tini,tfin,obsotimes,obsatimes,nro,nra)
+      print *,'Total number of measurements in the DA window= ',nrobs
+
+      if ((nrobs > 0) .and. (mode_analysis > 0)) then
 ! Assimilation step
-      if (mod(time,obsdt).lt.0.05*dt) then
-         iobs=iobs+1
+         allocate(obs(nrobs))
+         allocate(S(nrobs,nrens))
+         allocate(E(nrobs,nrens))
+         allocate(D(nrobs,nrens))
+         allocate(meanS(nrobs))
+         allocate(innov(nrobs))
+         allocate(R(nrobs,nrobs))
 
 
-         call measurements(ana,obs,obsvar,nro,nra,iobs,mkobs,time)
+! Assigning the active observations to obs and the predicted observations to S and setting up for analysis
+         call enkfprep(mem,obs,S,E,D,meanS,R,innov,winana,win,nrobs,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
 
+! Diagnostics at end of DA window
          call ensemblemean(mem,ave,nrens)
          call ensemblevariance(mem,ave,var,nrens)
          call ensemblecovariance(mem,ave,cov,nrens)
-         call dumpsol(time,ana,ave,var,cov,nx,dx,obs,nro,nra,mem,nrens,'F')
+         call dumpsol(time,ana,ave,var,cov,nx,dx,obs,nrobs,mem,nrens,'F')
 
-         call enkf(mem,nrens,obs,nro,nra,mode_analysis,&
-                  &truncation,covmodel,dx,rh,Rexact,rd,lrandrot,lsymsqrt,&
-                  &inflate,infmult,local,obs_radius,obs_truncation)
+! ES update of DA window
+         print '(a,i2)','Calling analysis with mode: ',mode_analysis
+         call analysis(win, R, E, S, D, innov, ndim*(nrw+1), nrens, nrobs, .true., truncation, mode_analysis, &
+                        lrandrot, lupdate_randrot, lsymsqrt, inflate, infmult, 1)
 
+! Ensemble at end of DA window (used in continued integration)
+         mem(:)=win(nrw,:)
+
+! Diagnostics at end of DA window
          call ensemblemean(mem,ave,nrens)
          call ensemblevariance(mem,ave,var,nrens)
          call ensemblecovariance(mem,ave,cov,nrens)
-         call dumpsol(time,ana,ave,var,cov,nx,dx,obs,nro,nra,mem,nrens,'A')
-
+         call dumpsol(time,ana,ave,var,cov,nx,dx,obs,nrobs,mem,nrens,'A')
+         deallocate(obs,S,E,D,meanS,R,innov)
       endif
 
+! Only needed to compute space-time covariances
+      if (lglobstat) full(tini:tfin,:)=win(0:nrw,:)
+
+! Compute ensemble mean and variance over current DA window
+      call windowstat(win,nrw,nrens,mean(tini:tfin),stdt(tini:tfin))
    enddo
 
+! Dumping mean and variance as function of space and time
+   call gnuplot('gnu_ave',mean,nrt)
+   call gnuplot('gnu_std',stdt,nrt)
+
+   if (lglobstat) then
+      print *,'calling full covariance statistics'
+      call covstat(full,nrt,nrens,mean,stdt,covo,cova)
+      call gnuplot('gnu_covo',covo,nrt)
+      call gnuplot('gnu_cova',cova,nrt)
+
+   endif
 
 end program main
 

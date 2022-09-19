@@ -1,2 +1,2 @@
-TARGET = ms.exe
+TARGET = multiscale
 

@@ -38,7 +38,7 @@ CPPFLAGS = -traditional -P $(CPPARCH) $(CPPMODEL)
 #LIBDIR = /h/geve/lib/linux  -L /usr/lib/gcc-lib/i386-redhat-linux/3.2.3
 #LIBDIR = -L /h/geve/lib/linux  -L /usr/lib/gcc/x86_64-redhat-linux/3.4.3/32 -L/h/a152128/lib/linux
 
-LIBS =  -llapack  ./libenkfanalysis.a -lblas ./libsampling.a -lfftw3
+LIBS =    ./libenkfanalysis.a -lblas ./libsampling.a -lfftw3 -llapack
 
 
 
@@ -80,8 +80,13 @@ OMOD = $(MODULES:.F90=.o) $(MODULES77:.F=.o)
 
 
 
-all: $(TARGET) install libenkfanalysis.a
+all: libsampling.a libenkfanalysis.a $(TARGET) install
 
+libsampling.a:
+	cd ../../EnKF_sampling/lib; make BUILD=../../EnKF_MS/build
+
+libenkfanalysis.a:
+	cd ../../EnKF_analysis/lib; make BUILD=../../EnKF_MS/build
 
 $(TARGET): $(INC2) $(OMOD) $(OBJECTS)
 	@mkdir -p $(BUILD)
