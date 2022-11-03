@@ -47,6 +47,7 @@ module m_readinfile
 
 ! Diagnostics
    logical lglobstat                     ! Dump global statistics output
+   character(len=25) outdir
 
    contains
    subroutine readinfile
@@ -59,6 +60,10 @@ module m_readinfile
    character(len=3) :: version='1.0'
    character(len=3) ver
    logical ex
+   character(len=9) :: cmd='mkdir -p '
+   character(len=50) :: cpinfile
+   character(len=50) :: cpgnu
+   integer i
 
 ! reading input data
    inquire(file='infile.in',exist=ex)
@@ -138,8 +143,22 @@ module m_readinfile
       read(10,'(1x,l1)')lrandrot  ; print *,'lrandrot=    ',lrandrot
       read(10,*)inflate,infmult   ; print *,'inflation=   ',inflate,infmult
       read(10,*)local,obs_radius,obs_truncation; print *,'localization=',local,obs_radius,obs_truncation
-   close(10)
+      read(10,*)outdir            ; print '(tr3,a,a)',        'Output directory for storing results :',trim(outdir)
+      call execute_command_line (cmd//outdir, exitstat=i)
 
+
+   close(10)
+   cpinfile='cp infile.in infile.'//trim(outdir)
+   call execute_command_line (trim(cpinfile), exitstat=i)
+
+   cpinfile='cp infile.in '//trim(outdir)
+   call execute_command_line (trim(cpinfile), exitstat=i)
+
+   cpgnu='./p.sh > '//trim(outdir)//'/p.gnu'
+   call execute_command_line (trim(cpgnu), exitstat=i)
+
+   cpgnu='cp c.gnu '//trim(outdir)
+   call execute_command_line (trim(cpgnu), exitstat=i)
 
 ! We assume constant atmospheric velocity equal to one
    u%atmos=1.0

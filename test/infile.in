@@ -1,6 +1,6 @@
 #1.0 Version of infile.in ---------------------------------------------------------------------------------------
- 1000                             ! Ensemble size
- 800                              ! Number of timesteps
+ 100                              ! Ensemble size
+ 200                              ! Number of timesteps
  50                               ! Number of timesteps within a DA window
  T                                ! Printing of global statistics (note memory use)
 #1 Model variables ----------------------------------------------------------------------------------------------
@@ -32,3 +32,4 @@
  F                                ! Random rotation in SQRT schemes
  0 1.01                           ! Multiplicative inflation and inflation factor
  0 10.0 0.2                       ! Localization (0-none, 1-distance, 2-adaptive), obs_radius
+ Exp0                             ! Output directory

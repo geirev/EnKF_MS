@@ -1,11 +1,12 @@
 module m_covstat
 contains
-subroutine covstat(full,nrt,nrens,mean,stdt,covo,cova)
+subroutine covstat(full,nrt,nrens,mean,stdt,covo,cova,outdir)
    use mod_dimensions
    use mod_state
    implicit none
    integer, intent(in) :: nrt
    integer, intent(in) :: nrens
+   character(len=25), intent(in) :: outdir
 
    type(state), intent(in)    :: full(0:nrt,nrens)
    type(state), intent(inout) :: mean(0:nrt)
@@ -18,7 +19,7 @@ subroutine covstat(full,nrt,nrens,mean,stdt,covo,cova)
    ic=nx/2
    kc=nrt/2
 
-   open(10,file='obs.dat')
+   open(10,file=trim(outdir)//'/'//'obs.dat')
       write(10,'(2I5)')ic,kc
    close(10)
 

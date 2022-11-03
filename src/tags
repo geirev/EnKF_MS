@@ -107,6 +107,7 @@ obstloc	m_obstloc.F90	/^subroutine obstloc(/;"	s	module:m_obstloc
 obsvar	m_readinfile.F90	/^   type(substate) obsvar$/;"	v	module:m_readinfile
 obsxloc	m_obsxloc.F90	/^subroutine obsxloc(/;"	s	module:m_obsxloc
 old	main.F90	/^   type(state), allocatable :: old(/;"	v	program:main
+outdir	m_readinfile.F90	/^   character(len=25) outdir$/;"	v	module:m_readinfile
 rd	m_readinfile.F90	/^   real rd /;"	v	module:m_readinfile
 readinfile	m_readinfile.F90	/^   subroutine readinfile$/;"	s	module:m_readinfile
 real_state_mult	mod_state.F90	/^   function real_state_mult(/;"	f	module:mod_state

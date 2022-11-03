@@ -80,7 +80,7 @@ program main
 
    call system('rm -f eigenvalues.dat')
    call system('rm -f obsloc?.dat')
-   call system('touch obsloca.dat obsloco.dat')
+!   call system('touch obsloca.dat obsloco.dat')
 
 ! Now that we know all dimensions, allocate the main arrays
    if (lglobstat) allocate (full(0:nrt,nrens))
@@ -113,12 +113,12 @@ program main
    print *,'Ocean observation locations'
    call obsxloc(nro,obsoloc)
    call obstloc(nrt,obst0o,obsdto,obsotimes)
-   call obspoints('obsloco',obsotimes,nrt,obsoloc,nro)
+   call obspoints(trim(outdir)//'/obsloco',obsotimes,nrt,obsoloc,nro)
 
    print *,'Atmos observation locations'
    call obsxloc(nra,obsaloc)
    call obstloc(nrt,obst0a,obsdta,obsatimes)
-   call obspoints('obsloca',obsatimes,nrt,obsaloc,nra)
+   call obspoints(trim(outdir)//'/obsloca',obsatimes,nrt,obsaloc,nra)
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -158,7 +158,7 @@ program main
    call ensemblemean(mem,ave,nrens)
    call ensemblevariance(mem,ave,var,nrens)
    call ensemblecovariance(mem,ave,cov,nrens)
-   call dumpsol(time,ana,ave,var,cov,nx,dx,obs,nrobs,mem,nrens,'I')
+   call dumpsol(time,ana,ave,var,cov,nx,dx,obs,nrobs,mem,nrens,outdir,'I')
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Loop over assimilation windows
@@ -236,7 +236,7 @@ program main
          call ensemblemean(mem,ave,nrens)
          call ensemblevariance(mem,ave,var,nrens)
          call ensemblecovariance(mem,ave,cov,nrens)
-         call dumpsol(time,ana,ave,var,cov,nx,dx,obs,nrobs,mem,nrens,'F')
+         call dumpsol(time,ana,ave,var,cov,nx,dx,obs,nrobs,mem,nrens,outdir,'F')
 
 ! ES update of DA window
          print '(a,i2)','Calling analysis with mode: ',mode_analysis
@@ -250,7 +250,7 @@ program main
          call ensemblemean(mem,ave,nrens)
          call ensemblevariance(mem,ave,var,nrens)
          call ensemblecovariance(mem,ave,cov,nrens)
-         call dumpsol(time,ana,ave,var,cov,nx,dx,obs,nrobs,mem,nrens,'A')
+         call dumpsol(time,ana,ave,var,cov,nx,dx,obs,nrobs,mem,nrens,outdir,'A')
          deallocate(obs,S,E,D,meanS,R,innov)
       endif
 
@@ -262,14 +262,14 @@ program main
    enddo
 
 ! Dumping mean and variance as function of space and time
-   call gnuplot('gnu_ave',mean,nrt)
-   call gnuplot('gnu_std',stdt,nrt)
+   call gnuplot('gnu_ave',mean,nrt,outdir)
+   call gnuplot('gnu_std',stdt,nrt,outdir)
 
    if (lglobstat) then
       print *,'calling full covariance statistics'
-      call covstat(full,nrt,nrens,mean,stdt,covo,cova)
-      call gnuplot('gnu_covo',covo,nrt)
-      call gnuplot('gnu_cova',cova,nrt)
+      call covstat(full,nrt,nrens,mean,stdt,covo,cova,outdir)
+      call gnuplot('gnu_covo',covo,nrt,outdir)
+      call gnuplot('gnu_cova',cova,nrt,outdir)
 
    endif
 

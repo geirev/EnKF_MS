@@ -189,7 +189,7 @@ set nogrid
 
 set xlabel  "distance (x)"
 
-set terminal wxt size 1600,1000
+set terminal qt size 1600,1000
 
 pdfout=0   # Make pdf files
 shift=4    # Shifting the y positions of the solutions
@@ -219,7 +219,7 @@ p 'sol_0000I.dat' u 1:(-shift+$4+2*$6):(-shift+$4-nstd*$6) with filledcurve fc r
   'sol_0000I.dat' u (f($1,582,782)):(cshift+0.2*covs*$11) linestyle 4 title  "Cov a-a"
 pause -1
 
-do for [var=10:1000:10] {
+do for [var=BBB:AAA:BBB] {
    xx="000"
    if (var > 9) {xx="00"}
    if (var > 99) {xx="0"}

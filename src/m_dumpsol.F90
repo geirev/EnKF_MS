@@ -1,6 +1,6 @@
 module m_dumpsol
 contains
-subroutine dumpsol(time,ana,ave,var,cov,nx,dx,obs,nrobs,mem,nrens,xx)
+subroutine dumpsol(time,ana,ave,var,cov,nx,dx,obs,nrobs,mem,nrens,outdir,xx)
    use mod_state
    use mod_observation
    implicit none
@@ -19,17 +19,15 @@ subroutine dumpsol(time,ana,ave,var,cov,nx,dx,obs,nrobs,mem,nrens,xx)
    integer i,m
    character(len=1) xx
    character(len=4) outtag
-   logical ex
+   character(len=25), intent(in) :: outdir
+!   logical ex
 
-   inquire(file='Solution',exist=ex)
-   if ( .not.ex ) call system('mkdir Solution')
-
-   inquire(file='Members',exist=ex)
-   if ( .not.ex ) call system('mkdir Ensemble')
+!   inquire(file='Ensemble',exist=ex)
+!   if ( .not.ex ) call system('mkdir Ensemble')
 
    write(outtag,'(i4.4)')nint(time)
 
-   open(10,file='Solution/sol_'//trim(outtag)//xx//'.dat')
+   open(10,file=trim(outdir)//'/sol_'//trim(outtag)//xx//'.dat')
       std=sqrt(var)
       write(10,'(11a11)')'         x','  Ref_Ocean','  Ref_Atmos',&
                                       '  Est_Ocean','  Est_Atmos',&
@@ -46,8 +44,8 @@ subroutine dumpsol(time,ana,ave,var,cov,nx,dx,obs,nrobs,mem,nrens,xx)
    close(10)
 
    if (nrobs > 0) then
-      open(10,file='Solution/oceanobs_'//trim(outtag)//'.dat')
-      open(11,file='Solution/atmosobs_'//trim(outtag)//'.dat')
+      open(10,file=trim(outdir)//'/oceanobs_'//trim(outtag)//'.dat')
+      open(11,file=trim(outdir)//'/atmosobs_'//trim(outtag)//'.dat')
          do m=1,nrobs
             if (obs(m)%observed(1:5) == 'ocean') then
                write(10,'(2i4,2f10.4)')obs(m)%tloc,obs(m)%xloc-1,obs(m)%d,sqrt(obs(m)%var) !,sqrt(obs(m)%var)
@@ -60,7 +58,7 @@ subroutine dumpsol(time,ana,ave,var,cov,nx,dx,obs,nrobs,mem,nrens,xx)
       close(11)
    endif
 
-!   open(10,file='Members/ens_'//trim(outtag)//xx//'.dat')
+!   open(10,file='Ensemble/ens_'//trim(outtag)//xx//'.dat')
 !      do i=1,nx
 !         write(10,'(202f10.4)')real(i-1)*dx,mem(1:min(10,nrens))%ocean(i),mem(1:min(10,nrens))%atmos(i)
 !      enddo

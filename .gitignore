@@ -2,4 +2,5 @@ build
 test/*
 !test/infile.in
 !test/p.gnu
+!test/p.sh
 !test/c.gnu
