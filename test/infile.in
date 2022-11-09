@@ -1,7 +1,7 @@
 #1.0 Version of infile.in ---------------------------------------------------------------------------------------
  100                              ! Ensemble size
- 200                              ! Number of timesteps
- 50                               ! Number of timesteps within a DA window
+ 1000                              ! Number of timesteps
+ 10                                ! Number of timesteps within a DA window
  T                                ! Printing of global statistics (note memory use)
 #1 Model variables ----------------------------------------------------------------------------------------------
  0.1                              ! Advection speed of ocean model
