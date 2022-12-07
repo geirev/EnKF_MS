@@ -14,7 +14,10 @@ subroutine covstat(full,nrt,nrens,mean,stdt,covo,cova,outdir)
    type(state), intent(inout) :: covo(0:nrt)
    type(state), intent(inout) :: cova(0:nrt)
 
-   integer j,k,ic,kc
+#ifdef ONED
+   integer j
+#endif
+   integer k,ic,kc
 
    ic=nx/2
    kc=nrt/2
@@ -29,12 +32,14 @@ subroutine covstat(full,nrt,nrens,mean,stdt,covo,cova,outdir)
    enddo
 
 ! covariance
+#ifdef ONED
    do j=1,nrens
    do k=0,nrt
       covo(k)=covo(k)+(full(k,j)-mean(k))*(full(kc,j)%ocean(ic)-mean(kc)%ocean(ic))
       cova(k)=cova(k)+(full(k,j)-mean(k))*(full(kc,j)%atmos(ic)-mean(kc)%atmos(ic))
    enddo
    enddo
+#endif
    do k=0,nrt
       covo(k)=covo(k)*(1.0/real(nrens-1))
       cova(k)=cova(k)*(1.0/real(nrens-1))

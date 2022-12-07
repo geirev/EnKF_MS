@@ -5,10 +5,12 @@
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
 900	m_tecfld.F90	/^ 900 format(10(1x,e12.5))$/;"	l	subroutine:tecfld	file:
+Atmos	mod_state.F90	/^      real Atmos$/;"	k	type:state
 Atmos	mod_state.F90	/^      real Atmos$/;"	k	type:substate
 Atmos	mod_state.F90	/^      real Atmos(/;"	k	type:state
 D	main.F90	/^   real, allocatable :: D(/;"	v	program:main
 E	main.F90	/^   real, allocatable :: E(/;"	v	program:main
+Ocean	mod_state.F90	/^      real Ocean$/;"	k	type:state
 Ocean	mod_state.F90	/^      real Ocean$/;"	k	type:substate
 Ocean	mod_state.F90	/^      real Ocean(/;"	k	type:state
 R	main.F90	/^   real, allocatable :: R(/;"	v	program:main

@@ -10,10 +10,20 @@ module mod_state
       real Atmos
    end type substate
 
-   type state
 ! Solution data
+   type state
+#ifdef ZEROD
+      real Ocean
+      real Atmos
+#endif
+#ifdef ONED
       real Ocean(nx)
       real Atmos(nx)
+#endif
+#ifdef TWOD
+      real Ocean(nx,ny)
+      real Atmos(nx,ny)
+#endif
    end type state
 
 ! Overloaded and generic operators
