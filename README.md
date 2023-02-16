@@ -70,7 +70,7 @@ replaced with main.
 
 ```bash
 sudo apt-get update
-sudo apt-get install libblas-dev liblapack-dev libfftw3-dev gfortran
+sudo apt-get install libblas-dev liblapack-dev libomp-dev libfftw3-dev gfortran
 ```
 
 ### Mac

@@ -8,7 +8,6 @@ subroutine enkfprep(mem,obs,S,E,D,meanS,R,innov,winana,win,nrobs,lwin,tini,tfin,
    use m_random
    use m_readinfile
    use m_model
-   use m_fixsample1D
    implicit none
    type(state),    intent(inout) :: mem(nrens)
    type(state),    intent(in) :: win(0:nrw,nrens)
