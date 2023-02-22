@@ -51,11 +51,10 @@ CPP = /usr/bin/cpp
 include source.files
 include target.mk
 
-INC2 =$(INC1:.H=.h)
-FILES =$(F90FILES) $(F77FILES) $(MODULES)
-FFILES =$(F90FILES:.F90=.f90) $(F77FILES:.F=.f) $(MODULES:.F90=.f90)
-OBJECTS = $(F90FILES:.F90=.o) $(F77FILES:.F=.o)
-OMOD = $(MODULES:.F90=.o) $(MODULES77:.F=.o)
+INCFILES =$(INCSOURCE:.H=.h)
+F90FILES =$(F90SOURCE:.F90=.f90)
+F77FILES =$(F77SOURCE:.F=.f)
+OBJECTS = $(F90SOURCE:.F90=.o) $(F77SOURCE:.F=.o)
 
 
 all: new $(TARGET) install
@@ -68,9 +67,9 @@ libsampling.a:
 libenkfanalysis.a:
 	cd ../../EnKF_analysis/lib; make BUILD=../../EnKF_MS/build
 
-$(TARGET): $(INC2) $(OMOD) $(OBJECTS)
+$(TARGET): $(INCFILES) $(OBJECTS)
 	@mkdir -p $(BUILD)
-	cd ./$(BUILD) ; $(LD) $(LINKFLAGS) -o $(TARGET) $(OMOD) $(OBJECTS) $(LIBDIR) $(LIBS)
+	cd ./$(BUILD) ; $(LD) $(LINKFLAGS) -o $(TARGET) $(OBJECTS) $(LIBDIR) $(LIBS)
 
 install:
 	cp $(BUILD)/$(TARGET) $(BINDIR)
@@ -86,7 +85,7 @@ source:
 depend:
 	../bin/mkdepend_linux.pl | sort -u > depends.file
 
-tags: $(FILES)
+tags: $(F90FILES) $(F77FILES) $(INCFILES)
 	ctags *.F90
 	#f90tags.sh
 

@@ -1,4 +1,5 @@
-MODULES = \
+F90SOURCE = \
+	main.F90\
 	m_covstat.F90\
 	m_dumpsol.F90\
 	m_enkfprep.F90\
@@ -20,7 +21,4 @@ MODULES = \
 	m_statistics.F90\
 	m_tecfld.F90\
 	m_windowstat.F90
-
-F90FILES = \
-	main.F90
 
