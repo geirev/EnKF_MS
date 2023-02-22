@@ -1,5 +1,5 @@
 BUILD = ../build
-VPATH = .:RCS:$(BUILD)
+VPATH = .:$(BUILD)
 
 .SUFFIXES:
 .SUFFIXES: .o .F90 .f90 .F .f .H .h
@@ -25,7 +25,6 @@ LIBS =    ./libenkfanalysis.a ./libsampling.a -lblas -lfftw3 -llapack
 BINDIR = $(HOME)/bin
 
 CPP = /usr/bin/cpp
-
 
 # Rules for running cpp and updating files in $(BUILD) directory
 .H.h:
