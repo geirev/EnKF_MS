@@ -160,6 +160,9 @@ module m_readinfile
    cpgnu='cp c.gnu '//trim(outdir)
    call execute_command_line (trim(cpgnu), exitstat=i)
 
+   cpgnu='cp cpdf.gnu '//trim(outdir)
+   call execute_command_line (trim(cpgnu), exitstat=i)
+
 ! We assume constant atmospheric velocity equal to one
    u%atmos=1.0
 end subroutine

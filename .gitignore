@@ -4,3 +4,4 @@ test/*
 !test/p.gnu
 !test/p.sh
 !test/c.gnu
+!test/cpdf.gnu

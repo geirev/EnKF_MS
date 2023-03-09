@@ -28,7 +28,7 @@ subroutine covstat(full,nrt,nrens,mean,stdt,covo,cova,outdir)
       cova(k)=0.0
    enddo
 
-! covariance
+! covariance function
    do j=1,nrens
    do k=0,nrt
       covo(k)=covo(k)+(full(k,j)-mean(k))*(full(kc,j)%ocean(ic)-mean(kc)%ocean(ic))
@@ -38,6 +38,12 @@ subroutine covstat(full,nrt,nrens,mean,stdt,covo,cova,outdir)
    do k=0,nrt
       covo(k)=covo(k)*(1.0/real(nrens-1))
       cova(k)=cova(k)*(1.0/real(nrens-1))
+   enddo
+
+! correlation function
+   do k=0,nrt
+      covo(k)=covo(k)/(stdt(kc)%ocean(ic)*stdt(k))
+      cova(k)=cova(k)/(stdt(kc)%atmos(ic)*stdt(k))
    enddo
 
 

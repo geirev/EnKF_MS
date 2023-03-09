@@ -2,7 +2,7 @@ module mod_state
 ! Model state definition
    use mod_dimensions
    private
-   public :: state, operator(+), operator(-), operator(*), assignment(=), sqrt
+   public :: state, operator(+), operator(-), operator(*), operator(/), assignment(=), sqrt
    public :: substate
 
    type substate
@@ -29,6 +29,10 @@ module mod_state
       module procedure state_real_mult,&
                        real_state_mult,&
                        state_state_mult
+   end interface
+
+   interface operator(/)
+      module procedure state_state_div
    end interface
 
    interface assignment(=)
@@ -96,6 +100,17 @@ contains
       state_state_mult%Atmos       = A%Atmos  * B%Atmos
       state_state_mult%Ocean       = A%Ocean  * B%Ocean
    end function state_state_mult
+
+   function state_state_div(A,B)
+      type(state) state_state_div
+      type(state), intent(in) :: A
+      type(state), intent(in) :: B
+      integer i
+      do i=1,nx
+         state_state_div%Atmos(i)       = A%Atmos(i) / B%Atmos(i)
+         state_state_div%Ocean(i)       = A%Ocean(i) / B%Ocean(i)
+      enddo
+   end function state_state_div
 
 
    subroutine assign_state(A,r)

@@ -122,6 +122,7 @@ shfilt2D	mod_shapiro.F90	/^subroutine shfilt2D(/;"	s	module:mod_shapiro
 sqrt_state	mod_state.F90	/^   function sqrt_state(/;"	f	module:mod_state
 state	mod_state.F90	/^   type state$/;"	t	module:mod_state
 state_real_mult	mod_state.F90	/^   function state_real_mult(/;"	f	module:mod_state
+state_state_div	mod_state.F90	/^   function state_state_div(/;"	f	module:mod_state
 state_state_mult	mod_state.F90	/^   function state_state_mult(/;"	f	module:mod_state
 statistics	m_statistics.F90	/^subroutine statistics(/;"	s	module:m_statistics
 stdt	main.F90	/^   type(state), allocatable :: stdt(/;"	v	program:main
