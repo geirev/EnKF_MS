@@ -6,6 +6,11 @@ module m_model
    real, parameter :: dx=1.0             ! Horizontal grid spacing
    real, parameter :: dt=1.0             ! Time step of atmospheric model
 
+   real :: o2a
+   real :: a2o
+   real :: b1
+   real :: b2
+
 contains
    subroutine model(mem,old,leuler)
    use mod_dimensions
@@ -16,10 +21,6 @@ contains
    logical,         intent(in)   :: leuler
    integer i,ia,ib
    type(state) new
-   real, parameter :: o2a=0.01
-   real, parameter :: a2o=0.00
-   real, parameter :: b1=0.003
-   real, parameter :: b2=0.001
    if (leuler) then
       do i=1,nx
          ia=mod(i-2+nx,nx)+1

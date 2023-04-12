@@ -2,6 +2,7 @@ module m_readinfile
 ! Variables read from infile
    use mod_state
    use mod_shapiro
+   use m_model
 
    integer nrt                           ! Number of timesteps
    integer nrw                           ! Number of timesteps within a data assimilation window
@@ -145,6 +146,16 @@ module m_readinfile
       read(10,*)local,obs_radius,obs_truncation; print *,'localization=',local,obs_radius,obs_truncation
       read(10,*)outdir            ; print '(tr3,a,a)',        'Output directory for storing results :',trim(outdir)
       call execute_command_line (cmd//outdir, exitstat=i)
+
+      read(10,'(a)')ca
+      if (ca /= '#5') then
+         print *,'#5: error in infile.in'
+         stop
+      endif
+      read(10,*)o2a             ; print *,'o2a=  ',o2a
+      read(10,*)a2o             ; print *,'a2o=  ',a2o
+      read(10,*)b1              ; print *,'b1 =  ',b1
+      read(10,*)b2              ; print *,'b2 =  ',b2
 
 
    close(10)

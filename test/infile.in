@@ -33,3 +33,10 @@
  0 1.01                           ! Multiplicative inflation and inflation factor
  0 10.0 0.2                       ! Localization (0-none, 1-distance, 2-adaptive), obs_radius
  Femke                            ! Output directory
+#5 Model parameters ---------------------------------------------------------------------------------------------
+ 0.01                             ! o2a ocean to atmosphere coupling
+ 0.00                             ! a2o atmosphere to ocean coupling
+ 0.003                            ! b1  atmospheric friction
+ 0.001                            ! b2  ocean friction
+
+
