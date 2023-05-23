@@ -18,6 +18,13 @@ subroutine windowstat(win,nrw,nrens,mean,stdt)
       stdt(k)=0.0
    enddo
 
+   if (nrens==1) then
+      do k=0,nrw
+         mean(k)=win(k,1)
+      enddo
+      return
+   endif
+
 ! mean
    do j=1,nrens
    do k=0,nrw

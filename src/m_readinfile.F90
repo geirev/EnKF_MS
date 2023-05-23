@@ -95,7 +95,6 @@ module m_readinfile
          print *,'#1: error in infile.in'
          stop
       endif
-      read(10,*)u%ocean            ; print *,'u%ocean=     ',u%ocean
       read(10,*)rh%ocean           ; print *,'rh%ocean=    ',rh%ocean
       read(10,*)rh%atmos           ; print *,'rh%atmos=    ',rh%atmos
       read(10,*)nsh                ; print *,'nshapiro=    ',nsh
@@ -152,11 +151,19 @@ module m_readinfile
          print *,'#5: error in infile.in'
          stop
       endif
-      read(10,*)o2a             ; print *,'o2a=  ',o2a
-      read(10,*)a2o             ; print *,'a2o=  ',a2o
-      read(10,*)b1              ; print *,'b1 =  ',b1
-      read(10,*)b2              ; print *,'b2 =  ',b2
+      read(10,*)alpha%d1               ; print *,'alpha%d1       =',alpha%d1
+      read(10,*)alpha%d2               ; print *,'alpha%d2       =',alpha%d2
+      read(10,*)alpha%oa               ; print *,'alpha%oa       =',alpha%oa
+      read(10,*)alpha%friction         ; print *,'alpha%friction =',alpha%friction
+      read(10,*)alpha%vback            ; print *,'alpha%vback    =',alpha%vback
+      read(10,*)alpha%vlin             ; print *,'alpha%vlin     =',alpha%vlin
 
+      read(10,*)omega%d1               ; print *,'omega%d1       =',omega%d1
+      read(10,*)omega%d2               ; print *,'omega%d2       =',omega%d2
+      read(10,*)omega%oa               ; print *,'omega%oa       =',omega%oa
+      read(10,*)omega%friction         ; print *,'omega%friction =',omega%friction
+      read(10,*)omega%vback            ; print *,'omega%vback    =',omega%vback
+      read(10,*)omega%vlin             ; print *,'omega%vlin     =',omega%vlin
 
    close(10)
    cpinfile='cp infile.in infile.'//trim(outdir)

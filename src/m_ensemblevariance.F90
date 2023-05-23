@@ -10,6 +10,7 @@ subroutine ensemblevariance(A,ave,var,nrens)
    integer j
 
    var=0.0
+   if (nrens == 1) return
    do j=1,nrens
       var=var+(A(j)-ave)*(A(j)-ave)
    enddo

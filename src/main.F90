@@ -187,14 +187,14 @@ program main
             call pseudo1D(samples,nx,nrens,rh%ocean,dx,nx)
             if (samp_fix) call fixsample1D(samples,nx,nrens)
             do j=1,nrens
-               mem(j)%ocean=mem(j)%ocean+sqrt(2.0*sysvar%ocean*dt)*samples(:,j)
+               mem(j)%ocean=mem(j)%ocean+sqrt(2.0*sysvar%ocean*dtout)*samples(:,j)
             enddo
          endif
          if (sysvar%atmos > 0.0) then
             call pseudo1D(samples,nx,nrens,rh%atmos,dx,nx)
             if (samp_fix) call fixsample1D(samples,nx,nrens)
             do j=1,nrens
-               mem(j)%atmos=mem(j)%atmos+sqrt(2.0*sysvar%atmos*dt)*samples(:,j)
+               mem(j)%atmos=mem(j)%atmos+sqrt(2.0*sysvar%atmos*dtout)*samples(:,j)
             enddo
          endif
 
@@ -218,7 +218,7 @@ program main
       nrobs=obscount(nrt,tini,tfin,obsotimes,obsatimes,nro,nra)
       print *,'Total number of measurements in the DA window= ',nrobs
 
-      if ((nrobs > 0) .and. (mode_analysis > 0)) then
+      if ((nrens > 10) .and. (nrobs > 0) .and. (mode_analysis > 0)) then
 ! Assimilation step
          allocate(obs(nrobs))
          allocate(S(nrobs,nrens))

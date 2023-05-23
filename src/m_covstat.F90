@@ -27,6 +27,7 @@ subroutine covstat(full,nrt,nrens,mean,stdt,covo,cova,outdir)
       covo(k)=0.0
       cova(k)=0.0
    enddo
+   if (nrens == 1) return
 
 ! covariance function
    do j=1,nrens

@@ -7,16 +7,22 @@ real, allocatable :: fullcor(:,:,:)
 real, allocatable :: fullcoroa(:,:,:)
 contains
 subroutine statistics(full,nrt,nrens,nrf)
+   implicit none
    integer, intent(in) :: nrt
    integer, intent(in) :: nrens
    integer, intent(in) :: nrf
    type(state), intent(in) :: full(0:nrt,nrens)
-   integer i,j,k,ic,kc
+   integer i,j,k,ic,kc,stat
 
-   allocate(fullave(nx,0:nrt,2))
-   allocate(fullvar(nx,0:nrt,2))
-   allocate(fullcor(nx,0:nrt,2))
-   allocate(fullcoroa(nx,0:nrt,2))
+   allocate(fullave(nx,0:nrt,2), stat=stat) ; if (stat /= 0) stop "Memory allocation failed for fullave"
+   allocate(fullvar(nx,0:nrt,2), stat=stat) ; if (stat /= 0) stop "Memory allocation failed for fullave"
+   allocate(fullcor(nx,0:nrt,2), stat=stat) ; if (stat /= 0) stop "Memory allocation failed for fullave"
+   allocate(fullcoroa(nx,0:nrt,2), stat=stat) ; if (stat /= 0) stop "Memory allocation failed for fullave"
+
+   fullave = 0.0
+   fullvar = 0.0
+   fullcor = 0.0
+   fullcoroa = 0.0
 
 
 ! mean
