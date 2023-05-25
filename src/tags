@@ -17,7 +17,6 @@ S	main.F90	/^   real, allocatable :: S(/;"	v	program:main
 add_state	mod_state.F90	/^   function add_state(/;"	f	module:mod_state
 alpha	m_model.F90	/^   type(modpar) :: alpha,/;"	v	module:m_model
 ana	main.F90	/^   type(state) ana /;"	v	program:main
-anaold	main.F90	/^   type(state) anaold /;"	v	program:main
 assign_state	mod_state.F90	/^   subroutine assign_state(/;"	s	module:mod_state
 ave	main.F90	/^   type(state) ave /;"	v	program:main
 cov	main.F90	/^   type(state) cov(/;"	v	program:main
@@ -49,7 +48,6 @@ innov	main.F90	/^   real, allocatable :: innov(/;"	v	program:main
 j	main.F90	/^   integer j,/;"	v	program:main
 k	main.F90	/^   integer j,k,/;"	v	program:main
 l	main.F90	/^   integer j,k,l$/;"	v	program:main
-leuler	main.F90	/^   logical leuler /;"	v	program:main
 lglobstat	m_readinfile.F90	/^   logical lglobstat /;"	v	module:m_readinfile
 local	m_readinfile.F90	/^   integer local /;"	v	module:m_readinfile
 lrandrot	m_readinfile.F90	/^   logical :: lrandrot=/;"	v	module:m_readinfile
@@ -112,13 +110,13 @@ obst0o	m_readinfile.F90	/^   integer obst0o /;"	v	module:m_readinfile
 obstloc	m_obstloc.F90	/^subroutine obstloc(/;"	s	module:m_obstloc
 obsvar	m_readinfile.F90	/^   type(substate) obsvar$/;"	v	module:m_readinfile
 obsxloc	m_obsxloc.F90	/^subroutine obsxloc(/;"	s	module:m_obsxloc
-old	main.F90	/^   type(state), allocatable :: old(/;"	v	program:main
 omega	m_model.F90	/^   type(modpar) :: alpha,omega$/;"	v	module:m_model
 outdir	m_readinfile.F90	/^   character(len=25) outdir$/;"	v	module:m_readinfile
 rd	m_readinfile.F90	/^   real rd /;"	v	module:m_readinfile
 readinfile	m_readinfile.F90	/^   subroutine readinfile$/;"	s	module:m_readinfile
 real_state_mult	mod_state.F90	/^   function real_state_mult(/;"	f	module:mod_state
 rh	m_model.F90	/^   type(substate) rh$/;"	v	module:m_model
+rkstep	m_model.F90	/^   function rkstep(/;"	f	module:m_model
 samp_fix	m_readinfile.F90	/^   logical samp_fix$/;"	v	module:m_readinfile
 samples	main.F90	/^   real, allocatable :: samples(/;"	v	program:main
 set_random_seed2	m_set_random_seed2.F90	/^subroutine set_random_seed2$/;"	s	module:m_set_random_seed2

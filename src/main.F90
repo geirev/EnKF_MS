@@ -28,10 +28,8 @@ program main
    type(state), allocatable :: win(:,:)    ! The ensemble of realizations over an assimilation window.
    type(state), allocatable :: winana(:)   ! The analytical solution over an assimilation window.
    type(state), allocatable :: mem(:)      ! The ensemble of realizations
-   type(state), allocatable :: old(:)      ! The ensemble of realizations in previous time step used in Leapfrog
    type(state), allocatable :: sysnoise(:) ! The ensemble of sampled system noise updated every timestep
    type(state) ana                         ! analytical solution
-   type(state) anaold                      ! analytical solution in previous time step used in Leapfrog
    type(state) ave                         ! ensemble average
    type(state) var                         ! ensemble variance
    type(state) cov(2)                      ! ensemble covariance for two points
@@ -69,7 +67,6 @@ program main
    integer tini                            ! start time of an assimilation window
    integer tfin                            ! end   time of an assimilation window
    integer nrobs                           ! Total number of measurement per assimilation window
-   logical leuler                          ! Euler timestepping if true
 
    integer j,k,l
    real time
@@ -91,7 +88,6 @@ program main
    allocate (covo(0:nrt))
    allocate (cova(0:nrt))
    allocate (mem(nrens))
-   allocate (old(nrens))
    allocate (sysnoise(nrens))
    allocate (samples(nx,nrens))
 
@@ -169,18 +165,16 @@ program main
       tini=(l-1)*nrw                                  ! time at beginning of assimilation window
       tfin=l*nrw                                      ! time at end of assimilation window
       print '(a,i3.3,a,i5.5,a,i5.5)','DA window number ',l,' running from ',tini,' to ',tfin
-      leuler=.true.                                   ! first timestep of each window is Euler step
       do k=1,nrw                                      ! timestep loop over assimilation window
-         if (k>1) leuler=.false.
          time=real((l-1)*nrw+k)
-         print '(a,f10.2,a,i3,a,i4,a,l1)','time= ',time,', window=',l,', timestep=',k,' Euler step=',leuler
+         print '(a,f10.2,a,i3,a,i4,a,l1)','time= ',time,', window=',l,', timestep=',k
 
 
 ! Advection
          do j=1,nrens
-            call model(mem(j),old(j),leuler)
+            call model(mem(j))
          enddo
-         call model(ana,anaold,leuler)
+         call model(ana)
 
 ! System noise
          if (sysvar%ocean > 0.0) then

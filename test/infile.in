@@ -5,7 +5,7 @@
  T                                ! Printing of global statistics (note memory use)
 #1 Model variables ----------------------------------------------------------------------------------------------
  20.0                             ! Smoothness of ocean model
- 20.0                             ! Smoothness of atmos model (60)
+ 60.0                             ! Smoothness of atmos model (60)
  0                                ! order of shapiro filter used every time step (0:8)
 #2 Prior statistics ---------------------------------------------------------------------------------------------
  F                                ! Fix samples (mean zero and variance one)
@@ -31,14 +31,14 @@
  F                                ! Random rotation in SQRT schemes
  0 1.01                           ! Multiplicative inflation and inflation factor
  0 10.0 0.2                       ! Localization (0-none, 1-distance, 2-adaptive), obs_radius
- NEW                              ! Output directory
+ NEWY                             ! Output directory
 #5 Model parameters ---------------------------------------------------------------------------------------------
- -0.40                             ! alpha%d1       Diffusion coefficient for atmosphere
- -0.10                             ! alpha%d2       Biharmonic diffusion coefficient for atmosphere
- 0.001                              ! alpha%oa       Ocean to atmosphere coupling
+ 0.0             -0.40                             ! alpha%d1       Diffusion coefficient for atmosphere (positive is diffusion)
+ 0.0            -0.05                             ! alpha%d2       Biharmonic diffusion coefficient for atmosphere (negative is diffusion)
+ 0.000                              ! alpha%oa       Ocean to atmosphere coupling
  0.0                              ! alpha%friction Atmospheric friction
  1.0                              ! alpha%vback    Background atmospheric advection velocity
- 0.1                              ! alpha%vlin     Nonlinear atmospheric advection velocity coefficient
+ 0.00                              ! alpha%vlin     Nonlinear atmospheric advection velocity coefficient
  0.00                              ! omega%d1       Diffusion coefficient for ocean
  0.00                              ! omega%d2       Biharmonic diffusion coefficient for ocean
  0.0                              ! omega%oa       Atmosphere to ocean coupling

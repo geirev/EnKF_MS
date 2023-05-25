@@ -6,15 +6,28 @@ subroutine set_random_seed2
 
    integer , dimension(8)::val
    integer cnt
-   integer sze
+   integer sze,i
    integer, allocatable, dimension(:):: pt
+   logical ex
 
-   call DATE_AND_TIME(values=val)
-   call SYSTEM_CLOCK(count=cnt)
-   call RANDOM_SEED(size=sze)
-   allocate(pt(max(sze,2)))
-   pt(1) = val(8)*val(3)
-   pt(2) = cnt
+   call DATE_AND_TIME(values=val)!; print *,'VAL:',val(:)
+   call SYSTEM_CLOCK(count=cnt)!; print *,'CNT:',cnt
+   call RANDOM_SEED(size=sze)!  ; print *,'sze:',sze
+   allocate(pt(sze))
+   do i=1,sze,2
+      pt(i) = val(8)*val(7)
+      pt(i+1) = cnt
+   enddo
+   inquire(file='seed.dat',exist=ex)
+   if (ex) then
+      open(10,file='seed.dat')
+         read(10,*)pt
+      close(10)
+   else
+      open(10,file='seed.dat')
+         write(10,*)pt
+      close(10)
+   endif
    call RANDOM_SEED(put=pt)
    deallocate(pt)
 end subroutine set_random_seed2
