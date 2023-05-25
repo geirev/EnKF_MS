@@ -151,6 +151,8 @@ module m_readinfile
          print *,'#5: error in infile.in'
          stop
       endif
+      read(10,*)advection              ; print *,'advection      =',advection
+
       read(10,*)alpha%d1               ; print *,'alpha%d1       =',alpha%d1
       read(10,*)alpha%d2               ; print *,'alpha%d2       =',alpha%d2
       read(10,*)alpha%oa               ; print *,'alpha%oa       =',alpha%oa
