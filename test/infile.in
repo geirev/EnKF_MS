@@ -1,11 +1,11 @@
 #1.0 Version of infile.in ---------------------------------------------------------------------------------------
  1                                ! Ensemble size
- 2048                              ! Number of timesteps
+ 300                                  2048                              ! Number of timesteps
  50                               ! Number of timesteps within a DA window
  T                                ! Printing of global statistics (note memory use)
 #1 Model variables ----------------------------------------------------------------------------------------------
  30.0                             ! Smoothness of ocean model
- 90.0                             ! Smoothness of atmos model (60)
+ 10.0                             ! Smoothness of atmos model (60)
  0                                ! order of shapiro filter used every time step (0:8)
 #2 Prior statistics ---------------------------------------------------------------------------------------------
  F                                ! Fix samples (mean zero and variance one)
@@ -31,18 +31,17 @@
  F                                ! Random rotation in SQRT schemes
  0 1.01                           ! Multiplicative inflation and inflation factor
  0 10.0 0.2                       ! Localization (0-none, 1-distance, 2-adaptive), obs_radius
- NEW                              ! Output directory
+ NEW1                             ! Output directory
 #5 Model parameters ---------------------------------------------------------------------------------------------
- 1                                ! t-step scheme (0=euler, 1=RK4)
- -0.1                             ! alpha%d1       Diffusion coefficient for atmosphere (positive is diffusion)
- -1.0                             ! alpha%d2       Biharmonic diffusion coefficient for atmosphere (negative is diffusion)
- 0.005                            ! alpha%oa       Ocean to atmosphere coupling
- 0.001                              ! alpha%friction Atmospheric friction
- 1.0                              ! alpha%vback    Background atmospheric advection velocity
- 0.10                             ! alpha%vlin     Nonlinear atmospheric advection velocity coefficient
- 0.00                             ! omega%d1       Diffusion coefficient for ocean
- -1.00                            ! omega%d2       Biharmonic diffusion coefficient for ocean
- 0.0                              ! omega%oa       Atmosphere to ocean coupling
- 0.0                              ! omega%friction Ocean friction
- 0.1                              ! omega%vback    Background ocean advection velocity
- 0.0                              ! omega%vlin     Nonlinear ocean advection velocity coefficient
+ 256.0                            ! Lxa            Pseudo-length of atmospheric domain
+  -1.0                            ! alpha%d1       Diffusion coefficient for atmosphere (positive is diffusion)
+  -2.0                            ! alpha%d2       Biharmonic diffusion coefficient for atmosphere (negative is diffusion)
+   0.005                           ! alpha%oa       Ocean to atmosphere coupling
+   1.0                            ! alpha%vback    Background atmospheric advection velocity
+   1.0                            ! alpha%v        Nonlinear atmospheric advection velocity coefficient
+  32.0                            ! Lxo            Pseudo-length of ocean domain
+  -1.0                            ! omega%d1       Diffusion coefficient for ocean
+  -0.5                            ! omega%d2       Biharmonic diffusion coefficient for ocean
+   0.001                          ! omega%oa       Atmosphere to ocean coupling
+   1.0                            ! omega%vback    Background ocean advection velocity
+   1.0                            ! omega%v        Nonlinear ocean advection velocity coefficient

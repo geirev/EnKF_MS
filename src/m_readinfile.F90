@@ -41,6 +41,7 @@ module m_readinfile
    character(len=8) covmodel             ! Diagonal or Gaussian measurement error covariance model
    real rd                               ! Horizontal correlation of observation errors in Gaussian case
    logical Rexact                        ! Use exact(true) or lowrank(false) R matrix
+   real dx
 
 ! Shapiro filter variables
    integer nsh
@@ -151,22 +152,23 @@ module m_readinfile
          print *,'#5: error in infile.in'
          stop
       endif
-      read(10,*)advection              ; print *,'advection      =',advection
 
+      read(10,*)lxa                    ; print *,'Length of ocean=',lxa
       read(10,*)alpha%d1               ; print *,'alpha%d1       =',alpha%d1
       read(10,*)alpha%d2               ; print *,'alpha%d2       =',alpha%d2
       read(10,*)alpha%oa               ; print *,'alpha%oa       =',alpha%oa
-      read(10,*)alpha%friction         ; print *,'alpha%friction =',alpha%friction
       read(10,*)alpha%vback            ; print *,'alpha%vback    =',alpha%vback
-      read(10,*)alpha%vlin             ; print *,'alpha%vlin     =',alpha%vlin
+      read(10,*)alpha%v                ; print *,'alpha%v        =',alpha%v
 
+      read(10,*)lxo                    ; print *,'Length of ocean=',lxo
       read(10,*)omega%d1               ; print *,'omega%d1       =',omega%d1
       read(10,*)omega%d2               ; print *,'omega%d2       =',omega%d2
       read(10,*)omega%oa               ; print *,'omega%oa       =',omega%oa
-      read(10,*)omega%friction         ; print *,'omega%friction =',omega%friction
       read(10,*)omega%vback            ; print *,'omega%vback    =',omega%vback
-      read(10,*)omega%vlin             ; print *,'omega%vlin     =',omega%vlin
+      read(10,*)omega%v                ; print *,'omega%v        =',omega%v
 
+      omega%vback=omega%vback*real(lxo)/real(lxa)
+      print *,'omega%vback corrected by factor (lxo/lxa): ',real(lxo)/real(lxa)
    close(10)
    cpinfile='cp infile.in infile.'//trim(outdir)
    call execute_command_line (trim(cpinfile), exitstat=i)
@@ -185,5 +187,7 @@ module m_readinfile
 
 ! We assume constant atmospheric velocity equal to one
    u%atmos=1.0
+
+   dx=lxa/nx
 end subroutine
 end module

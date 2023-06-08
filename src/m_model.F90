@@ -4,8 +4,10 @@ module m_model
    implicit none
    type(substate) u                      ! Model velocity
    type(substate) rh
-   real, parameter :: dx=1.0             ! Horizontal grid spacing
+   real :: lxo                           ! Length of ocean model domain
+   real :: lxa                           ! Length of atmos model domain
    real, parameter :: dtout=1.0             ! Time between outputs
+   real, parameter :: pi=3.14159265359
 
    integer advection
 
@@ -13,117 +15,166 @@ module m_model
       real d1         ! diffusion
       real d2         ! biharmonic diffusion
       real oa         ! coupling
-      real friction   ! friction
       real vback      ! background velocity
-      real vlin       ! linear state dep velocity
+      real v          ! linear state dep velocity
    end type
 
    type(modpar) :: alpha,omega
 
-
-
 contains
 
-   subroutine model(mem)
+subroutine model(mem)
    use mod_dimensions
    use mod_state
+   use mod_fftw3
+
    implicit none
    type(state),     intent(inout):: mem
    integer i,nrsteps,n
    real dt
-   real maxu
-   type(state) k1,k2,k3,k4
+   integer, save :: ifirst=1
 
-   dt=1.0
+   integer(8), save :: plan_c2r, plan_r2c
+   real, save :: kappaa(0:nx/2)
+   real, save :: kappao(0:nx/2)
+   complex, save :: ddxa(0:nx/2)
+   complex, save :: ddxo(0:nx/2)
+   complex, save :: Ga(0:nx/2)
+   complex, save :: Go(0:nx/2)
+   real, save :: difa(0:nx/2)
+   real, save :: difo(0:nx/2)
+   real, save :: Aa(0:nx/2)
+   real, save :: Ao(0:nx/2)
+   real, save :: Ba(0:nx/2)
+   real, save :: Bo(0:nx/2)
+   real, save :: dt2,dt32
 
-   if (alpha%d1 /= 0.0 ) dt=min(dt, dx**2/(2.0*abs(alpha%d1)))
-   if (alpha%d2 /= 0.0 ) dt=min(dt, dx**4/(12.0*abs(alpha%d2)))
-   if (omega%d1 /= 0.0 ) dt=min(dt, dx**2/(2.0*abs(omega%d1)))
-   if (omega%d2 /= 0.0 ) dt=min(dt, dx**4/(12.0*abs(omega%d2)))
+   real atmos(0:nx)
+   real ocean(0:nx)
+   complex  atmosfft(0:nx/2)
+   complex  oceanfft(0:nx/2)
 
+   real temp(0:nx)
+   complex  tempfft(0:nx/2)
 
-   maxu=0.0
-   do i=1,nx
-      u%atmos=alpha%vback + alpha%vlin*mem%atmos(i)
-      maxu=max(maxu,abs(u%atmos))
-      u%ocean=omega%vback + omega%vlin*mem%ocean(i)
-      maxu=max(maxu,abs(u%ocean))
-   enddo
-   dt=min(dt,0.1*dx/maxu)
-   nrsteps=nint(1.0/dt)
+   complex :: nna(0:nx/2)
+   complex :: nn1a(0:nx/2)
+   complex :: nno(0:nx/2)
+   complex :: nn1o(0:nx/2)
+
+   complex :: lina(0:nx/2)
+   complex :: lin1a(0:nx/2)
+   complex :: lino(0:nx/2)
+   complex :: lin1o(0:nx/2)
+
+!   complex :: xx=(2.0,3.00)
+!   complex :: yy=(2.0,3.00)
+!   print *,3.0*xx,xx*yy
+
+   dt=1.0/16.0
+   nrsteps=nint(dtout/dt)
    dt=1.0/real(nrsteps)
 
-   print *,'n=',nrsteps,dt,real(nrsteps)*dt
+   !print '(a,11f15.5)','A atmos:',mem%atmos(1:10),mem%atmos(nx)
+
+   if (ifirst==1) then
+      ifirst=0.0
+!     Setting up the fftw3 plans
+      call dfftw_plan_dft_r2c_1d(plan_r2c, nx, atmos, atmosfft, FFTW_MEASURE)
+      call dfftw_plan_dft_c2r_1d(plan_c2r, nx, atmosfft, atmos, FFTW_MEASURE)
+
+      dt2=dt/2.0
+      dt32=3.0*dt/2.0
+
+      do i=0,nx/2
+         kappaa(i) =2.0*pi*real(i)/real(Lxa)                      ! Derivative of wave numbers kappa(k)=2*pi*k/(nx*dx)
+         kappao(i) =2.0*pi*real(i)/real(Lxo)                      ! Derivative of wave numbers kappa(k)=2*pi*k/(nx*dx)
+      enddo
+      kappaa(nx/2)=0.0
+      kappao(nx/2)=0.0
+
+      do i=0,nx/2
+         ddxa(i)=cmplx( 0.0, kappaa(i) )                          ! Spectral D=d/dx operator  img*kappa(i)
+         ddxo(i)=cmplx( 0.0, kappao(i) )                          ! Spectral D=d/dx operator  img*kappa(i)
+         Ga(i)   =-0.5*ddxa(i)                                    ! -0.5*D
+         Go(i)   =-0.5*ddxo(i)                                    ! -0.5*D
+
+         difa(i) =-alpha%d1*kappaa(i)**2 + alpha%d2*kappaa(i)**4    ! Diffusion operator in wave space
+         difo(i) =-omega%d1*kappao(i)**2 + omega%d2*kappao(i)**4    ! Diffusion operator in wave space
+         Aa(i)=1.0 + dt2*difa(i)
+         Ao(i)=1.0 + dt2*difo(i)
+         Ba(i)=1.0/(1.0 - dt2*difa(i))
+         Bo(i)=1.0/(1.0 - dt2*difo(i))
+      enddo
+   endif
+
+   atmos(1:nx)=mem%atmos(1:nx)
+   atmos(0)=atmos(nx)
+   call dfftw_execute_dft_r2c(plan_r2c, atmos, atmosfft)
+
+   ocean(1:nx)=mem%ocean(1:nx)
+   ocean(0)=ocean(nx)
+   call dfftw_execute_dft_r2c(plan_r2c, ocean, oceanfft)
+
+   lina(:)=(0.0,0.0)
+   lino(:)=(0.0,0.0)
+   nna(:)=(0.0,0.0)
+   nno(:)=(0.0,0.0)
+
+
    do n=1,nrsteps
-      if (advection == 0) then
-         mem = mem + dt*func(mem,dx)
+      nn1a(:)=nna(:)
+      nn1o(:)=nno(:)
+      lin1a(:)=lina(:)
+      lin1o(:)=lino(:)
 
-      elseif (advection == 1) then
+! Linear background advection
+      lina(0:nx/2)=alpha%vback*Ga(0:nx/2)*atmosfft(0:nx/2)
+      if (n==1) lin1a=lina
 
-         k1  = dt*func(mem,dx)
-         k2  = dt*func(mem+0.5*k1,dx)
-         k3  = dt*func(mem+0.5*k2,dx)
-         k4  = dt*func(mem+k3,dx)
-         mem = mem + (1.0/6.0)*(k1+2.0*k2+2.0*k3+k4)
+      lino(0:nx/2)=omega%vback*Go(0:nx/2)*oceanfft(0:nx/2)
+      if (n==1) lin1o=lino
 
-      endif
+! Nonlinear advection
+      tempfft=atmosfft
+      call dfftw_execute_dft_c2r(plan_c2r, tempfft, temp)
+      temp(:)=temp(:)/real(nx)
+      temp(:)=temp(:)*temp(:)
+      call dfftw_execute_dft_r2c(plan_r2c, temp, tempfft)
+      do i=0,nx/2
+         nna(i)=alpha%v*Ga(i)*tempfft(i)
+      enddo
+      if (n==1) nn1a=nna
+
+      tempfft=oceanfft
+      call dfftw_execute_dft_c2r(plan_c2r, tempfft, temp)
+      temp(:)=temp(:)/real(nx)
+      temp(:)=temp(:)*temp(:)
+      call dfftw_execute_dft_r2c(plan_r2c, temp, tempfft)
+      do i=0,nx/2
+         nno(i)=omega%v*Go(i)*tempfft(i)
+      enddo
+      if (n==1) nn1o=nno
+
+      do i=0,nx/2
+         tempfft(i)=oceanfft(i)-atmosfft(i)
+         atmosfft(i)=Ba(i)*(Aa(i)*atmosfft(i) + dt32*(nna(i)+lina(i)) - dt2*(nn1a(i)+lin1a(i)) + alpha%oa*tempfft(i) )
+         oceanfft(i)=Bo(i)*(Ao(i)*oceanfft(i) + dt32*(nno(i)+lino(i)) - dt2*(nn1o(i)+lin1o(i)) - omega%oa*tempfft(i) )
+      enddo
+
    enddo
+
+   call dfftw_execute_dft_c2r(plan_c2r, atmosfft, atmos)
+   call dfftw_execute_dft_c2r(plan_c2r, oceanfft, ocean)
+   atmos(nx)=atmos(0)
+   ocean(nx)=ocean(0)
+   atmos=atmos/real(nx)
+   ocean=ocean/real(nx)
+   mem%atmos(1:nx)=atmos(1:nx)
+   mem%ocean(1:nx)=ocean(1:nx)
+!   print '(a,11f15.5)','E atmos:',mem%atmos(1:10),mem%atmos(nx)
+!   call dfftw_destroy_plan(plan_r2c)
+!   call dfftw_destroy_plan(plan_c2r)
 
 end subroutine
-
-function func(mem,dx)
-   use mod_dimensions
-   use mod_state
-   implicit none
-   type(state) func
-   type(state), intent(in)   :: mem
-   real, intent(in) :: dx
-
-   integer i,ia,ib,ia2,ib2
-   type(state) new
-
-   do i=1,nx
-      ia=mod(i-2+nx,nx)+1
-      ib=mod(i,nx)+1
-      ia2=mod(i-3+nx,nx)+1
-      ib2=mod(i+1,nx)+1
-
-      u%atmos=alpha%vback + alpha%vlin*mem%atmos(i)
-
-      if (advection == 0) then
-         if (u%atmos > 0.0) then
-            new%atmos(i) =  - u%atmos*(mem%atmos(i)-mem%atmos(ia))/dx
-         else
-            new%atmos(i) =  - u%atmos*(mem%atmos(ib)-mem%atmos(i))/dx
-         endif
-      else
-         new%atmos(i) =  - u%atmos*(mem%atmos(ib)-mem%atmos(ia))/(2.0*dx)
-      endif
-
-      new%atmos(i) =  new%atmos(i)                                                                                  &
-          + alpha%d1*(mem%atmos(ia)-2.0*mem%atmos(i)+mem%atmos(ib))/(dx**2)                                         &
-          + alpha%d2*(mem%atmos(ia2)-4.0*mem%atmos(ia)+6.0*mem%atmos(i)-4.0*mem%atmos(ib)+mem%atmos(ib2))/(dx**4)  &
-          + alpha%oa*(mem%ocean(i)-mem%atmos(i))                                                                    &
-          - alpha%friction*mem%atmos(i)
-
-      u%ocean=omega%vback + omega%vlin*mem%ocean(i)
-
-      if (advection == 0) then
-         if (u%ocean > 0.0) then
-            new%ocean(i) =  - u%ocean*(mem%ocean(i)-mem%ocean(ia))/dx
-         else
-            new%ocean(i) =  - u%ocean*(mem%ocean(ib)-mem%ocean(i))/dx
-         endif
-      else
-         new%ocean(i) =  - u%ocean*(mem%ocean(ib)-mem%ocean(ia))/(2.0*dx)
-      endif
-
-      new%ocean(i) =  new%ocean(i)                                                                                  &
-          + omega%d1*(mem%ocean(ia)-2.0*mem%ocean(i)+mem%ocean(ib))/(dx**2)                                         &
-          + omega%d2*(mem%ocean(ia2)-4.0*mem%ocean(ia)+6.0*mem%ocean(i)-4.0*mem%ocean(ib)+mem%ocean(ib2))/(dx**4)  &
-          + omega%oa*(mem%atmos(i)-mem%ocean(i))                                                                    &
-          - omega%friction*mem%ocean(i)
-   enddo
-   func=new
-end function
 end module

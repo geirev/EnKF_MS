@@ -57,6 +57,7 @@ m_gnuplot.o:      mod_state.o
 m_model.o:      makefile
 m_model.o:      mod_dimensions.o
 m_model.o:      MODEL.CPP
+m_model.o:      mod_fftw3.o
 m_model.o:      mod_state.o
 m_obscount.o:      makefile
 m_obscount.o:      MODEL.CPP

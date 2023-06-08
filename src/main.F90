@@ -68,8 +68,9 @@ program main
    integer tfin                            ! end   time of an assimilation window
    integer nrobs                           ! Total number of measurement per assimilation window
 
-   integer j,k,l
-   real time
+   integer j,k,l,i
+   real time,xx
+   real :: dxsamp=1.0
 
    call readinfile()
 
@@ -119,26 +120,26 @@ program main
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! The true solution smooth pseudo random field drawn from  N(0,1,rh).
-   call pseudo1D(ana%ocean,nx,1,rh%ocean,dx,nx)
-   call pseudo1D(ana%atmos,nx,1,rh%atmos,dx,nx)
+   call pseudo1D(ana%ocean,nx,1,rh%ocean,dxsamp,nx)
+   call pseudo1D(ana%atmos,nx,1,rh%atmos,dxsamp,nx)
    print *,'main: ana ok'
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! First guess solution stored in ave
-   call pseudo1D(ave%ocean,nx,1,rh%ocean,dx,nx)
-   call pseudo1D(ave%atmos,nx,1,rh%atmos,dx,nx)
+   call pseudo1D(ave%ocean,nx,1,rh%ocean,dxsamp,nx)
+   call pseudo1D(ave%atmos,nx,1,rh%atmos,dxsamp,nx)
    ave=(ave + ana)*(1.0/sqrt(2.0))
    print *,'main: fg ok'
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Initialization of ensemble
-   call pseudo1D(samples,nx,nrens,rh%ocean,dx,nx)
+   call pseudo1D(samples,nx,nrens,rh%ocean,dxsamp,nx)
    if (samp_fix) call fixsample1D(samples,nx,nrens)
    do j=1,nrens
       mem(j)%ocean(1:nx)=samples(1:nx,j)
    enddo
 
-   call pseudo1D(samples,nx,nrens,rh%atmos,dx,nx)
+   call pseudo1D(samples,nx,nrens,rh%atmos,dxsamp,nx)
    if (samp_fix) call fixsample1D(samples,nx,nrens)
    do j=1,nrens
       mem(j)%atmos(1:nx)=samples(1:nx,j)
@@ -150,11 +151,25 @@ program main
    enddo
    print *,'main: ensemble ok'
 
+! Initialization for testing standard KS case
+   do i=1,nx
+      xx=real(i-1)*(lxa/real(nx))
+!      mem(1)%atmos(i) = cos(xx) + 0.1*cos(xx/16.0)*(1.0+2.0*sin(xx/16.0))
+      xx=real(i-1)*(lxo/real(nx))
+!      mem(1)%ocean(i) = cos(xx) + 0.1*cos(xx/16.0)*(1.0+2.0*sin(xx/16.0))
+   enddo
+
    nrobs=0
    call ensemblemean(mem,ave,nrens)
    call ensemblevariance(mem,ave,var,nrens)
    call ensemblecovariance(mem,ave,cov,nrens)
    call dumpsol(time,ana,ave,var,cov,nx,dx,obs,nrobs,mem,nrens,outdir,'I')
+
+   open(10,file='atmosin.dat')
+      do i=1,nx
+         write(10,'(3f15.7)')real(i),mem(1)%atmos(i)
+      enddo
+   close(10)
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Loop over assimilation windows
@@ -174,7 +189,11 @@ program main
          do j=1,nrens
             call model(mem(j))
          enddo
-         call model(ana)
+         if (nrens > 1) then
+            call model(ana)
+         else
+            ana=0.0
+         endif
 
 ! System noise
          if (sysvar%ocean > 0.0) then
@@ -266,6 +285,12 @@ program main
       call gnuplot('gnu_cova',cova,nrt,outdir)
 
    endif
+
+   open(10,file='atmosout.dat')
+      do i=1,nx
+         write(10,'(3f15.7)')real(i),mem(1)%atmos(i)
+      enddo
+   close(10)
 
 end program main
 

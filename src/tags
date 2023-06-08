@@ -30,31 +30,33 @@ d1	m_model.F90	/^      real d1 /;"	k	type:modpar
 d2	m_model.F90	/^      real d2 /;"	k	type:modpar
 dtout	m_model.F90	/^   real, parameter :: dtout=/;"	v	module:m_model
 dumpsol	m_dumpsol.F90	/^subroutine dumpsol(/;"	s	module:m_dumpsol
-dx	m_model.F90	/^   real, parameter :: dx=/;"	v	module:m_model
+dx	m_readinfile.F90	/^   real dx$/;"	v	module:m_readinfile
+dxsamp	main.F90	/^   real :: dxsamp=/;"	v	program:main
 enkfprep	m_enkfprep.F90	/^subroutine enkfprep(/;"	s	module:m_enkfprep
 ensemblecovariance	m_ensemblecovariance.F90	/^subroutine ensemblecovariance(/;"	s	module:m_ensemblecovariance
 ensemblemean	m_ensemblemean.F90	/^subroutine ensemblemean(/;"	s	module:m_ensemblemean
 ensemblevariance	m_ensemblevariance.F90	/^subroutine ensemblevariance(/;"	s	module:m_ensemblevariance
-friction	m_model.F90	/^      real friction /;"	k	type:modpar
 full	main.F90	/^   type(state), allocatable :: full(/;"	v	program:main
 fullave	m_statistics.F90	/^real, allocatable :: fullave(/;"	v	module:m_statistics
 fullcor	m_statistics.F90	/^real, allocatable :: fullcor(/;"	v	module:m_statistics
 fullcoroa	m_statistics.F90	/^real, allocatable :: fullcoroa(/;"	v	module:m_statistics
 fullvar	m_statistics.F90	/^real, allocatable :: fullvar(/;"	v	module:m_statistics
-func	m_model.F90	/^funct/;"	f	module:m_model
 gnuplot	m_gnuplot.F90	/^subroutine gnuplot(/;"	s	module:m_gnuplot
+i	main.F90	/^   in/;"	v	program:main
 inflate	m_readinfile.F90	/^   integer inflate /;"	v	module:m_readinfile
 infmult	m_readinfile.F90	/^   real infmult /;"	v	module:m_readinfile
 inivar	m_readinfile.F90	/^   type(substate) inivar$/;"	v	module:m_readinfile
 innov	main.F90	/^   real, allocatable :: innov(/;"	v	program:main
 j	main.F90	/^   integer j,/;"	v	program:main
 k	main.F90	/^   integer j,k,/;"	v	program:main
-l	main.F90	/^   integer j,k,l$/;"	v	program:main
+l	main.F90	/^   integer j,k,l,/;"	v	program:main
 lglobstat	m_readinfile.F90	/^   logical lglobstat /;"	v	module:m_readinfile
 local	m_readinfile.F90	/^   integer local /;"	v	module:m_readinfile
 lrandrot	m_readinfile.F90	/^   logical :: lrandrot=/;"	v	module:m_readinfile
 lsymsqrt	m_readinfile.F90	/^   logical :: lsymsqrt=/;"	v	module:m_readinfile
 lupdate_randrot	m_readinfile.F90	/^   logical :: lupdate_randrot=/;"	v	module:m_readinfile
+lxa	m_model.F90	/^   real :: lxa /;"	v	module:m_model
+lxo	m_model.F90	/^   real :: lxo /;"	v	module:m_model
 m_covstat	m_covstat.F90	/^module m_covstat$/;"	m
 m_dumpsol	m_dumpsol.F90	/^module m_dumpsol$/;"	m
 m_enkfprep	m_enkfprep.F90	/^module m_enkfprep$/;"	m
@@ -81,7 +83,7 @@ mod_observation	mod_observation.F90	/^module mod_observation$/;"	m
 mod_shapiro	mod_shapiro.F90	/^module mod_shapiro$/;"	m
 mod_state	mod_state.F90	/^module mod_state$/;"	m
 mode_analysis	m_readinfile.F90	/^   integer mode_analysis /;"	v	module:m_readinfile
-model	m_model.F90	/^   subroutine model(/;"	s	module:m_model
+model	m_model.F90	/^subroutine model(/;"	s	module:m_model
 modpar	m_model.F90	/^   type modpar$/;"	t	module:m_model
 ndim	mod_dimensions.F90	/^   integer, parameter :: ndim=/;"	v	module:mod_dimensions
 nra	m_readinfile.F90	/^   integer nra /;"	v	module:m_readinfile
@@ -114,6 +116,7 @@ obsvar	m_readinfile.F90	/^   type(substate) obsvar$/;"	v	module:m_readinfile
 obsxloc	m_obsxloc.F90	/^subroutine obsxloc(/;"	s	module:m_obsxloc
 omega	m_model.F90	/^   type(modpar) :: alpha,omega$/;"	v	module:m_model
 outdir	m_readinfile.F90	/^   character(len=25) outdir$/;"	v	module:m_readinfile
+pi	m_model.F90	/^   real, parameter :: pi=/;"	v	module:m_model
 rd	m_readinfile.F90	/^   real rd /;"	v	module:m_readinfile
 readinfile	m_readinfile.F90	/^   subroutine readinfile$/;"	s	module:m_readinfile
 real_state_mult	mod_state.F90	/^   function real_state_mult(/;"	f	module:mod_state
@@ -138,18 +141,19 @@ sysnoise	main.F90	/^   type(state), allocatable :: sysnoise(/;"	v	program:main
 sysvar	m_readinfile.F90	/^   type(substate) sysvar$/;"	v	module:m_readinfile
 tecfld	m_tecfld.F90	/^subroutine tecfld(/;"	s	module:m_tecfld
 tfin	main.F90	/^   integer tfin /;"	v	program:main
-time	main.F90	/^   real time$/;"	v	program:main
+time	main.F90	/^   real time,/;"	v	program:main
 tini	main.F90	/^   integer tini /;"	v	program:main
 tloc	mod_observation.F90	/^      integer tloc$/;"	k	type:observation
 truncation	m_readinfile.F90	/^   real truncation /;"	v	module:m_readinfile
 u	m_model.F90	/^   type(sub/;"	v	module:m_model
+v	m_model.F90	/^      real v /;"	k	type:modpar
 var	main.F90	/^   type(state) var /;"	v	program:main
 var	mod_observation.F90	/^      real var$/;"	k	type:observation
 vback	m_model.F90	/^      real vback /;"	k	type:modpar
-vlin	m_model.F90	/^      real vlin /;"	k	type:modpar
 win	main.F90	/^   type(state), allocatable :: win(/;"	v	program:main
 winana	main.F90	/^   type(state), allocatable :: winana(/;"	v	program:main
 windowstat	m_windowstat.F90	/^subroutine windowstat(/;"	s	module:m_windowstat
 x	main.F90	/^   real, allocatable :: x(/;"	v	program:main
 xloc	mod_observation.F90	/^      integer xloc$/;"	k	type:observation
+xx	main.F90	/^   real time,xx$/;"	v	program:main
 y	main.F90	/^   real, allocatable :: y(/;"	v	program:main
