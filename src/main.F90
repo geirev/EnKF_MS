@@ -37,6 +37,7 @@ program main
    real, allocatable :: samples(:,:)       ! work array used when sampling in pseudo1D
 
 ! Spacew time statistics diagnostic variables
+   type(state), allocatable :: anaout(:)   ! ensemble average as a function of space and time
    type(state), allocatable :: mean(:)     ! ensemble average as a function of space and time
    type(state), allocatable :: stdt(:)     ! ensemble std dev as a function of space and time
    type(state), allocatable :: covo(:)     ! ensemble std dev as a function of space and time
@@ -84,6 +85,7 @@ program main
    if (lglobstat) allocate (full(0:nrt,nrens))
    allocate (win(0:nrw,nrens))
    allocate (winana(0:nrw))
+   allocate (anaout(0:nrt))
    allocate (mean(0:nrt))
    allocate (stdt(0:nrt))
    allocate (covo(0:nrt))
@@ -272,7 +274,11 @@ program main
 
 ! Compute ensemble mean and variance over current DA window
       call windowstat(win,nrw,nrens,mean(tini:tfin),stdt(tini:tfin))
+      anaout(tini:tfin)=winana
    enddo
+
+! Dumping reference solution from which we extract observations
+   call gnuplot('gnu_ref',anaout,nrt,outdir)
 
 ! Dumping mean and variance as function of space and time
    call gnuplot('gnu_ave',mean,nrt,outdir)

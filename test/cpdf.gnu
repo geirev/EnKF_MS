@@ -189,6 +189,12 @@ set output "aveo.pdf"
 plot 'gnu_aveo.dat' matrix nonuniform with image notitle,\
      'obsloco.dat' u 1:2 w points pt 6 pointsize 0.5 linecolor "black" notitle
 
+set title "Ocean reference"
+set output "refo.pdf"
+plot 'gnu_refo.dat' matrix nonuniform with image notitle,\
+     'obsloco.dat' u 1:2 w points pt 6 pointsize 0.5 linecolor "black" notitle
+
+
 set title "Ocean standard deviation"
 set output "stdo.pdf"
 plot 'gnu_stdo.dat' matrix nonuniform with image notitle,\
@@ -197,6 +203,11 @@ plot 'gnu_stdo.dat' matrix nonuniform with image notitle,\
 set title "Atmos average"
 set output "avea.pdf"
 plot 'gnu_avea.dat' matrix nonuniform with image notitle,\
+     'obsloca.dat' u 1:2 w points pt 6 pointsize 0.5 linecolor "black" notitle
+
+set title "Atmos reference"
+set output "refa.pdf"
+plot 'gnu_refa.dat' matrix nonuniform with image notitle,\
      'obsloca.dat' u 1:2 w points pt 6 pointsize 0.5 linecolor "black" notitle
 
 set output "stda.pdf"

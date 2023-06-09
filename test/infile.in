@@ -1,10 +1,10 @@
 #1.0 Version of infile.in ---------------------------------------------------------------------------------------
- 1                                ! Ensemble size
- 300                                  2048                              ! Number of timesteps
- 50                               ! Number of timesteps within a DA window
+ 1000                                ! Ensemble size
+ 200                                  2048                              ! Number of timesteps
+ 25                               ! Number of timesteps within a DA window
  T                                ! Printing of global statistics (note memory use)
 #1 Model variables ----------------------------------------------------------------------------------------------
- 30.0                             ! Smoothness of ocean model
+ 10.0                             ! Smoothness of ocean model
  10.0                             ! Smoothness of atmos model (60)
  0                                ! order of shapiro filter used every time step (0:8)
 #2 Prior statistics ---------------------------------------------------------------------------------------------
@@ -16,12 +16,12 @@
  0.3                              ! Measurement standard deviation for ocean measurements
  0.3                              ! Measurement standard deviation for atmos measurements
 #3 Measurements -------------------------------------------------------------------------------------------------
- 0                                ! Number of ocean observations
- 0                                ! Number of atmos observations
- 10                               ! Time of first batch of ocean observations
- 10                               ! Time of first batch of atmos observations
- 20                               ! Time between ocean observations
- 20                               ! Time between atmos observations
+ 0                               ! Number of ocean observations
+ 0                               ! Number of atmos observations
+ 50                               ! Time of first batch of ocean observations
+ 50                               ! Time of first batch of atmos observations
+ 5                                ! Time between ocean observations
+ 5                                ! Time between atmos observations
 #4 EnKF analysis ------------------------------------------------------------------------------------------------
  13                               ! EnKF analysis mode (Perturbed obs: 11 using R, 13 using E; SQRT 21, 23; skip analysis 00)
  0.99                             ! Use truncation in svd
@@ -31,17 +31,17 @@
  F                                ! Random rotation in SQRT schemes
  0 1.01                           ! Multiplicative inflation and inflation factor
  0 10.0 0.2                       ! Localization (0-none, 1-distance, 2-adaptive), obs_radius
- NEW1                             ! Output directory
+ Exp0                             ! Output directory
 #5 Model parameters ---------------------------------------------------------------------------------------------
  256.0                            ! Lxa            Pseudo-length of atmospheric domain
   -1.0                            ! alpha%d1       Diffusion coefficient for atmosphere (positive is diffusion)
-  -2.0                            ! alpha%d2       Biharmonic diffusion coefficient for atmosphere (negative is diffusion)
-   0.005                           ! alpha%oa       Ocean to atmosphere coupling
-   1.0                            ! alpha%vback    Background atmospheric advection velocity
+  -1.0                            ! alpha%d2       Biharmonic diffusion coefficient for atmosphere (negative is diffusion)
+   0.000                           ! alpha%oa       Ocean to atmosphere coupling
+   0.0                            ! alpha%vback    Background atmospheric advection velocity
    1.0                            ! alpha%v        Nonlinear atmospheric advection velocity coefficient
   32.0                            ! Lxo            Pseudo-length of ocean domain
   -1.0                            ! omega%d1       Diffusion coefficient for ocean
   -0.5                            ! omega%d2       Biharmonic diffusion coefficient for ocean
-   0.001                          ! omega%oa       Atmosphere to ocean coupling
-   1.0                            ! omega%vback    Background ocean advection velocity
+   0.000                          ! omega%oa       Atmosphere to ocean coupling
+   0.0                            ! omega%vback    Background ocean advection velocity
    1.0                            ! omega%v        Nonlinear ocean advection velocity coefficient

@@ -188,37 +188,47 @@ plot 'gnu_aveo.dat' matrix nonuniform with image notitle,\
      'obsloco.dat' u 1:2 w points pt 6 pointsize 0.5 linecolor "black" notitle
 pause -1
 
-#set title "Ocean standard deviation"
-#plot 'gnu_stdo.dat' matrix nonuniform with image notitle,\
-#     'obsloco.dat' u 1:2 w points pt 6 pointsize 0.5 linecolor "black" notitle
-#pause -1
+set title "Ocean reference"
+plot 'gnu_refo.dat' matrix nonuniform with image notitle,\
+     'obsloco.dat' u 1:2 w points pt 6 pointsize 0.5 linecolor "black" notitle
+pause -1
+
+set title "Ocean standard deviation"
+plot 'gnu_stdo.dat' matrix nonuniform with image notitle,\
+     'obsloco.dat' u 1:2 w points pt 6 pointsize 0.5 linecolor "black" notitle
+pause -1
 
 set title "Atmos average"
 plot 'gnu_avea.dat' matrix nonuniform with image notitle,\
      'obsloca.dat' u 1:2 w points pt 6 pointsize 0.5 linecolor "black" notitle
 pause -1
 
-#set title "Atmos standard deviation"
-#plot 'gnu_stda.dat' matrix nonuniform with image notitle,\
-#     'obsloca.dat' u 1:2 w points pt 6 pointsize 0.5 linecolor "black" notitle
-#pause -1
+set title "Atmos reference"
+plot 'gnu_refa.dat' matrix nonuniform with image notitle,\
+     'obsloca.dat' u 1:2 w points pt 6 pointsize 0.5 linecolor "black" notitle
+pause -1
 
-#set title "OceanObs-ocean covariance"
-#plot 'gnu_covoo.dat' matrix nonuniform with image notitle,\
-#     'obs.dat' u 1:2 w points pt 6 linecolor "black"  t "Observation"
-#pause -1
+set title "Atmos standard deviation"
+plot 'gnu_stda.dat' matrix nonuniform with image notitle,\
+     'obsloca.dat' u 1:2 w points pt 6 pointsize 0.5 linecolor "black" notitle
+pause -1
 
-#set title "OceanObs-atmos covariance"
-#plot 'gnu_covoa.dat' matrix nonuniform with image notitle,\
-#     'obs.dat' u 1:2 w points pt 6 linecolor "black" t "Observation"
-#pause -1
+set title "OceanObs-ocean covariance"
+plot 'gnu_covoo.dat' matrix nonuniform with image notitle,\
+     'obs.dat' u 1:2 w points pt 6 linecolor "black"  t "Observation"
+pause -1
 
-#set title "AtmosObs-atmos covariance"
-#plot 'gnu_covaa.dat' matrix nonuniform with image notitle,\
-#     'obs.dat' u 1:2 w points pt 6 linecolor "black" t "Observation"
-#pause -1
+set title "OceanObs-atmos covariance"
+plot 'gnu_covoa.dat' matrix nonuniform with image notitle,\
+     'obs.dat' u 1:2 w points pt 6 linecolor "black" t "Observation"
+pause -1
 
-#set title "AtmosObs-ocean covariance"
-#plot 'gnu_covao.dat' matrix nonuniform with image notitle,\
-#     'obs.dat' u 1:2 w points pt 6 linecolor "black" t "Observation"
-#pause -1
+set title "AtmosObs-atmos covariance"
+plot 'gnu_covaa.dat' matrix nonuniform with image notitle,\
+     'obs.dat' u 1:2 w points pt 6 linecolor "black" t "Observation"
+pause -1
+
+set title "AtmosObs-ocean covariance"
+plot 'gnu_covao.dat' matrix nonuniform with image notitle,\
+     'obs.dat' u 1:2 w points pt 6 linecolor "black" t "Observation"
+pause -1

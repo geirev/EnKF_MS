@@ -18,6 +18,7 @@ add_state	mod_state.F90	/^   function add_state(/;"	f	module:mod_state
 advection	m_model.F90	/^   integer advection$/;"	v	module:m_model
 alpha	m_model.F90	/^   type(modpar) :: alpha,/;"	v	module:m_model
 ana	main.F90	/^   type(state) ana /;"	v	program:main
+anaout	main.F90	/^   type(state), allocatable :: anaout(/;"	v	program:main
 assign_state	mod_state.F90	/^   subroutine assign_state(/;"	s	module:mod_state
 ave	main.F90	/^   type(state) ave /;"	v	program:main
 cov	main.F90	/^   type(state) cov(/;"	v	program:main

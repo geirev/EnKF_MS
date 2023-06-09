@@ -67,9 +67,6 @@ subroutine model(mem)
    complex :: lino(0:nx/2)
    complex :: lin1o(0:nx/2)
 
-!   complex :: xx=(2.0,3.00)
-!   complex :: yy=(2.0,3.00)
-!   print *,3.0*xx,xx*yy
 
    dt=1.0/16.0
    nrsteps=nint(dtout/dt)
