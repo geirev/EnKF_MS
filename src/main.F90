@@ -26,18 +26,16 @@ program main
 
    type(state), allocatable :: full(:,:)   ! The ensemble of realizations over the whole simulation
    type(state), allocatable :: win(:,:)    ! The ensemble of realizations over an assimilation window.
-   type(state), allocatable :: winana(:)   ! The analytical solution over an assimilation window.
+   type(state), allocatable :: winref(:)   ! The reference solution over an assimilation window.
    type(state), allocatable :: mem(:)      ! The ensemble of realizations
    type(state), allocatable :: sysnoise(:) ! The ensemble of sampled system noise updated every timestep
-   type(state) ana                         ! analytical solution
+   type(state) ref                         ! reference solution
    type(state) ave                         ! ensemble average
-   type(state) var                         ! ensemble variance
-   type(state) cov(2)                      ! ensemble covariance for two points
 
    real, allocatable :: samples(:,:)       ! work array used when sampling in pseudo1D
 
 ! Spacew time statistics diagnostic variables
-   type(state), allocatable :: anaout(:)   ! ensemble average as a function of space and time
+   type(state), allocatable :: refout(:)   ! ensemble average as a function of space and time
    type(state), allocatable :: mean(:)     ! ensemble average as a function of space and time
    type(state), allocatable :: stdt(:)     ! ensemble std dev as a function of space and time
    type(state), allocatable :: covo(:)     ! ensemble std dev as a function of space and time
@@ -57,7 +55,7 @@ program main
    real, allocatable :: D(:,:)             ! Innovations
    real, allocatable :: R(:,:)             ! Measurement error covariance matrix
    real, allocatable :: meanS(:)           ! Mean of predicted measurements
-   real, allocatable :: innov(:)           ! Mean innovation 
+   real, allocatable :: innov(:)           ! Mean innovation
 
 ! Shapiro filter variables
    real, allocatable :: x(:)               ! work array for shapiro filter (input)
@@ -69,7 +67,7 @@ program main
    integer tfin                            ! end   time of an assimilation window
    integer nrobs                           ! Total number of measurement per assimilation window
 
-   integer j,k,l,i
+   integer j,k,l,i,imda
    real time,xx
    real :: dxsamp=1.0
 
@@ -84,8 +82,8 @@ program main
 ! Now that we know all dimensions, allocate the main arrays
    if (lglobstat) allocate (full(0:nrt,nrens))
    allocate (win(0:nrw,nrens))
-   allocate (winana(0:nrw))
-   allocate (anaout(0:nrt))
+   allocate (winref(0:nrw))
+   allocate (refout(0:nrt))
    allocate (mean(0:nrt))
    allocate (stdt(0:nrt))
    allocate (covo(0:nrt))
@@ -122,15 +120,15 @@ program main
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! The true solution smooth pseudo random field drawn from  N(0,1,rh).
-   call pseudo1D(ana%ocean,nx,1,rh%ocean,dxsamp,nx)
-   call pseudo1D(ana%atmos,nx,1,rh%atmos,dxsamp,nx)
-   print *,'main: ana ok'
+   call pseudo1D(ref%ocean,nx,1,rh%ocean,dxsamp,nx)
+   call pseudo1D(ref%atmos,nx,1,rh%atmos,dxsamp,nx)
+   print *,'main: ref ok'
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! First guess solution stored in ave
    call pseudo1D(ave%ocean,nx,1,rh%ocean,dxsamp,nx)
    call pseudo1D(ave%atmos,nx,1,rh%atmos,dxsamp,nx)
-   ave=(ave + ana)*(1.0/sqrt(2.0))
+   ave=(ave + ref)*(1.0/sqrt(2.0))
    print *,'main: fg ok'
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -161,79 +159,69 @@ program main
 !      mem(1)%ocean(i) = cos(xx) + 0.1*cos(xx/16.0)*(1.0+2.0*sin(xx/16.0))
    enddo
 
-   nrobs=0
-   call ensemblemean(mem,ave,nrens)
-   call ensemblevariance(mem,ave,var,nrens)
-   call ensemblecovariance(mem,ave,cov,nrens)
-   call dumpsol(time,ana,ave,var,cov,nx,dx,obs,nrobs,mem,nrens,outdir,'I')
-
-   open(10,file='atmosin.dat')
-      do i=1,nx
-         write(10,'(3f15.7)')real(i),mem(1)%atmos(i)
-      enddo
-   close(10)
-
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Loop over assimilation windows
    print *,'main: start time stepping'
    do l=1,nrwindows                                   ! Integrate model over the assimilation window
-      winana(0)=ana                                   ! store reference solution at tini in winana
+      winref(0)=ref                                   ! store reference solution at tini in winref
       win(0,:)=mem(:)                                 ! store ensemble at tini in win
       tini=(l-1)*nrw                                  ! time at beginning of assimilation window
       tfin=l*nrw                                      ! time at end of assimilation window
       print '(a,i3.3,a,i5.5,a,i5.5)','DA window number ',l,' running from ',tini,' to ',tfin
-      do k=1,nrw                                      ! timestep loop over assimilation window
-         time=real((l-1)*nrw+k)
-         print '(a,f10.2,a,i3,a,i4,a,l1)','time= ',time,', window=',l,', timestep=',k
+
+! ESMDA steps
+      do imda=1,nmda
+
+! timestep loop over assimilation window
+         do k=1,nrw
+            time=real((l-1)*nrw+k)
+            print '(a,f10.2,a,i3,a,i4,a,l1)','time= ',time,', window=',l,', timestep=',k
 
 
-! Advection
-         do j=1,nrens
-            call model(mem(j))
-         enddo
-         if (nrens > 1) then
-            call model(ana)
-         else
-            ana=0.0
-         endif
-
-! System noise
-         if (sysvar%ocean > 0.0) then
-            call pseudo1D(samples,nx,nrens,rh%ocean,dx,nx)
-            if (samp_fix) call fixsample1D(samples,nx,nrens)
+! Advection over assimilation window
             do j=1,nrens
-               mem(j)%ocean=mem(j)%ocean+sqrt(2.0*sysvar%ocean*dtout)*samples(:,j)
+               call model(mem(j))
             enddo
-         endif
-         if (sysvar%atmos > 0.0) then
-            call pseudo1D(samples,nx,nrens,rh%atmos,dx,nx)
-            if (samp_fix) call fixsample1D(samples,nx,nrens)
-            do j=1,nrens
-               mem(j)%atmos=mem(j)%atmos+sqrt(2.0*sysvar%atmos*dtout)*samples(:,j)
-            enddo
-         endif
+            if ((nrens>1).and.(imda==1)) then
+               call model(ref)
+            endif
+
+! System noise (only for ES method where nmda=1)
+            if ((sysvar%ocean > 0.0).and.(nmda==1)) then
+               call pseudo1D(samples,nx,nrens,rh%ocean,dx,nx)
+               if (samp_fix) call fixsample1D(samples,nx,nrens)
+               do j=1,nrens
+                  mem(j)%ocean=mem(j)%ocean+sqrt(2.0*sysvar%ocean*dtout)*samples(:,j)
+               enddo
+            endif
+            if ((sysvar%atmos > 0.0).and.(nmda==1)) then
+               call pseudo1D(samples,nx,nrens,rh%atmos,dx,nx)
+               if (samp_fix) call fixsample1D(samples,nx,nrens)
+               do j=1,nrens
+                  mem(j)%atmos=mem(j)%atmos+sqrt(2.0*sysvar%atmos*dtout)*samples(:,j)
+               enddo
+            endif
 
 ! Shapiro filter in case we need it
-         if (nsh > 0) then
-            x=mem(j)%ocean
-            call  shfilt(nsh,sh,nx,x,1,y,1,nsh)
-            mem(j)%ocean=y
-            x=mem(j)%atmos
-            call  shfilt(nsh,sh,nx,x,1,y,1,nsh)
-            mem(j)%atmos=y
-         endif
+!           if (nsh > 0) then
+!              x=mem(j)%ocean
+!              call  shfilt(nsh,sh,nx,x,1,y,1,nsh)
+!              mem(j)%ocean=y
+!              x=mem(j)%atmos
+!              call  shfilt(nsh,sh,nx,x,1,y,1,nsh)
+!              mem(j)%atmos=y
+!           endif
 
 ! Store ensemble and reference solution for window
-         win(k,:)=mem(:)
-         winana(k)=ana
-      enddo
+            win(k,:)=mem(:)
+            if (imda == 1) winref(k)=ref
+         enddo
 
 
 ! Counting the number of measurements in the current DA window
-      nrobs=obscount(nrt,tini,tfin,obsotimes,obsatimes,nro,nra)
-      print *,'Total number of measurements in the DA window= ',nrobs
-
-      if ((nrens > 10) .and. (nrobs > 0) .and. (mode_analysis > 0)) then
+         nrobs=obscount(nrt,tini,tfin,obsotimes,obsatimes,nro,nra)
+         print *,'Total number of measurements in the DA window= ',nrobs
+         if (nrobs == 0) exit
 ! Assimilation step
          allocate(obs(nrobs))
          allocate(S(nrobs,nrens))
@@ -243,60 +231,41 @@ program main
          allocate(innov(nrobs))
          allocate(R(nrobs,nrobs))
 
-
 ! Assigning the active observations to obs and the predicted observations to S and setting up for analysis
-         call enkfprep(mem,obs,S,E,D,meanS,R,innov,winana,win,nrobs,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
-
-! Diagnostics at end of DA window
-         call ensemblemean(mem,ave,nrens)
-         call ensemblevariance(mem,ave,var,nrens)
-         call ensemblecovariance(mem,ave,cov,nrens)
-         call dumpsol(time,ana,ave,var,cov,nx,dx,obs,nrobs,mem,nrens,outdir,'F')
+         call enkfprep(mem,obs,S,E,D,meanS,R,innov,winref,win,nrobs,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
 
 ! ES update of DA window
          print '(a,i2)','Calling analysis with mode: ',mode_analysis
          call analysis(win, R, E, S, D, innov, ndim*(nrw+1), nrens, nrobs, .true., truncation, mode_analysis, &
-                        lrandrot, lupdate_randrot, lsymsqrt, inflate, infmult, 1)
+                     lrandrot, lupdate_randrot, lsymsqrt, inflate, infmult, 1)
 
-! Ensemble at end of DA window (used in continued integration)
-         mem(:)=win(nrw,:)
+! Ensemble at beginning of DA window (used in ESMDA)
+         mem(:)=win(1,:)
 
-! Diagnostics at end of DA window
-         call ensemblemean(mem,ave,nrens)
-         call ensemblevariance(mem,ave,var,nrens)
-         call ensemblecovariance(mem,ave,cov,nrens)
-         call dumpsol(time,ana,ave,var,cov,nx,dx,obs,nrobs,mem,nrens,outdir,'A')
          deallocate(obs,S,E,D,meanS,R,innov)
-      endif
+      enddo ! end loop over mda steps
+
+! Continue integration in next assimilation window from final value of current window
+      mem(:)=win(nrw,:)
 
 ! Only needed to compute space-time covariances
       if (lglobstat) full(tini:tfin,:)=win(0:nrw,:)
 
 ! Compute ensemble mean and variance over current DA window
       call windowstat(win,nrw,nrens,mean(tini:tfin),stdt(tini:tfin))
-      anaout(tini:tfin)=winana
-   enddo
+      refout(tini:tfin)=winref
+   enddo ! End loop over assimilation windows
 
-! Dumping reference solution from which we extract observations
-   call gnuplot('gnu_ref',anaout,nrt,outdir)
-
-! Dumping mean and variance as function of space and time
+! Dumping reference solution, mean and standard deviations for plotting
+   call gnuplot('gnu_ref',refout,nrt,outdir)
    call gnuplot('gnu_ave',mean,nrt,outdir)
    call gnuplot('gnu_std',stdt,nrt,outdir)
-
    if (lglobstat) then
       print *,'calling full covariance statistics'
       call covstat(full,nrt,nrens,mean,stdt,covo,cova,outdir)
       call gnuplot('gnu_covo',covo,nrt,outdir)
       call gnuplot('gnu_cova',cova,nrt,outdir)
-
    endif
-
-   open(10,file='atmosout.dat')
-      do i=1,nx
-         write(10,'(3f15.7)')real(i),mem(1)%atmos(i)
-      enddo
-   close(10)
 
 end program main
 

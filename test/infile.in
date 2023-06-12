@@ -3,7 +3,7 @@
  200                                  2048                              ! Number of timesteps
  25                               ! Number of timesteps within a DA window
  T                                ! Printing of global statistics (note memory use)
-#1 Model variables ----------------------------------------------------------------------------------------------
+#1 Exp1A variables ----------------------------------------------------------------------------------------------
  10.0                             ! Smoothness of ocean model
  10.0                             ! Smoothness of atmos model (60)
  0                                ! order of shapiro filter used every time step (0:8)
@@ -16,8 +16,8 @@
  0.3                              ! Measurement standard deviation for ocean measurements
  0.3                              ! Measurement standard deviation for atmos measurements
 #3 Measurements -------------------------------------------------------------------------------------------------
- 0                               ! Number of ocean observations
- 0                               ! Number of atmos observations
+ 20                              ! Number of ocean observations
+ 30                              ! Number of atmos observations
  50                               ! Time of first batch of ocean observations
  50                               ! Time of first batch of atmos observations
  5                                ! Time between ocean observations
@@ -31,17 +31,17 @@
  F                                ! Random rotation in SQRT schemes
  0 1.01                           ! Multiplicative inflation and inflation factor
  0 10.0 0.2                       ! Localization (0-none, 1-distance, 2-adaptive), obs_radius
- Exp0                             ! Output directory
-#5 Model parameters ---------------------------------------------------------------------------------------------
+ Exp1A4                           ! Output directory
+#5 Exp1A parameters ---------------------------------------------------------------------------------------------
  256.0                            ! Lxa            Pseudo-length of atmospheric domain
   -1.0                            ! alpha%d1       Diffusion coefficient for atmosphere (positive is diffusion)
   -1.0                            ! alpha%d2       Biharmonic diffusion coefficient for atmosphere (negative is diffusion)
-   0.000                           ! alpha%oa       Ocean to atmosphere coupling
+   0.003                           ! alpha%oa       Ocean to atmosphere coupling
    0.0                            ! alpha%vback    Background atmospheric advection velocity
    1.0                            ! alpha%v        Nonlinear atmospheric advection velocity coefficient
   32.0                            ! Lxo            Pseudo-length of ocean domain
   -1.0                            ! omega%d1       Diffusion coefficient for ocean
   -0.5                            ! omega%d2       Biharmonic diffusion coefficient for ocean
-   0.000                          ! omega%oa       Atmosphere to ocean coupling
+   0.003                          ! omega%oa       Atmosphere to ocean coupling
    0.0                            ! omega%vback    Background ocean advection velocity
    1.0                            ! omega%v        Nonlinear ocean advection velocity coefficient

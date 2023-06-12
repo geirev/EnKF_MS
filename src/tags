@@ -17,11 +17,8 @@ S	main.F90	/^   real, allocatable :: S(/;"	v	program:main
 add_state	mod_state.F90	/^   function add_state(/;"	f	module:mod_state
 advection	m_model.F90	/^   integer advection$/;"	v	module:m_model
 alpha	m_model.F90	/^   type(modpar) :: alpha,/;"	v	module:m_model
-ana	main.F90	/^   type(state) ana /;"	v	program:main
-anaout	main.F90	/^   type(state), allocatable :: anaout(/;"	v	program:main
 assign_state	mod_state.F90	/^   subroutine assign_state(/;"	s	module:mod_state
 ave	main.F90	/^   type(state) ave /;"	v	program:main
-cov	main.F90	/^   type(state) cov(/;"	v	program:main
 cova	main.F90	/^   type(state), allocatable :: cova(/;"	v	program:main
 covmodel	m_readinfile.F90	/^   character(len=8) covmodel /;"	v	module:m_readinfile
 covo	main.F90	/^   type(state), allocatable :: covo(/;"	v	program:main
@@ -44,6 +41,7 @@ fullcoroa	m_statistics.F90	/^real, allocatable :: fullcoroa(/;"	v	module:m_stati
 fullvar	m_statistics.F90	/^real, allocatable :: fullvar(/;"	v	module:m_statistics
 gnuplot	m_gnuplot.F90	/^subroutine gnuplot(/;"	s	module:m_gnuplot
 i	main.F90	/^   in/;"	v	program:main
+imda	main.F90	/^   integer j,k,l,i,imda$/;"	v	program:main
 inflate	m_readinfile.F90	/^   integer inflate /;"	v	module:m_readinfile
 infmult	m_readinfile.F90	/^   real infmult /;"	v	module:m_readinfile
 inivar	m_readinfile.F90	/^   type(substate) inivar$/;"	v	module:m_readinfile
@@ -87,6 +85,7 @@ mode_analysis	m_readinfile.F90	/^   integer mode_analysis /;"	v	module:m_readinf
 model	m_model.F90	/^subroutine model(/;"	s	module:m_model
 modpar	m_model.F90	/^   type modpar$/;"	t	module:m_model
 ndim	mod_dimensions.F90	/^   integer, parameter :: ndim=/;"	v	module:mod_dimensions
+nmda	m_readinfile.F90	/^   integer nmda /;"	v	module:m_readinfile
 nra	m_readinfile.F90	/^   integer nra /;"	v	module:m_readinfile
 nrens	m_readinfile.F90	/^   integer nrens /;"	v	module:m_readinfile
 nro	m_readinfile.F90	/^   integer nro /;"	v	module:m_readinfile
@@ -121,6 +120,8 @@ pi	m_model.F90	/^   real, parameter :: pi=/;"	v	module:m_model
 rd	m_readinfile.F90	/^   real rd /;"	v	module:m_readinfile
 readinfile	m_readinfile.F90	/^   subroutine readinfile$/;"	s	module:m_readinfile
 real_state_mult	mod_state.F90	/^   function real_state_mult(/;"	f	module:mod_state
+ref	main.F90	/^   type(state) ref /;"	v	program:main
+refout	main.F90	/^   type(state), allocatable :: refout(/;"	v	program:main
 rh	m_model.F90	/^   type(substate) rh$/;"	v	module:m_model
 samp_fix	m_readinfile.F90	/^   logical samp_fix$/;"	v	module:m_readinfile
 samples	main.F90	/^   real, allocatable :: samples(/;"	v	program:main
@@ -148,12 +149,11 @@ tloc	mod_observation.F90	/^      integer tloc$/;"	k	type:observation
 truncation	m_readinfile.F90	/^   real truncation /;"	v	module:m_readinfile
 u	m_model.F90	/^   type(sub/;"	v	module:m_model
 v	m_model.F90	/^      real v /;"	k	type:modpar
-var	main.F90	/^   type(state) var /;"	v	program:main
 var	mod_observation.F90	/^      real var$/;"	k	type:observation
 vback	m_model.F90	/^      real vback /;"	k	type:modpar
 win	main.F90	/^   type(state), allocatable :: win(/;"	v	program:main
-winana	main.F90	/^   type(state), allocatable :: winana(/;"	v	program:main
 windowstat	m_windowstat.F90	/^subroutine windowstat(/;"	s	module:m_windowstat
+winref	main.F90	/^   type(state), allocatable :: winref(/;"	v	program:main
 x	main.F90	/^   real, allocatable :: x(/;"	v	program:main
 xloc	mod_observation.F90	/^      integer xloc$/;"	k	type:observation
 xx	main.F90	/^   real time,xx$/;"	v	program:main

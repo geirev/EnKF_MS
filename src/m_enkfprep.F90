@@ -30,6 +30,7 @@ subroutine enkfprep(mem,obs,S,E,D,meanS,R,innov,winana,win,nrobs,lwin,tini,tfin,
 
    integer m,i,k,mm,m1,m2,j
 
+   real mdafac
    real tmpo(nro)
    real tmpa(nra)
    real, allocatable :: EEfield(:,:)
@@ -121,6 +122,10 @@ subroutine enkfprep(mem,obs,S,E,D,meanS,R,innov,winana,win,nrobs,lwin,tini,tfin,
    do m=1,nrobs
       print '(a,i5,tr1,a5,2i5,2f12.4)','measurements: ',m,obs(m)%observed,obs(m)%tloc,obs(m)%xloc,obs(m)%d,obs(m)%var
    enddo
+
+! ESMDA adjustment of measurement perturbations and error variance
+   mdafac=real(nmda)
+   E=sqrt(mdafac)*E
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Construct ensemble of measurements D=d+E

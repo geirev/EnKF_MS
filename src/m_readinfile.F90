@@ -21,6 +21,7 @@ module m_readinfile
    integer nra                           ! Number of atmos measurement per assimilation time
 
    integer nrens                         ! ensemble size
+   integer nmda                          ! Number of mda steps (1=ES)
    integer mode_analysis                 ! 1 standard, 2 fixed R
    logical samp_fix
    logical :: lupdate_randrot=.true.
@@ -43,7 +44,6 @@ module m_readinfile
    logical Rexact                        ! Use exact(true) or lowrank(false) R matrix
    real dx
 
-! Shapiro filter variables
    integer nsh
    real, allocatable :: sh(:)
 
@@ -136,13 +136,14 @@ module m_readinfile
          print *,'#4: error in infile.in'
          stop
       endif
+      read(10,*)nmda               ; print *,'nmda=        ',mode_analysis
       read(10,*)mode_analysis      ; print *,'mode_ana=    ',mode_analysis
-      read(10,*)truncation        ; print *,'truncation=  ',truncation
-      read(10,'(1x,a)')covmodel   ; print *,'covmodel=    ',trim(covmodel)
-      read(10,*)rd                ; print *,'rd      =    ',rd
-      read(10,'(1x,l1)')Rexact    ; print *,'Rexact=      ',Rexact
-      read(10,'(1x,l1)')lrandrot  ; print *,'lrandrot=    ',lrandrot
-      read(10,*)inflate,infmult   ; print *,'inflation=   ',inflate,infmult
+      read(10,*)truncation         ; print *,'truncation=  ',truncation
+      read(10,'(1x,a)')covmodel    ; print *,'covmodel=    ',trim(covmodel)
+      read(10,*)rd                 ; print *,'rd      =    ',rd
+      read(10,'(1x,l1)')Rexact     ; print *,'Rexact=      ',Rexact
+      read(10,'(1x,l1)')lrandrot   ; print *,'lrandrot=    ',lrandrot
+      read(10,*)inflate,infmult    ; print *,'inflation=   ',inflate,infmult
       read(10,*)local,obs_radius,obs_truncation; print *,'localization=',local,obs_radius,obs_truncation
       read(10,*)outdir            ; print '(tr3,a,a)',        'Output directory for storing results :',trim(outdir)
       call execute_command_line (cmd//outdir, exitstat=i)
@@ -176,8 +177,8 @@ module m_readinfile
    cpinfile='cp infile.in '//trim(outdir)
    call execute_command_line (trim(cpinfile), exitstat=i)
 
-   cpgnu='./p.sh > '//trim(outdir)//'/p.gnu'
-   call execute_command_line (trim(cpgnu), exitstat=i)
+!   cpgnu='./p.sh > '//trim(outdir)//'/p.gnu'
+!   call execute_command_line (trim(cpgnu), exitstat=i)
 
    cpgnu='cp c.gnu '//trim(outdir)
    call execute_command_line (trim(cpgnu), exitstat=i)

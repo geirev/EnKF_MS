@@ -182,38 +182,42 @@ set ylabel "Time index" offset 1.0,0
 
 #set terminal qt 0 position 0,0  size 800,1000 noraise
 #set terminal pdfcairo enhanced font  "Arial,30" size 10in,7in lw 1.0 rounded
-set terminal pdfcairo enhanced font  "Arial,30" size 10in,13in lw 1.0 rounded
+set terminal pdfcairo enhanced font  "Arial,30" size 10in,8in lw 1.0 rounded
 
+set cbrange [-4:4]
 set title "Ocean average" offset 0,-0.5  font "Arial,40"
 set output "aveo.pdf"
 plot 'gnu_aveo.dat' matrix nonuniform with image notitle,\
-     'obsloco.dat' u 1:2 w points pt 6 pointsize 0.5 linecolor "black" notitle
+     'obsloco.dat' u 1:2 w points pt 6 pointsize 0.25 linecolor "black" notitle
 
 set title "Ocean reference"
 set output "refo.pdf"
 plot 'gnu_refo.dat' matrix nonuniform with image notitle,\
-     'obsloco.dat' u 1:2 w points pt 6 pointsize 0.5 linecolor "black" notitle
-
-
-set title "Ocean standard deviation"
-set output "stdo.pdf"
-plot 'gnu_stdo.dat' matrix nonuniform with image notitle,\
-     'obsloco.dat' u 1:2 w points pt 6 pointsize 0.5 linecolor "black" notitle
+     'obsloco.dat' u 1:2 w points pt 6 pointsize 0.25 linecolor "black" notitle
 
 set title "Atmos average"
 set output "avea.pdf"
 plot 'gnu_avea.dat' matrix nonuniform with image notitle,\
-     'obsloca.dat' u 1:2 w points pt 6 pointsize 0.5 linecolor "black" notitle
+     'obsloca.dat' u 1:2 w points pt 6 pointsize 0.25 linecolor "black" notitle
 
 set title "Atmos reference"
 set output "refa.pdf"
 plot 'gnu_refa.dat' matrix nonuniform with image notitle,\
-     'obsloca.dat' u 1:2 w points pt 6 pointsize 0.5 linecolor "black" notitle
+     'obsloca.dat' u 1:2 w points pt 6 pointsize 0.25 linecolor "black" notitle
+
+set cbrange [0:2]
+
+set title "Ocean standard deviation"
+set output "stdo.pdf"
+plot 'gnu_stdo.dat' matrix nonuniform with image notitle,\
+     'obsloco.dat' u 1:2 w points pt 6 pointsize 0.25 linecolor "black" notitle
 
 set output "stda.pdf"
 set title "Atmos standard deviation"
 plot 'gnu_stda.dat' matrix nonuniform with image notitle,\
-     'obsloca.dat' u 1:2 w points pt 6 pointsize 0.5 linecolor "black" notitle
+     'obsloca.dat' u 1:2 w points pt 6 pointsize 0.25 linecolor "black" notitle
+
+set cbrange [-1:1]
 
 set output "corOo.pdf"
 set title "OceanObs-ocean correlation"
