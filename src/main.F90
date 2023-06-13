@@ -40,6 +40,8 @@ program main
    type(state), allocatable :: stdt(:)     ! ensemble std dev as a function of space and time
    type(state), allocatable :: covo(:)     ! ensemble std dev as a function of space and time
    type(state), allocatable :: cova(:)     ! ensemble std dev as a function of space and time
+   type(substate), allocatable :: rmse(:)  ! time series of rmse values (mean - referece)
+   type(substate), allocatable :: rmss(:)  ! time series of rms std values 
 
 ! Observation location variables
    integer, allocatable :: obsoloc(:)      ! location of ocean observations in space
@@ -91,6 +93,8 @@ program main
    allocate (mem(nrens))
    allocate (sysnoise(nrens))
    allocate (samples(nx,nrens))
+   allocate (rmse(0:nrt))
+   allocate (rmss(0:nrt))
 
    allocate (obsoloc(nro))
    allocate (obsaloc(nra))
@@ -255,6 +259,18 @@ program main
       call windowstat(win,nrw,nrens,mean(tini:tfin),stdt(tini:tfin))
       refout(tini:tfin)=winref
    enddo ! End loop over assimilation windows
+
+! Compute root-mean-squared errors and std. dev.
+   do k=0,nrt
+      rmse(k)=sqrt(average((mean(k)-refout(k))*(mean(k)-refout(k))))
+      rmss(k)=sqrt(average(stdt(k)*stdt(k)))
+   enddo
+   open(10,file=trim(outdir)//'/rmse.dat')
+      do k=0,nrt
+         write(10,'(i5,1024g12.4)')k,rmse(k)%Atmos,rmse(k)%Ocean,rmss(k)%Atmos,rmss(k)%Ocean
+      enddo
+   close(10)
+
 
 ! Dumping reference solution, mean and standard deviations for plotting
    call gnuplot('gnu_ref',refout,nrt,outdir)

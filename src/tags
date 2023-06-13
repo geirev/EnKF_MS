@@ -19,6 +19,7 @@ advection	m_model.F90	/^   integer advection$/;"	v	module:m_model
 alpha	m_model.F90	/^   type(modpar) :: alpha,/;"	v	module:m_model
 assign_state	mod_state.F90	/^   subroutine assign_state(/;"	s	module:mod_state
 ave	main.F90	/^   type(state) ave /;"	v	program:main
+average_state	mod_state.F90	/^   function average_state(/;"	f	module:mod_state
 cova	main.F90	/^   type(state), allocatable :: cova(/;"	v	program:main
 covmodel	m_readinfile.F90	/^   character(len=8) covmodel /;"	v	module:m_readinfile
 covo	main.F90	/^   type(state), allocatable :: covo(/;"	v	program:main
@@ -123,6 +124,8 @@ real_state_mult	mod_state.F90	/^   function real_state_mult(/;"	f	module:mod_sta
 ref	main.F90	/^   type(state) ref /;"	v	program:main
 refout	main.F90	/^   type(state), allocatable :: refout(/;"	v	program:main
 rh	m_model.F90	/^   type(substate) rh$/;"	v	module:m_model
+rmse	main.F90	/^   type(substate), allocatable :: rmse(/;"	v	program:main
+rmss	main.F90	/^   type(substate), allocatable :: rmss(/;"	v	program:main
 samp_fix	m_readinfile.F90	/^   logical samp_fix$/;"	v	module:m_readinfile
 samples	main.F90	/^   real, allocatable :: samples(/;"	v	program:main
 set_random_seed2	m_set_random_seed2.F90	/^subroutine set_random_seed2$/;"	s	module:m_set_random_seed2
@@ -131,6 +134,7 @@ shfact	mod_shapiro.F90	/^subroutine shfact(/;"	s	module:mod_shapiro
 shfilt	mod_shapiro.F90	/^subroutine shfilt(/;"	s	module:mod_shapiro
 shfilt2D	mod_shapiro.F90	/^subroutine shfilt2D(/;"	s	module:mod_shapiro
 sqrt_state	mod_state.F90	/^   function sqrt_state(/;"	f	module:mod_state
+sqrt_substate	mod_state.F90	/^   function sqrt_substate(/;"	f	module:mod_state
 state	mod_state.F90	/^   type state$/;"	t	module:mod_state
 state_real_mult	mod_state.F90	/^   function state_real_mult(/;"	f	module:mod_state
 state_state_div	mod_state.F90	/^   function state_state_div(/;"	f	module:mod_state

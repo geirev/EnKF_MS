@@ -1,7 +1,6 @@
 build
 test/*
 !test/infile.in
-!test/p.gnu
-!test/p.sh
+!test/rms.gnu
 !test/c.gnu
 !test/cpdf.gnu
