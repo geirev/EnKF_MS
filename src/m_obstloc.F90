@@ -12,7 +12,7 @@ subroutine obstloc(nrt,t0,obsdt,obstimes)
       tt=t0+(i-1)*obsdt
       if (tt > nrt) exit
       obstimes(i)=tt
-      print *,'obs times: ',obstimes(i)
+!      print *,'obs times: ',obstimes(i)
    enddo
 end subroutine
 end module

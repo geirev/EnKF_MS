@@ -5,6 +5,7 @@ program main
    use m_readinfile                        ! Reading infile.in
    use m_set_random_seed2                  ! Sets new random seed unless 'seed.dat' exists
    use m_model                             ! Model time stepping
+   use m_frobenius                         ! Frobenius norm between two matrices
    use m_pseudo1D                          ! Samples pseudo-random fields in 1-D
    use m_fixsample1D                       ! Ensures zero mean and unit variance of sampled ensembles
    use m_obsxloc                           ! Computes x position of measurements
@@ -16,16 +17,24 @@ program main
    use m_ensemblevariance                  ! Compute ensemble variance at current time (from mem)
    use m_ensemblecovariance                ! Compute ensemble covariance at current time (from mem)
    use m_enkfprep                          ! Setting up predicted measurements and matrices for analysis
+   use m_prepY                             ! Setting up predicted measurements for IES analysis
+   use m_scaling                           ! Setting up predicted measurements for IES analysis
+   use m_prepD                             ! Setting up predicted measurements for IES analysis
+   use m_pertE                             ! Setting up predicted measurements for IES analysis
    use m_random                            ! Generate random normal numbers
    use m_tecfld                            ! Tecplot output (not used)
    use mod_shapiro                         ! Shapiro filter in case it is needed
    use m_windowstat                        ! Compute ensemble mean and variance in a DA window (from win)
    use m_covstat                           ! Computes space time covariances in case you have a lot of memory
    use m_gnuplot                           ! Generate space time plots for plotting in gnuplot (c.gnu)
+   use m_ies
+   use, intrinsic :: omp_lib
+   use m_ansi_colors
    implicit none
 
    type(state), allocatable :: full(:,:)   ! The ensemble of realizations over the whole simulation
    type(state), allocatable :: win(:,:)    ! The ensemble of realizations over an assimilation window.
+   type(state), allocatable :: win0(:,:)   ! Initial ensemble of realizations over an assimilation window.
    type(state), allocatable :: winref(:)   ! The reference solution over an assimilation window.
    type(state), allocatable :: mem(:)      ! The ensemble of realizations
    type(state), allocatable :: sysnoise(:) ! The ensemble of sampled system noise updated every timestep
@@ -41,7 +50,7 @@ program main
    type(state), allocatable :: covo(:)     ! ensemble std dev as a function of space and time
    type(state), allocatable :: cova(:)     ! ensemble std dev as a function of space and time
    type(substate), allocatable :: rmse(:)  ! time series of rmse values (mean - referece)
-   type(substate), allocatable :: rmss(:)  ! time series of rms std values 
+   type(substate), allocatable :: rmss(:)  ! time series of rms std values
 
 ! Observation location variables
    integer, allocatable :: obsoloc(:)      ! location of ocean observations in space
@@ -52,25 +61,26 @@ program main
    type(observation), allocatable :: obs(:)! Stores all observation information in a DA window
 
 ! EnKF analysis variables
+   real, allocatable :: Y(:,:)             ! Predicted meaurements
    real, allocatable :: S(:,:)             ! Predicted meaurements anomalies
    real, allocatable :: E(:,:)             ! Measurement perturbations
    real, allocatable :: D(:,:)             ! Innovations
+   real, allocatable :: DA(:,:)            ! Innovations
    real, allocatable :: R(:,:)             ! Measurement error covariance matrix
    real, allocatable :: meanS(:)           ! Mean of predicted measurements
    real, allocatable :: innov(:)           ! Mean innovation
-
-! Shapiro filter variables
-   real, allocatable :: x(:)               ! work array for shapiro filter (input)
-   real, allocatable :: y(:)               ! work array for shapiro filter (output)
+   real, allocatable :: W(:,:)             ! ies iteration matrix
+   real, allocatable :: XX(:,:)            ! The XX matrix :-)
 
 
 ! other variables
    integer tini                            ! start time of an assimilation window
    integer tfin                            ! end   time of an assimilation window
    integer nrobs                           ! Total number of measurement per assimilation window
+   character(len=10) tag10
 
-   integer j,k,l,i,imda
-   real time,xx
+   integer j,k,l,iter,ldw
+   real time
    real :: dxsamp=1.0
 
    call readinfile()
@@ -84,6 +94,7 @@ program main
 ! Now that we know all dimensions, allocate the main arrays
    if (lglobstat) allocate (full(0:nrt,nrens))
    allocate (win(0:nrw,nrens))
+   allocate (win0(0:nrw,nrens))
    allocate (winref(0:nrw))
    allocate (refout(0:nrt))
    allocate (mean(0:nrt))
@@ -96,19 +107,17 @@ program main
    allocate (rmse(0:nrt))
    allocate (rmss(0:nrt))
 
+   allocate (W(nrens,nrens))
+   allocate (XX(nrens,nrens))
+
    allocate (obsoloc(nro))
    allocate (obsaloc(nra))
    allocate (obsotimes(nrt))
    allocate (obsatimes(nrt))
 
-! Shapiro filter
-   if (nsh > 0) then
-      allocate (x(nx))
-      allocate (y(nx))
-   endif
-
    time=0.0
 
+!   call omp_set_num_threads(10)
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Uniformly distributed measurements for ocean and atmosphere in space and time
    print *,'Ocean observation locations'
@@ -155,99 +164,154 @@ program main
    enddo
    print *,'main: ensemble ok'
 
-! Initialization for testing standard KS case
-   do i=1,nx
-      xx=real(i-1)*(lxa/real(nx))
-!      mem(1)%atmos(i) = cos(xx) + 0.1*cos(xx/16.0)*(1.0+2.0*sin(xx/16.0))
-      xx=real(i-1)*(lxo/real(nx))
-!      mem(1)%ocean(i) = cos(xx) + 0.1*cos(xx/16.0)*(1.0+2.0*sin(xx/16.0))
-   enddo
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Loop over assimilation windows
-   print *,'main: start time stepping'
+   print '(a)','---------------------------------------------------------------------------'
    do l=1,nrwindows                                   ! Integrate model over the assimilation window
-      winref(0)=ref                                   ! store reference solution at tini in winref
-      win(0,:)=mem(:)                                 ! store ensemble at tini in win
       tini=(l-1)*nrw                                  ! time at beginning of assimilation window
       tfin=l*nrw                                      ! time at end of assimilation window
+      print *
+      print '(a)','---------------------------------------------------------------------------'
       print '(a,i3.3,a,i5.5,a,i5.5)','DA window number ',l,' running from ',tini,' to ',tfin
-
-! ESMDA steps
-      do imda=1,nmda
-
-! timestep loop over assimilation window
-         do k=1,nrw
-            time=real((l-1)*nrw+k)
-            print '(a,f10.2,a,i3,a,i4,a,l1)','time= ',time,', window=',l,', timestep=',k
-
-
-! Advection over assimilation window
-            do j=1,nrens
-               call model(mem(j))
-            enddo
-            if ((nrens>1).and.(imda==1)) then
-               call model(ref)
-            endif
-
-! System noise (only for ES method where nmda=1)
-            if ((sysvar%ocean > 0.0).and.(nmda==1)) then
-               call pseudo1D(samples,nx,nrens,rh%ocean,dx,nx)
-               if (samp_fix) call fixsample1D(samples,nx,nrens)
-               do j=1,nrens
-                  mem(j)%ocean=mem(j)%ocean+sqrt(2.0*sysvar%ocean*dtout)*samples(:,j)
-               enddo
-            endif
-            if ((sysvar%atmos > 0.0).and.(nmda==1)) then
-               call pseudo1D(samples,nx,nrens,rh%atmos,dx,nx)
-               if (samp_fix) call fixsample1D(samples,nx,nrens)
-               do j=1,nrens
-                  mem(j)%atmos=mem(j)%atmos+sqrt(2.0*sysvar%atmos*dtout)*samples(:,j)
-               enddo
-            endif
-
-! Shapiro filter in case we need it
-!           if (nsh > 0) then
-!              x=mem(j)%ocean
-!              call  shfilt(nsh,sh,nx,x,1,y,1,nsh)
-!              mem(j)%ocean=y
-!              x=mem(j)%atmos
-!              call  shfilt(nsh,sh,nx,x,1,y,1,nsh)
-!              mem(j)%atmos=y
-!           endif
-
-! Store ensemble and reference solution for window
-            win(k,:)=mem(:)
-            if (imda == 1) winref(k)=ref
-         enddo
-
+      print *
 
 ! Counting the number of measurements in the current DA window
-         nrobs=obscount(nrt,tini,tfin,obsotimes,obsatimes,nro,nra)
-         print *,'Total number of measurements in the DA window= ',nrobs
-         if (nrobs == 0) exit
-! Assimilation step
+      nrobs=obscount(nrt,tini,tfin,obsotimes,obsatimes,nro,nra)
+      print '(tr5,a,i5)','main: Total number of measurements in the DA window= ',nrobs
+      print *
+
+! Reference solution over assimilation window stored in refout
+      print '(tr5,a)','main: Reference-model integration'
+      winref(0)=ref
+      do k=1,nrw
+         call model(ref)
+         winref(k)=ref
+      enddo
+      refout(tini:tfin)=winref
+
+! prior ensemble integration over assimilation window
+      win(0,:)=mem(:)                                 ! store ensemble at tini in win
+      print '(tr5,a,i3,a,f10.2,a,i3)','main: prior ensemble simulation:  window=',l
+!$OMP PARALLEL DO
+      do j=1,nrens
+         do k=1,nrw
+            call model(mem(j))
+            win(k,j)=mem(j)
+         enddo
+      enddo
+!$OMP END PARALLEL DO
+      win0=win ! Store prior ensemble over window for IES algorithm as win=win0*X
+
+      if (nrobs > 0) then
+! Allocate DA variables
          allocate(obs(nrobs))
+         allocate(Y(nrobs,nrens))
          allocate(S(nrobs,nrens))
          allocate(E(nrobs,nrens))
+         allocate(DA(nrobs,nrens))
          allocate(D(nrobs,nrens))
          allocate(meanS(nrobs))
          allocate(innov(nrobs))
          allocate(R(nrobs,nrobs))
 
-! Assigning the active observations to obs and the predicted observations to S and setting up for analysis
-         call enkfprep(mem,obs,S,E,D,meanS,R,innov,winref,win,nrobs,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
+! ESMDA steps or IES iteration
+         W=0.0
+         winref=refout(tini:tfin)
 
-! ES update of DA window
-         print '(a,i2)','Calling analysis with mode: ',mode_analysis
-         call analysis(win, R, E, S, D, innov, ndim*(nrw+1), nrens, nrobs, .true., truncation, mode_analysis, &
-                     lrandrot, lupdate_randrot, lsymsqrt, inflate, infmult, 1)
+! Generate the observations
+         print '(tr5,a)','main: -> Calling prepD to get DA'
+         if (.not.oldana) then
+            call prepD(obs,DA,winref,nrobs,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes,iter)
+         endif
 
-! Ensemble at beginning of DA window (used in ESMDA)
-         mem(:)=win(1,:)
+         do iter=1,nmda
+            if (oldana) then
+               print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling enkf preprep'
+               ! Returns all matrices UNSCALED by sqrt(nrens-1) for use in analysis.F90
+               ! Note that it also returns the full innovation D=d+E-Y
+               call enkfprep(mem,obs,Y,S,E,D,meanS,R,innov,winref,win,nrobs,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
+               ! Compute innovation D'=D-HA
+!               print *,'oldana D:'
+!               print '(5f10.4)',D(1:5,1:5)
+!               print *,'oldana Y:'
+!               print '(5f10.4)',Y(1:5,1:5)
+                D=D-Y
 
-         deallocate(obs,S,E,D,meanS,R,innov)
-      enddo ! end loop over mda steps
+               print '(tr5,a,2(i3,a))','main: iter=',iter,' -> Calling analysis with mode: ',mode_analysis
+               call analysis(win, R, E, S, D, innov, ndim*(nrw+1), nrens, nrobs, .true., truncation, mode_analysis, &
+                           lrandrot, lupdate_randrot, lsymsqrt, inflate, infmult, 1)
+            else
+               if (((cmethod(1:3) == 'IES').and.(iter==1)).or.(cmethod(1:3) == 'MDA')) then
+
+                  print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling pertE and computing D=DA+E'
+                  call pertE(E,nrobs,l   ,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
+                  if (cmethod(1:3) == 'MDA') E=sqrt(real(nmda))*E
+                  print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling scaling of D'
+                  D=DA+E
+                  call scaling(D,E,nrobs,nrens)
+               endif
+
+               print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling prepY'
+               call prepY(Y,win,nrobs,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
+
+               print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling scaling of Y'
+               call scaling(Y,E,nrobs,nrens)
+
+!               print *,'ies scheme D:'
+!               print '(5f10.4)',D(1:5,1:5)
+!               print *,'ies scheme Y:'
+!               print '(5f10.4)',Y(1:5,1:5)
+
+               print '(tr5,a,2(i3,a))','main: iter=',iter,' -> Calling ies with mode: ',mode_analysis
+               if (cmethod(1:3) == 'MDA') W=0.0
+               ! Passing the unscaled (by sqrt(nrens-1)) predicted measurement Y and the unscaled perturbed measurements D
+               XX=W
+               call ies(Y,D,W,nrens,nrobs,steplength,mode_analysis)
+               if ((iter > 1).and.(cmethod(1:3) == 'IES')) then
+                  write(tag10,'(f10.4)')frobenius(XX-W,nrens,nrens)
+                  print '(tr5,a,i3,3a)','main: iter=',iter,' -> ',color("wdiff=",c_green),color(tag10,c_green)
+               endif
+
+! XX = I + W/sqrt(N-1)
+               XX=W/sqrt(real(nrens-1))
+               do j=1,nrens
+                  XX(j,j)=XX(j,j)+1.0
+               enddo
+!               print '(a,i3,a)','main: iter=',iter,' -> IES XX:'
+!               print '(10f13.4)',XX(1:10,1:10)
+
+! Window update
+               write(*,'(tr5,a,i3,a)',advance='no')'main: iter=',iter,' -> Ensemble update'
+               if (iter==nmda) then
+                  ldw=ndim*(nrw+1)
+                  call dgemm('N','N',ldw,nrens,nrens,1.0,win0,ldw,XX,nrens,0.0,win,ldw)
+               else
+                  ldw=ndim
+                  call dgemm('N','N',ldw,nrens,nrens,1.0,win0(0,:),ldw,XX,nrens,0.0,win(0,:),ldw)
+               endif
+               print '(a,i3,a)','..... done'
+            endif
+
+! timestep loop over assimilation window
+            if (iter < nmda) then
+               write(*,'(tr5,a,i3,a,i3,i5,a,i5)',advance='no')'main: iter=',iter,' -> post-update-sim: window=',l,tini,'->',tfin
+               mem(:)=win(0,:)
+!$OMP PARALLEL DO
+               do j=1,nrens
+                  do k=1,nrw
+                     call model(mem(j))
+                     win(k,j)=mem(j)
+                  enddo
+               enddo
+!$OMP END PARALLEL DO
+               print '(a,i3,a)','..... done'
+               print *
+            endif
+            if (cmethod(1:3)=="MDA") win0=win
+         enddo ! end loop over mda steps
+         deallocate(obs,Y,S,E,D,DA,meanS,R,innov)
+      endif
 
 ! Continue integration in next assimilation window from final value of current window
       mem(:)=win(nrw,:)
@@ -257,7 +321,6 @@ program main
 
 ! Compute ensemble mean and variance over current DA window
       call windowstat(win,nrw,nrens,mean(tini:tfin),stdt(tini:tfin))
-      refout(tini:tfin)=winref
    enddo ! End loop over assimilation windows
 
 ! Compute root-mean-squared errors and std. dev.

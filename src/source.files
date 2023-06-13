@@ -1,12 +1,15 @@
 F90SOURCE = \
 	main.F90\
+	m_ansi_colors.F90\
 	m_covstat.F90\
 	m_dumpsol.F90\
 	m_enkfprep.F90\
 	m_ensemblecovariance.F90\
 	m_ensemblemean.F90\
 	m_ensemblevariance.F90\
+	m_frobenius.F90\
 	m_gnuplot.F90\
+	m_ies.F90\
 	m_model.F90\
 	m_obscount.F90\
 	m_obspoints.F90\
@@ -16,7 +19,11 @@ F90SOURCE = \
 	mod_observation.F90\
 	mod_shapiro.F90\
 	mod_state.F90\
+	m_pertE.F90\
+	m_prepD.F90\
+	m_prepY.F90\
 	m_readinfile.F90\
+	m_scaling.F90\
 	m_set_random_seed2.F90\
 	m_statistics.F90\
 	m_tecfld.F90\

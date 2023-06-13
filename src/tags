@@ -8,18 +8,36 @@
 Atmos	mod_state.F90	/^      real Atmos$/;"	k	type:substate
 Atmos	mod_state.F90	/^      real Atmos(/;"	k	type:state
 D	main.F90	/^   real, allocatable :: D(/;"	v	program:main
+DA	main.F90	/^   real, allocatable :: DA(/;"	v	program:main
 E	main.F90	/^   real, allocatable :: E(/;"	v	program:main
 Ocean	mod_state.F90	/^      real Ocean$/;"	k	type:substate
 Ocean	mod_state.F90	/^      real Ocean(/;"	k	type:state
 R	main.F90	/^   real, allocatable :: R(/;"	v	program:main
 Rexact	m_readinfile.F90	/^   logical Rexact /;"	v	module:m_readinfile
 S	main.F90	/^   real, allocatable :: S(/;"	v	program:main
+W	main.F90	/^   real, allocatable :: W(/;"	v	program:main
+XX	main.F90	/^   real, allocatable :: XX(/;"	v	program:main
+Y	main.F90	/^   real, allocatable :: Y(/;"	v	program:main
 add_state	mod_state.F90	/^   function add_state(/;"	f	module:mod_state
 advection	m_model.F90	/^   integer advection$/;"	v	module:m_model
 alpha	m_model.F90	/^   type(modpar) :: alpha,/;"	v	module:m_model
 assign_state	mod_state.F90	/^   subroutine assign_state(/;"	s	module:mod_state
 ave	main.F90	/^   type(state) ave /;"	v	program:main
 average_state	mod_state.F90	/^   function average_state(/;"	f	module:mod_state
+c_black	m_ansi_colors.F90	/^  character(len=*), parameter :: c_black /;"	v	module:m_ansi_colors
+c_blue	m_ansi_colors.F90	/^  character(len=*), parameter :: c_blue /;"	v	module:m_ansi_colors
+c_clear	m_ansi_colors.F90	/^  character(len=*), parameter :: c_clear /;"	v	module:m_ansi_colors
+c_cyan	m_ansi_colors.F90	/^  character(len=*), parameter :: c_cyan /;"	v	module:m_ansi_colors
+c_end	m_ansi_colors.F90	/^  character(len=1), parameter :: c_end /;"	v	module:m_ansi_colors
+c_esc	m_ansi_colors.F90	/^  character(len=1), parameter :: c_esc /;"	v	module:m_ansi_colors
+c_green	m_ansi_colors.F90	/^  character(len=*), parameter :: c_green /;"	v	module:m_ansi_colors
+c_magenta	m_ansi_colors.F90	/^  character(len=*), parameter :: c_magenta /;"	v	module:m_ansi_colors
+c_red	m_ansi_colors.F90	/^  character(len=*), parameter :: c_red /;"	v	module:m_ansi_colors
+c_start	m_ansi_colors.F90	/^  character(len=2), parameter :: c_start /;"	v	module:m_ansi_colors
+c_white	m_ansi_colors.F90	/^  character(len=*), parameter :: c_white /;"	v	module:m_ansi_colors
+c_yellow	m_ansi_colors.F90	/^  character(len=*), parameter :: c_yellow /;"	v	module:m_ansi_colors
+cmethod	m_readinfile.F90	/^   character(len=3) cmethod /;"	v	module:m_readinfile
+color	m_ansi_colors.F90	/^  function color(/;"	f	module:m_ansi_colors
 cova	main.F90	/^   type(state), allocatable :: cova(/;"	v	program:main
 covmodel	m_readinfile.F90	/^   character(len=8) covmodel /;"	v	module:m_readinfile
 covo	main.F90	/^   type(state), allocatable :: covo(/;"	v	program:main
@@ -35,21 +53,23 @@ enkfprep	m_enkfprep.F90	/^subroutine enkfprep(/;"	s	module:m_enkfprep
 ensemblecovariance	m_ensemblecovariance.F90	/^subroutine ensemblecovariance(/;"	s	module:m_ensemblecovariance
 ensemblemean	m_ensemblemean.F90	/^subroutine ensemblemean(/;"	s	module:m_ensemblemean
 ensemblevariance	m_ensemblevariance.F90	/^subroutine ensemblevariance(/;"	s	module:m_ensemblevariance
+frobenius	m_frobenius.F90	/^real function frobenius(/;"	f	module:m_frobenius
 full	main.F90	/^   type(state), allocatable :: full(/;"	v	program:main
 fullave	m_statistics.F90	/^real, allocatable :: fullave(/;"	v	module:m_statistics
 fullcor	m_statistics.F90	/^real, allocatable :: fullcor(/;"	v	module:m_statistics
 fullcoroa	m_statistics.F90	/^real, allocatable :: fullcoroa(/;"	v	module:m_statistics
 fullvar	m_statistics.F90	/^real, allocatable :: fullvar(/;"	v	module:m_statistics
 gnuplot	m_gnuplot.F90	/^subroutine gnuplot(/;"	s	module:m_gnuplot
-i	main.F90	/^   in/;"	v	program:main
-imda	main.F90	/^   integer j,k,l,i,imda$/;"	v	program:main
+ies	m_ies.F90	/^subroutine ies(/;"	s	module:m_ies
 inflate	m_readinfile.F90	/^   integer inflate /;"	v	module:m_readinfile
 infmult	m_readinfile.F90	/^   real infmult /;"	v	module:m_readinfile
 inivar	m_readinfile.F90	/^   type(substate) inivar$/;"	v	module:m_readinfile
 innov	main.F90	/^   real, allocatable :: innov(/;"	v	program:main
+iter	main.F90	/^   integer j,k,l,iter,/;"	v	program:main
 j	main.F90	/^   integer j,/;"	v	program:main
 k	main.F90	/^   integer j,k,/;"	v	program:main
 l	main.F90	/^   integer j,k,l,/;"	v	program:main
+ldw	main.F90	/^   integer j,k,l,iter,ldw$/;"	v	program:main
 lglobstat	m_readinfile.F90	/^   logical lglobstat /;"	v	module:m_readinfile
 local	m_readinfile.F90	/^   integer local /;"	v	module:m_readinfile
 lrandrot	m_readinfile.F90	/^   logical :: lrandrot=/;"	v	module:m_readinfile
@@ -57,19 +77,26 @@ lsymsqrt	m_readinfile.F90	/^   logical :: lsymsqrt=/;"	v	module:m_readinfile
 lupdate_randrot	m_readinfile.F90	/^   logical :: lupdate_randrot=/;"	v	module:m_readinfile
 lxa	m_model.F90	/^   real :: lxa /;"	v	module:m_model
 lxo	m_model.F90	/^   real :: lxo /;"	v	module:m_model
+m_ansi_colors	m_ansi_colors.F90	/^module m_ansi_colors$/;"	m
 m_covstat	m_covstat.F90	/^module m_covstat$/;"	m
 m_dumpsol	m_dumpsol.F90	/^module m_dumpsol$/;"	m
 m_enkfprep	m_enkfprep.F90	/^module m_enkfprep$/;"	m
 m_ensemblecovariance	m_ensemblecovariance.F90	/^module m_ensemblecovariance$/;"	m
 m_ensemblemean	m_ensemblemean.F90	/^module m_ensemblemean$/;"	m
 m_ensemblevariance	m_ensemblevariance.F90	/^module m_ensemblevariance$/;"	m
+m_frobenius	m_frobenius.F90	/^module m_frobenius$/;"	m
 m_gnuplot	m_gnuplot.F90	/^module m_gnuplot$/;"	m
+m_ies	m_ies.F90	/^module m_ies$/;"	m
 m_model	m_model.F90	/^module m_model$/;"	m
 m_obscount	m_obscount.F90	/^module m_obscount$/;"	m
 m_obspoints	m_obspoints.F90	/^module m_obspoints$/;"	m
 m_obstloc	m_obstloc.F90	/^module m_obstloc$/;"	m
 m_obsxloc	m_obsxloc.F90	/^module m_obsxloc$/;"	m
+m_pertE	m_pertE.F90	/^module m_pertE$/;"	m
+m_prepD	m_prepD.F90	/^module m_prepD$/;"	m
+m_prepY	m_prepY.F90	/^module m_prepY$/;"	m
 m_readinfile	m_readinfile.F90	/^module m_readinfile$/;"	m
+m_scaling	m_scaling.F90	/^module m_scaling$/;"	m
 m_set_random_seed2	m_set_random_seed2.F90	/^module m_set_random_seed2$/;"	m
 m_statistics	m_statistics.F90	/^module m_statistics$/;"	m
 m_tecfld	m_tecfld.F90	/^module m_tecfld$/;"	m
@@ -115,9 +142,14 @@ obst0o	m_readinfile.F90	/^   integer obst0o /;"	v	module:m_readinfile
 obstloc	m_obstloc.F90	/^subroutine obstloc(/;"	s	module:m_obstloc
 obsvar	m_readinfile.F90	/^   type(substate) obsvar$/;"	v	module:m_readinfile
 obsxloc	m_obsxloc.F90	/^subroutine obsxloc(/;"	s	module:m_obsxloc
+oldana	m_readinfile.F90	/^   logical oldana$/;"	v	module:m_readinfile
 omega	m_model.F90	/^   type(modpar) :: alpha,omega$/;"	v	module:m_model
 outdir	m_readinfile.F90	/^   character(len=25) outdir$/;"	v	module:m_readinfile
+pertE	m_pertE.F90	/^subroutine pertE(/;"	s	module:m_pertE
 pi	m_model.F90	/^   real, parameter :: pi=/;"	v	module:m_model
+prepD	m_prepD.F90	/^subroutine prepD(/;"	s	module:m_prepD
+prepY	m_prepY.F90	/^subroutine prepY(/;"	s	module:m_prepY
+proj	m_ies.F90	/^function proj(/;"	f	module:m_ies
 rd	m_readinfile.F90	/^   real rd /;"	v	module:m_readinfile
 readinfile	m_readinfile.F90	/^   subroutine readinfile$/;"	s	module:m_readinfile
 real_state_mult	mod_state.F90	/^   function real_state_mult(/;"	f	module:mod_state
@@ -128,6 +160,7 @@ rmse	main.F90	/^   type(substate), allocatable :: rmse(/;"	v	program:main
 rmss	main.F90	/^   type(substate), allocatable :: rmss(/;"	v	program:main
 samp_fix	m_readinfile.F90	/^   logical samp_fix$/;"	v	module:m_readinfile
 samples	main.F90	/^   real, allocatable :: samples(/;"	v	program:main
+scaling	m_scaling.F90	/^subroutine  scaling(/;"	s	module:m_scaling
 set_random_seed2	m_set_random_seed2.F90	/^subroutine set_random_seed2$/;"	s	module:m_set_random_seed2
 sh	m_readinfile.F90	/^   real, allocatable :: sh(/;"	v	module:m_readinfile
 shfact	mod_shapiro.F90	/^subroutine shfact(/;"	s	module:mod_shapiro
@@ -141,13 +174,15 @@ state_state_div	mod_state.F90	/^   function state_state_div(/;"	f	module:mod_sta
 state_state_mult	mod_state.F90	/^   function state_state_mult(/;"	f	module:mod_state
 statistics	m_statistics.F90	/^subroutine statistics(/;"	s	module:m_statistics
 stdt	main.F90	/^   type(state), allocatable :: stdt(/;"	v	program:main
+steplength	m_readinfile.F90	/^   real    steplength /;"	v	module:m_readinfile
 substate	mod_state.F90	/^   type substate$/;"	t	module:mod_state
 subtract_state	mod_state.F90	/^   function subtract_state(/;"	f	module:mod_state
 sysnoise	main.F90	/^   type(state), allocatable :: sysnoise(/;"	v	program:main
 sysvar	m_readinfile.F90	/^   type(substate) sysvar$/;"	v	module:m_readinfile
+tag10	main.F90	/^   character(len=10) tag10$/;"	v	program:main
 tecfld	m_tecfld.F90	/^subroutine tecfld(/;"	s	module:m_tecfld
 tfin	main.F90	/^   integer tfin /;"	v	program:main
-time	main.F90	/^   real time,/;"	v	program:main
+time	main.F90	/^   real time$/;"	v	program:main
 tini	main.F90	/^   integer tini /;"	v	program:main
 tloc	mod_observation.F90	/^      integer tloc$/;"	k	type:observation
 truncation	m_readinfile.F90	/^   real truncation /;"	v	module:m_readinfile
@@ -156,9 +191,7 @@ v	m_model.F90	/^      real v /;"	k	type:modpar
 var	mod_observation.F90	/^      real var$/;"	k	type:observation
 vback	m_model.F90	/^      real vback /;"	k	type:modpar
 win	main.F90	/^   type(state), allocatable :: win(/;"	v	program:main
+win0	main.F90	/^   type(state), allocatable :: win0(/;"	v	program:main
 windowstat	m_windowstat.F90	/^subroutine windowstat(/;"	s	module:m_windowstat
 winref	main.F90	/^   type(state), allocatable :: winref(/;"	v	program:main
-x	main.F90	/^   real, allocatable :: x(/;"	v	program:main
 xloc	mod_observation.F90	/^      integer xloc$/;"	k	type:observation
-xx	main.F90	/^   real time,xx$/;"	v	program:main
-y	main.F90	/^   real, allocatable :: y(/;"	v	program:main
