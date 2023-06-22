@@ -1,6 +1,7 @@
 F90SOURCE = \
 	main.F90\
 	m_ansi_colors.F90\
+	m_costfunction.F90\
 	m_covstat.F90\
 	m_debug.F90\
 	m_dumpsol.F90\

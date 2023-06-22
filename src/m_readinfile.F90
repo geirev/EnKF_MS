@@ -54,6 +54,9 @@ module m_readinfile
    character(len=25) outdir
    logical oldana
 
+   logical :: lm                         ! Levenberg-Marquardt in IES algorithm
+   logical :: lsim                       ! Ensemble simulation over window in final MDA or IES step
+
    contains
    subroutine readinfile
    use mod_dimensions
@@ -149,6 +152,8 @@ module m_readinfile
       read(10,*)nmda               ; print '(a,tr7,i3 )',  'nmda=        ',nmda
       read(10,*)steplength         ; print '(a,tr4,f6.2)', 'steplength=  ',steplength
       read(10,*)mode_analysis      ; print '(a,tr8,i2)',   'mode_ana=    ',mode_analysis
+      read(10,'(1x,l1)')lm         ; print '(a,tr9,l1)',   'Leveberg M=  ',lm
+      read(10,'(1x,l1)')lsim       ; print '(a,tr9,l1)',   'lsim      =  ',lsim
       read(10,*)truncation         ; print '(a,tr4,f6.3)', 'truncation=  ',truncation
       read(10,'(1x,a)')covmodel    ; print '(a,tr2,a)',    'covmodel=    ',trim(covmodel)
       read(10,*)rd                 ; print '(a,tr4,f6.2)', 'rd=          ',rd

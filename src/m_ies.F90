@@ -6,7 +6,7 @@ subroutine ies(Y,D,W,nrens,nrobs,steplength,mode_analysis,fac)
    implicit none
    integer, intent(in) :: nrens            ! Number of realizations
    integer, intent(in) :: nrobs            ! Number of measurements
-   real, intent(inout) :: Y(nrobs,nrens)   ! Ensemble of predicted measurements
+   real, intent(in)    :: Y(nrobs,nrens)   ! Ensemble of predicted measurements
    real, intent(in)    :: D(nrobs,nrens)   ! Ensemble of perturbed measurements D=d+E
    real, intent(inout) :: W(nrens,nrens)   ! Coefficient matrix
    real, intent(in)    :: steplength       ! Steplength in update
@@ -15,6 +15,7 @@ subroutine ies(Y,D,W,nrens,nrobs,steplength,mode_analysis,fac)
 
    integer i
    real :: DB(nrobs,nrens)     ! D work array
+   real :: YB(nrobs,nrens)     ! Y work array
    real :: E(nrobs,nrens)      ! E
    real :: S(nrobs,nrens)      ! Y*PI
    real :: H(nrobs,nrens)      ! D-Y
@@ -30,19 +31,21 @@ subroutine ies(Y,D,W,nrens,nrobs,steplength,mode_analysis,fac)
    integer ipiv(nrens),info
    integer nrmin
 
+   YB=Y
    if (fac /= 1.0) then
       E=proj(D,nrobs,nrens)*sqrt(real(nrens-1))
       DB=D+(fac-1.0)*E
       E=fac*E
-      call scaling(Y,E,nrobs,nrens)
+      call scaling(YB,E,nrobs,nrens)
       call scaling(DB,E,nrobs,nrens)
    endif
+   DB=D
 
 ! E = D*PI
    E=proj(DB,nrobs,nrens)
 
 ! Y = Y*PI
-   S=proj(Y,nrobs,nrens)
+   S=proj(YB,nrobs,nrens)
 
 ! Remember AA projection for n < N-1
 
@@ -56,7 +59,7 @@ subroutine ies(Y,D,W,nrens,nrobs,steplength,mode_analysis,fac)
   call dgesv(nrens,nrobs,transpose(Omega),nrens,ipiv,transpose(S),nrens,info)
 
 ! H = S*W + D - Y
-   H=DB-Y
+   H=DB-YB
 
 ! H=H+matmul(S,W)
    call dgemm('N','N',nrobs,nrens,nrens,1.0,S,nrobs,W,nrens,1.0,H,nrobs)

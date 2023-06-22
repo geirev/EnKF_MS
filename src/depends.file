@@ -1,5 +1,6 @@
 main.o:      makefile
 main.o:      m_ansi_colors.o
+main.o:      m_costfunction.o
 main.o:      m_covstat.o
 main.o:      m_debug.o
 main.o:      m_enkfprep.o
@@ -32,6 +33,8 @@ main.o:      m_tecfld.o
 main.o:      m_windowstat.o
 m_ansi_colors.o:      makefile
 m_ansi_colors.o:      MODEL.CPP
+m_costfunction.o:      makefile
+m_costfunction.o:      MODEL.CPP
 m_covstat.o:      makefile
 m_covstat.o:      mod_dimensions.o
 m_covstat.o:      MODEL.CPP
