@@ -12,7 +12,7 @@ program main
    use m_obstloc                           ! Computes time of measurements
    use m_obscount                          ! Counts the number of measurements in a DA window
    use m_obspoints                         ! Saves the measurement locations in space and time for plotting
-   use m_dumpsol                           ! Saves outputs for gnuplot animations (p.gnu)
+   use m_debug                             ! Saves outputs for gnuplot animations (p.gnu)
    use m_ensemblemean                      ! Compute ensemble mean at current time (from mem)
    use m_ensemblevariance                  ! Compute ensemble variance at current time (from mem)
    use m_ensemblecovariance                ! Compute ensemble covariance at current time (from mem)
@@ -81,6 +81,7 @@ program main
 
    integer j,k,l,iter,ldw
    real time
+   real fac
    real :: dxsamp=1.0
 
    call readinfile()
@@ -201,6 +202,7 @@ program main
          enddo
       enddo
 !$OMP END PARALLEL DO
+      call debug(win(0,:),refout(0),nrens,outdir,l,0)
       win0=win ! Store prior ensemble over window for IES algorithm as win=win0*X
 
       if (nrobs > 0) then
@@ -221,16 +223,14 @@ program main
 
 ! Generate the observations
          print '(tr5,a)','main: -> Calling prepD to get DA'
-         if (.not.oldana) then
-            call prepD(obs,DA,winref,nrobs,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes,iter)
-         endif
+         call prepD(obs,DA,winref,nrobs,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes,iter)
 
          do iter=1,nmda
             if (oldana) then
                print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling enkf preprep'
                ! Returns all matrices UNSCALED by sqrt(nrens-1) for use in analysis.F90
                ! Note that it also returns the full innovation D=d+E-Y
-               call enkfprep(mem,obs,Y,S,E,D,meanS,R,innov,winref,win,nrobs,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
+               call enkfprep(mem,obs,Y,S,E,D,DA,meanS,R,innov,winref,win,nrobs,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
                ! Compute innovation D'=D-HA
 !               print *,'oldana D:'
 !               print '(5f10.4)',D(1:5,1:5)
@@ -243,13 +243,32 @@ program main
                            lrandrot, lupdate_randrot, lsymsqrt, inflate, infmult, 1)
             else
                if (((cmethod(1:3) == 'IES').and.(iter==1)).or.(cmethod(1:3) == 'MDA')) then
+!                 Using ESMDA: We simullate a new E for every DA step and then scale it with sqrt(nmda),
+!                              thus, D=DA+sqrt(nmda)*E is updated every MDA step.
+!                 Using IES  : We simulate E only in the first iteration and compute D=DA+E which we use unchanged
+!                              in all following IES iterations.
 
                   print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling pertE and computing D=DA+E'
                   call pertE(E,nrobs,l   ,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
-                  if (cmethod(1:3) == 'MDA') E=sqrt(real(nmda))*E
-                  print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling scaling of D'
+
+                  if (cmethod(1:3) == 'MDA') then
+                     print '(tr5,a,i3,a)','main: iter=',iter,' -> MDA scaling of E=sqrt(nmda)*E'
+                     E=sqrt(real(nmda))*E
+                  endif
+
+                  print '(tr5,a,i3,a)','main: iter=',iter,' -> Constructing D=DA+E'
                   D=DA+E
+
+                  print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling scaling of D'
                   call scaling(D,E,nrobs,nrens)
+               endif
+
+! Levenberg–Marquardt algorithm with IES increases variance in observations D
+               if (cmethod(1:3) == 'IES') then
+                  fac=1.0+10.0*exp(-2.0*real(iter)/(real(nmda)))
+                  write(tag10,'(f10.4)')fac
+                  print '(tr5,a,i3,a,a)','main: iter=',iter,' ->  inflation:',color(tag10,c_yellow)
+                  D=DA+fac*E
                endif
 
                print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling prepY'
@@ -258,8 +277,8 @@ program main
                print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling scaling of Y'
                call scaling(Y,E,nrobs,nrens)
 
-!               print *,'ies scheme D:'
-!               print '(5f10.4)',D(1:5,1:5)
+!               print *,'ies scheme E:'
+!               print '(5f10.4)',E(1:5,1:5)
 !               print *,'ies scheme Y:'
 !               print '(5f10.4)',Y(1:5,1:5)
 
@@ -293,6 +312,7 @@ program main
                print '(a,i3,a)','..... done'
             endif
 
+            call debug(win(0,:),refout(0),nrens,outdir,l,iter)
 ! timestep loop over assimilation window
             if (iter < nmda) then
                write(*,'(tr5,a,i3,a,i3,i5,a,i5)',advance='no')'main: iter=',iter,' -> post-update-sim: window=',l,tini,'->',tfin

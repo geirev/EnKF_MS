@@ -1,6 +1,6 @@
 module m_enkfprep
 contains
-subroutine enkfprep(mem,obs,Y,S,E,D,meanY,R,innov,winref,win,nrobs,lwin,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
+subroutine enkfprep(mem,obs,Y,S,E,D,DA,meanY,R,innov,winref,win,nrobs,lwin,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
    use mod_dimensions
    use mod_state
    use mod_observation
@@ -25,6 +25,7 @@ subroutine enkfprep(mem,obs,Y,S,E,D,meanY,R,innov,winref,win,nrobs,lwin,tini,tfi
    real,  intent(out):: S(nrobs,nrens)
    real,  intent(out):: E(nrobs,nrens)
    real,  intent(out):: D(nrobs,nrens)
+   real,  intent(in) :: DA(nrobs,nrens)
    real,  intent(out):: R(nrobs,nrobs)
    real,  intent(out):: meanY(nrobs)
    real,  intent(out):: innov(nrobs)
@@ -46,11 +47,11 @@ subroutine enkfprep(mem,obs,Y,S,E,D,meanY,R,innov,winref,win,nrobs,lwin,tini,tfi
                m2=m+nro
                do mm=1,nro
                   m=m+1
-                  obs(m)%xloc=obsoloc(mm)
-                  obs(m)%tloc=obsotimes(i)
-                  obs(m)%var=obsvar%ocean
-                  obs(m)%observed='ocean'
-                  obs(m)%d=winref(k)%ocean(obs(m)%xloc) + sqrt(obsvar%ocean)*tmpo(mm)
+!                  obs(m)%xloc=obsoloc(mm)
+!                  obs(m)%tloc=obsotimes(i)
+!                  obs(m)%var=obsvar%ocean
+!                  obs(m)%observed='ocean'
+!                  obs(m)%d=winref(k)%ocean(obs(m)%xloc) + sqrt(obsvar%ocean)*tmpo(mm)
                   Y(m,:) = win(k,:)%ocean(obs(m)%xloc)
                enddo
             endif
@@ -65,11 +66,11 @@ subroutine enkfprep(mem,obs,Y,S,E,D,meanY,R,innov,winref,win,nrobs,lwin,tini,tfi
                m2=m+nra
                do mm=1,nra
                   m=m+1
-                  obs(m)%xloc=obsaloc(mm)
-                  obs(m)%tloc=obsatimes(i)
-                  obs(m)%var=obsvar%atmos
-                  obs(m)%observed='atmos'
-                  obs(m)%d=winref(k)%atmos(obs(m)%xloc) + sqrt(obsvar%atmos)*tmpa(mm)
+!                  obs(m)%xloc=obsaloc(mm)
+!                  obs(m)%tloc=obsatimes(i)
+!                  obs(m)%var=obsvar%atmos
+!                  obs(m)%observed='atmos'
+!                  obs(m)%d=winref(k)%atmos(obs(m)%xloc) + sqrt(obsvar%atmos)*tmpa(mm)
                   Y(m,:) = win(k,:)%atmos(obs(m)%xloc)
                enddo
             endif
@@ -158,11 +159,7 @@ subroutine enkfprep(mem,obs,Y,S,E,D,meanY,R,innov,winref,win,nrobs,lwin,tini,tfi
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Construct ensemble of measurements D=d+E
-   do j=1,nrens
-      do m=1,nrobs
-         D(m,j)=obs(m)%d+E(m,j)
-      enddo
-   enddo
+   D=DA+E
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Compute innovation D'=D-HA
@@ -203,7 +200,7 @@ subroutine enkfprep(mem,obs,Y,S,E,D,meanY,R,innov,winref,win,nrobs,lwin,tini,tfi
       D(m,:)=scaling(m)*D(m,:)
       innov(m)=scaling(m)*innov(m)
    enddo
-   print '(a,10f10.4)','scaling: ',scaling(1:10)
+!   print '(a,10f10.4)','scaling: ',scaling(1:10)
 
    do j=1,nrobs
    do i=1,nrobs

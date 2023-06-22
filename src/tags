@@ -45,6 +45,7 @@ covstat	m_covstat.F90	/^subroutine covstat(/;"	s	module:m_covstat
 d	mod_observation.F90	/^      real d$/;"	k	type:observation
 d1	m_model.F90	/^      real d1 /;"	k	type:modpar
 d2	m_model.F90	/^      real d2 /;"	k	type:modpar
+debug	m_debug.F90	/^subroutine debug(/;"	s	module:m_debug
 dtout	m_model.F90	/^   real, parameter :: dtout=/;"	v	module:m_model
 dumpsol	m_dumpsol.F90	/^subroutine dumpsol(/;"	s	module:m_dumpsol
 dx	m_readinfile.F90	/^   real dx$/;"	v	module:m_readinfile
@@ -53,6 +54,7 @@ enkfprep	m_enkfprep.F90	/^subroutine enkfprep(/;"	s	module:m_enkfprep
 ensemblecovariance	m_ensemblecovariance.F90	/^subroutine ensemblecovariance(/;"	s	module:m_ensemblecovariance
 ensemblemean	m_ensemblemean.F90	/^subroutine ensemblemean(/;"	s	module:m_ensemblemean
 ensemblevariance	m_ensemblevariance.F90	/^subroutine ensemblevariance(/;"	s	module:m_ensemblevariance
+fac	main.F90	/^   real fac$/;"	v	program:main
 frobenius	m_frobenius.F90	/^real function frobenius(/;"	f	module:m_frobenius
 full	main.F90	/^   type(state), allocatable :: full(/;"	v	program:main
 fullave	m_statistics.F90	/^real, allocatable :: fullave(/;"	v	module:m_statistics
@@ -79,6 +81,7 @@ lxa	m_model.F90	/^   real :: lxa /;"	v	module:m_model
 lxo	m_model.F90	/^   real :: lxo /;"	v	module:m_model
 m_ansi_colors	m_ansi_colors.F90	/^module m_ansi_colors$/;"	m
 m_covstat	m_covstat.F90	/^module m_covstat$/;"	m
+m_debug	m_debug.F90	/^module m_debug$/;"	m
 m_dumpsol	m_dumpsol.F90	/^module m_dumpsol$/;"	m
 m_enkfprep	m_enkfprep.F90	/^module m_enkfprep$/;"	m
 m_ensemblecovariance	m_ensemblecovariance.F90	/^module m_ensemblecovariance$/;"	m

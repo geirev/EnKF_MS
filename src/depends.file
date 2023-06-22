@@ -1,7 +1,7 @@
 main.o:      makefile
 main.o:      m_ansi_colors.o
 main.o:      m_covstat.o
-main.o:      m_dumpsol.o
+main.o:      m_debug.o
 main.o:      m_enkfprep.o
 main.o:      m_ensemblecovariance.o
 main.o:      m_ensemblemean.o
@@ -36,6 +36,11 @@ m_covstat.o:      makefile
 m_covstat.o:      mod_dimensions.o
 m_covstat.o:      MODEL.CPP
 m_covstat.o:      mod_state.o
+m_debug.o:      makefile
+m_debug.o:      mod_dimensions.o
+m_debug.o:      MODEL.CPP
+m_debug.o:      mod_observation.o
+m_debug.o:      mod_state.o
 m_dumpsol.o:      makefile
 m_dumpsol.o:      MODEL.CPP
 m_dumpsol.o:      mod_observation.o

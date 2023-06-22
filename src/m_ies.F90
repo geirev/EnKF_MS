@@ -80,7 +80,8 @@ subroutine ies(Y,D,W,nrens,nrobs,steplength,mode_analysis)
       call dgemm('t','n',nrens,nrens,nrobs,1.0,S,nrobs,X3,nrobs,0.0,X5,nrens)
       deallocate(Z,X3,eig)
    else
-      stop 'invalid mode_analysis'
+      print '(a,i3)','invalid mode_analysis=',mode_analysis
+      stop
    endif
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 !   W = W - steplength*(W - X5)
