@@ -73,6 +73,7 @@ m_gnuplot.o:      mod_state.o
 m_ies.o:      makefile
 m_ies.o:      mod_anafunc.o
 m_ies.o:      MODEL.CPP
+m_ies.o:      m_scaling.o
 m_model.o:      makefile
 m_model.o:      mod_dimensions.o
 m_model.o:      MODEL.CPP

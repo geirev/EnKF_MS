@@ -229,13 +229,12 @@ program main
             if (oldana) then
                print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling enkf preprep'
                ! Returns all matrices UNSCALED by sqrt(nrens-1) for use in analysis.F90
-               ! Note that it also returns the full innovation D=d+E-Y
                call enkfprep(mem,obs,Y,S,E,D,DA,meanS,R,innov,winref,win,nrobs,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
-               ! Compute innovation D'=D-HA
 !               print *,'oldana D:'
 !               print '(5f10.4)',D(1:5,1:5)
 !               print *,'oldana Y:'
 !               print '(5f10.4)',Y(1:5,1:5)
+               ! Compute innovation D'=D-HA
                 D=D-Y
 
                print '(tr5,a,2(i3,a))','main: iter=',iter,' -> Calling analysis with mode: ',mode_analysis
@@ -259,7 +258,7 @@ program main
                   print '(tr5,a,i3,a)','main: iter=',iter,' -> Constructing D=DA+E'
                   D=DA+E
 
-                  print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling scaling of D'
+                  print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling scaling of D w/r to measurement std.dev.'
                   call scaling(D,E,nrobs,nrens)
                endif
 
@@ -268,17 +267,16 @@ program main
                   fac=1.0+10.0*exp(-2.0*real(iter)/(real(nmda)))
                   write(tag10,'(f10.4)')fac
                   print '(tr5,a,i3,a,a)','main: iter=',iter,' ->  inflation:',color(tag10,c_yellow)
-                  D=DA+fac*E
                endif
 
                print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling prepY'
                call prepY(Y,win,nrobs,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
 
-               print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling scaling of Y'
+               print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling scaling of Y w/r to measurement std.dev.'
                call scaling(Y,E,nrobs,nrens)
 
-!               print *,'ies scheme E:'
-!               print '(5f10.4)',E(1:5,1:5)
+!               print *,'ies scheme D:'
+!               print '(5f10.4)',D(1:5,1:5)
 !               print *,'ies scheme Y:'
 !               print '(5f10.4)',Y(1:5,1:5)
 
@@ -286,7 +284,7 @@ program main
                if (cmethod(1:3) == 'MDA') W=0.0
                ! Passing the unscaled (by sqrt(nrens-1)) predicted measurement Y and the unscaled perturbed measurements D
                XX=W
-               call ies(Y,D,W,nrens,nrobs,steplength,mode_analysis)
+               call ies(Y,D,W,nrens,nrobs,steplength,mode_analysis,fac)
                if ((iter > 1).and.(cmethod(1:3) == 'IES')) then
                   write(tag10,'(f10.4)')frobenius(XX-W,nrens,nrens)
                   print '(tr5,a,i3,3a)','main: iter=',iter,' -> ',color("wdiff=",c_green),color(tag10,c_green)
