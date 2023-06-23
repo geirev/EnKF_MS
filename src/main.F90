@@ -266,7 +266,7 @@ program main
                   fac=1.0
                   XX=W           ! used for computing change in W
                   if (LM) then   ! Levenberg–Marquardt algorithm with IES
-                     fac=1.0+10.0*exp(-10.0*real(iter-1)/(real(nmda)))
+                     fac=1.0+50.0*exp(-10.0*real(iter-1)/(real(nmda)))
                      write(tag8,'(f8.2)')fac
                   endif
                else
@@ -280,7 +280,7 @@ program main
                call ies(Y,D,W,nrens,nrobs,steplength,mode_analysis,fac)
 
                if ((iter > 1).and.(cmethod(1:3) == 'IES')) then
-                  write(ctag13,'(g13.5)')costfunction(W,D-Y,nrens,nrobs)
+                  write(ctag13,'(g13.7)')costfunction(W,D-Y,nrens,nrobs)
                   write(ftag10,'(f10.4)')frobenius(XX-W,nrens,nrens)
                   print '(tr5,a,i3,7a)','main: iter=',iter,' -> ',color(" LMfac:",c_yellow),color(tag8,c_yellow),&
                                                                   color(" wdiff=",c_green), color(ftag10,c_green),&

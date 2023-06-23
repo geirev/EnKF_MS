@@ -76,9 +76,10 @@ k	main.F90	/^   integer j,k,/;"	v	program:main
 l	main.F90	/^   integer j,k,l,/;"	v	program:main
 ldw	main.F90	/^   integer j,k,l,iter,ldw$/;"	v	program:main
 lglobstat	m_readinfile.F90	/^   logical lglobstat /;"	v	module:m_readinfile
-lm	main.F90	/^   logical :: lm=/;"	v	program:main
+lm	m_readinfile.F90	/^   logical :: lm /;"	v	module:m_readinfile
 local	m_readinfile.F90	/^   integer local /;"	v	module:m_readinfile
 lrandrot	m_readinfile.F90	/^   logical :: lrandrot=/;"	v	module:m_readinfile
+lsim	m_readinfile.F90	/^   logical :: lsim /;"	v	module:m_readinfile
 lsymsqrt	m_readinfile.F90	/^   logical :: lsymsqrt=/;"	v	module:m_readinfile
 lupdate_randrot	m_readinfile.F90	/^   logical :: lupdate_randrot=/;"	v	module:m_readinfile
 lxa	m_model.F90	/^   real :: lxa /;"	v	module:m_model

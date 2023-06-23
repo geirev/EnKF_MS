@@ -32,17 +32,13 @@ subroutine ies(Y,D,W,nrens,nrobs,steplength,mode_analysis,fac)
    integer nrmin
 
    YB=Y
+   DB=D
    if (fac /= 1.0) then
-      E=proj(D,nrobs,nrens)*sqrt(real(nrens-1))
-      DB=D+(fac-1.0)*E
-      E=fac*E
+      E=sqrt(fac)*proj(DB,nrobs,nrens)*sqrt(real(nrens-1))
       call scaling(YB,E,nrobs,nrens)
       call scaling(DB,E,nrobs,nrens)
    endif
-   DB=D
 
-! E = D*PI
-   E=proj(DB,nrobs,nrens)
 
 ! Y = Y*PI
    S=proj(YB,nrobs,nrens)
@@ -59,7 +55,7 @@ subroutine ies(Y,D,W,nrens,nrobs,steplength,mode_analysis,fac)
   call dgesv(nrens,nrobs,transpose(Omega),nrens,ipiv,transpose(S),nrens,info)
 
 ! H = S*W + D - Y
-   H=DB-YB
+   H=fac*(DB-YB)
 
 ! H=H+matmul(S,W)
    call dgemm('N','N',nrobs,nrens,nrens,1.0,S,nrobs,W,nrens,1.0,H,nrobs)
@@ -81,6 +77,8 @@ subroutine ies(Y,D,W,nrens,nrobs,steplength,mode_analysis,fac)
       allocate(eig(nrmin))
       allocate(Z(nrobs,nrmin))
       allocate(X3(nrobs,nrens))
+! E = D*PI
+      E=sqrt(fac)*proj(DB,nrobs,nrens)
 
       call lowrankE(S,E,nrobs,nrens,nrmin,Z,eig,truncation,1)
 
@@ -97,8 +95,8 @@ subroutine ies(Y,D,W,nrens,nrobs,steplength,mode_analysis,fac)
       stop
    endif
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-!   W = W - steplength*(W - X5)
-   W = (1.0-steplength)*W + steplength*X5
+   W = W - (steplength/fac)*(W - X5)
+!   W = (1.0-steplength)*W + steplength*X5
 !   print '(a)','IES W: '
 !   print '(10f13.4)',W(1:10,1:10)
 
