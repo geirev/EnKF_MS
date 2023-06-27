@@ -1,8 +1,6 @@
 main.o:      makefile
 main.o:      m_ansi_colors.o
-main.o:      m_costfunction.o
 main.o:      m_covstat.o
-main.o:      m_debug.o
 main.o:      m_enkfprep.o
 main.o:      m_ensemblecovariance.o
 main.o:      m_ensemblemean.o
@@ -11,6 +9,7 @@ main.o:      m_fixsample1D.o
 main.o:      m_frobenius.o
 main.o:      m_gnuplot.o
 main.o:      m_ies.o
+main.o:      m_ies_steplength.o
 main.o:      m_model.o
 main.o:      m_obscount.o
 main.o:      m_obspoints.o
@@ -24,6 +23,7 @@ main.o:      mod_state.o
 main.o:      m_pertE.o
 main.o:      m_prepD.o
 main.o:      m_prepY.o
+main.o:      m_print_ies_status.o
 main.o:      m_pseudo1D.o
 main.o:      m_random.o
 main.o:      m_readinfile.o
@@ -77,6 +77,10 @@ m_ies.o:      makefile
 m_ies.o:      mod_anafunc.o
 m_ies.o:      MODEL.CPP
 m_ies.o:      m_scaling.o
+m_ies_steplength.o:      makefile
+m_ies_steplength.o:      m_ansi_colors.o
+m_ies_steplength.o:      m_costfunction.o
+m_ies_steplength.o:      MODEL.CPP
 m_model.o:      makefile
 m_model.o:      mod_dimensions.o
 m_model.o:      MODEL.CPP
@@ -128,6 +132,10 @@ m_prepY.o:      mod_state.o
 m_prepY.o:      m_pseudo1D.o
 m_prepY.o:      m_random.o
 m_prepY.o:      m_readinfile.o
+m_print_ies_status.o:      makefile
+m_print_ies_status.o:      m_ansi_colors.o
+m_print_ies_status.o:      m_frobenius.o
+m_print_ies_status.o:      MODEL.CPP
 m_readinfile.o:      makefile
 m_readinfile.o:      m_model.o
 m_readinfile.o:      mod_dimensions.o

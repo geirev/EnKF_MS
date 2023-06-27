@@ -12,6 +12,7 @@ F90SOURCE = \
 	m_frobenius.F90\
 	m_gnuplot.F90\
 	m_ies.F90\
+	m_ies_steplength.F90\
 	m_model.F90\
 	m_obscount.F90\
 	m_obspoints.F90\
@@ -24,6 +25,7 @@ F90SOURCE = \
 	m_pertE.F90\
 	m_prepD.F90\
 	m_prepY.F90\
+	m_print_ies_status.F90\
 	m_readinfile.F90\
 	m_scaling.F90\
 	m_set_random_seed2.F90\
