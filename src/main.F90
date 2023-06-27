@@ -270,8 +270,10 @@ program main
                call prepY(Y,win,nrobs,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
                call scaling(Y,E,nrobs,nrens)
 
-               if (cmethod(1:3) == 'IES') call ies_steplength(steplength,costf,nrwindows,nmda,W,Wold,D,Y,Yold,nrens,nrobs,iter,l)
-               if (steplength < 0.01) exit
+               if (cmethod(1:3) == 'IES') then
+                  call ies_steplength(steplength,costf,nrwindows,nmda,W,Wold,D,Y,Yold,nrens,nrobs,iter,l)
+                  if (steplength < 0.01) exit
+               endif
 
                print '(tr5,a,2(i3,a))','main: iter=',iter,' -> Calling ies with mode: ',mode_analysis
                call ies(Y,D,W,nrens,nrobs,steplength,mode_analysis,fac)
@@ -343,6 +345,15 @@ program main
          write(10,'(i5,1024g12.4)')k,rmse(k)%Atmos,rmse(k)%Ocean,rmss(k)%Atmos,rmss(k)%Ocean
       enddo
    close(10)
+
+! Print the cost functions values for each window.
+   if (cmethod == 'IES') then
+      open(10,file=trim(outdir)//'/costf.dat')
+         do iter=1,nmda
+            write(10,'(i5,100g12.4)')iter,costf(iter,1:nrwindows)
+         enddo
+      close(10)
+   endif
 
 ! Dumping reference solution, mean and standard deviations for plotting
    call gnuplot('gnu_ref',refout,nrt,outdir)
