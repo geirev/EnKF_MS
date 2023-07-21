@@ -280,17 +280,17 @@ program main
 
                if (cmethod(1:3) == 'IES') iprt=print_ies_status(fac,steplength,costf(iter,l),Wold,W,nrens,iter)
 
-! Window update: for last iteration we are updating the whole window rather than rerunning the model
-! For linear dynamics, this doesn't change anything, but for strongly unstable dynamics it gives a better
-! posterior estimate over the window, and better starting point for the next window.
 ! X = I + W/sqrt(N-1)
                X=W/sqrt(real(nrens-1))
                do j=1,nrens
                   X(j,j)=X(j,j)+1.0
                enddo
 
+! Window update: for last iteration and in ES we are updating the whole window not just the intial condition.
+! For linear dynamics, this doesn't change anything, but for strongly unstable dynamics it may give a better
+! posterior estimate over the window, and better starting point for the next window.
                write(*,'(tr5,a,i3,a)',advance='no')'main: iter=',iter,' -> Ensemble update'
-               if (iter==nmda) then
+               if ((iter==nmda).and.(.not.lsim)) then
                   ldw=ndim*(nrw+1)
                   call dgemm('N','N',ldw,nrens,nrens,1.0,win0,ldw,X,nrens,0.0,win,ldw)
                else
