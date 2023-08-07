@@ -1,15 +1,19 @@
 module m_prepD
 contains
-subroutine prepD(obs,D,winref,nrobs,lwin,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes,iter)
+subroutine prepD(obs,D,winref,nrobs,lwin,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes,iter,nro,nra,nrt,nrw,nrens,obsvar)
    use mod_dimensions
    use mod_state
    use mod_observation
    use m_pseudo1D
    use m_random
-   use m_readinfile
+!   use m_readinfile
    use m_model
    implicit none
-   type(state), intent(in) :: winref(0:nrw)
+   integer, intent(in) :: nrens
+   integer, intent(in) :: nrw
+   integer, intent(in) :: nro
+   integer, intent(in) :: nra
+   integer, intent(in) :: nrt
    integer, intent(in) :: nrobs
    integer, intent(in) :: lwin
    integer, intent(in) :: tini
@@ -21,6 +25,8 @@ subroutine prepD(obs,D,winref,nrobs,lwin,tini,tfin,obsoloc,obsaloc,obsotimes,obs
    integer, intent(in) :: iter
    type(observation),  intent(out):: obs(nrobs)
    real,  intent(out):: D(nrobs,nrens)
+   type(substate), intent(in) :: obsvar
+   type(state), intent(in) :: winref(0:nrw)
 
    integer m,i,k,mm,m1,m2,j
 

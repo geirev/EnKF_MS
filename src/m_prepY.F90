@@ -1,16 +1,20 @@
 module m_prepY
 contains
-subroutine prepY(Y,win,nrobs,lwin,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
+subroutine prepY(Y,win,nrobs,lwin,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes,nro,nra,nrt,nrw,nrens)
    use mod_dimensions
    use mod_state
    use mod_observation
    use m_pseudo1D
    use m_random
-   use m_readinfile
+!   use m_readinfile
    use m_model
    implicit none
-   type(state),    intent(in) :: win(0:nrw,nrens)
+
+   integer, intent(in) :: nro,nra
    integer, intent(in) :: nrobs
+   integer, intent(in) :: nrens
+   integer, intent(in) :: nrw,nrt
+   type(state),    intent(in) :: win(0:nrw,nrens)
    integer, intent(in) :: lwin
    integer, intent(in) :: tini
    integer, intent(in) :: tfin

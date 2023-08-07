@@ -31,6 +31,7 @@ subroutine ies(Y,D,W,nrens,nrobs,steplength,mode_analysis,fac)
    integer ipiv(nrens),info
    integer nrmin
 
+
    YB=Y
    DB=D
    if (fac /= 1.0) then

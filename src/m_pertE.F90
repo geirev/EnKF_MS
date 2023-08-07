@@ -1,23 +1,31 @@
 module m_pertE
 contains
-subroutine pertE(E,nrobs,lwin,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
+subroutine pertE(E,nrobs,lwin,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes,nro,nra,nrt,nrens,obsvar,covmodel,dx,rd,nrw)
    use mod_dimensions
    use mod_state
    use mod_observation
    use m_pseudo1D
    use m_random
-   use m_readinfile
+!   use m_readinfile
    use m_model
    implicit none
+   integer, intent(in) :: nrw
+   integer, intent(in) :: nrens
+   integer, intent(in) :: nrt
+   integer, intent(in) :: nra
+   integer, intent(in) :: nro
    integer, intent(in) :: nrobs
    integer, intent(in) :: lwin
    integer, intent(in) :: tini
    integer, intent(in) :: tfin
+   type(substate), intent(in) :: obsvar
    integer, intent(in) :: obsoloc(nro)
    integer, intent(in) :: obsaloc(nra)
    integer, intent(in) :: obsotimes(nrt)
    integer, intent(in) :: obsatimes(nrt)
    real,    intent(out):: E(nrobs,nrens)
+   real, intent(in)    :: dx,rd
+   character(len=8), intent(in) :: covmodel
 
    integer m,i,k,m1,m2,j,mm
 

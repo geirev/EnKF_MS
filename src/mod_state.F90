@@ -2,8 +2,9 @@ module mod_state
 ! Model state definition
    use mod_dimensions
    private
-   public :: state, operator(+), operator(-), operator(*), operator(/), assignment(=), sqrt, average
+   public :: state,  operator(+), operator(-), operator(*), operator(/), assignment(=), sqrt, average
    public :: substate
+   public :: stateX
 
    type substate
       real Ocean
@@ -15,6 +16,10 @@ module mod_state
       real Ocean(nx)
       real Atmos(nx)
    end type state
+
+   type stateX
+      real var(nx)
+   end type stateX
 
 ! Overloaded and generic operators
    interface operator(+)

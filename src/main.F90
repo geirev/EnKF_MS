@@ -33,6 +33,7 @@ program main
    use m_ansi_colors
    implicit none
 
+   real, allocatable        :: tmp1(:,:),tmp2(:,:)
    type(state), allocatable :: full(:,:)   ! The ensemble of realizations over the whole simulation
    type(state), allocatable :: win(:,:)    ! The ensemble of realizations over an assimilation window.
    type(state), allocatable :: win0(:,:)   ! Initial ensemble of realizations over an assimilation window.
@@ -59,29 +60,36 @@ program main
    integer, allocatable :: obsotimes(:)    ! location of ocean observations in time
    integer, allocatable :: obsatimes(:)    ! location of atmos observations in time
 
-   type(observation), allocatable :: obs(:)! Stores all observation information in a DA window
+   type(observation), allocatable :: obsA(:)
+   type(observation), allocatable :: obsO(:)
 
 ! EnKF analysis variables
-   real, allocatable :: Y(:,:)             ! Predicted meaurements
-   real, allocatable :: S(:,:)             ! Predicted meaurements anomalies
-   real, allocatable :: E(:,:)             ! Measurement perturbations
-   real, allocatable :: D(:,:)             ! Innovations
-   real, allocatable :: DA(:,:)            ! Innovations
-   real, allocatable :: R(:,:)             ! Measurement error covariance matrix
-   real, allocatable :: meanS(:)           ! Mean of predicted measurements
-   real, allocatable :: innov(:)           ! Mean innovation
-   real, allocatable :: W(:,:)             ! ies iteration matrix
-   real, allocatable :: Wold(:,:)          ! ies iteration matri for reducing steplength
-   real, allocatable :: Yold(:,:)          ! ies predicted measurements for reducing steplength
-   real, allocatable :: X(:,:)            ! The X matrix :-)
+   real, allocatable :: YO(:,:)             ! Predicted meaurements
+   real, allocatable :: EO(:,:)             ! Measurement perturbations
+   real, allocatable :: DDO(:,:)             ! Innovations
+   real, allocatable :: DAO(:,:)            ! Innovations
+   real, allocatable :: WO(:,:)             ! ies iteration matrix
+   real, allocatable :: WoldO(:,:)          ! ies iteration matri for reducing steplength
+   real, allocatable :: YoldO(:,:)          ! ies predicted measurements for reducing steplength
+   real, allocatable :: XO(:,:)            ! The X matrix :-)
+   real, allocatable :: YA(:,:)             ! Predicted meaurements
+   real, allocatable :: EA(:,:)             ! Measurement perturbations
+   real, allocatable :: DDA(:,:)             ! Innovations
+   real, allocatable :: DAA(:,:)            ! Innovations
+   real, allocatable :: WA(:,:)             ! ies iteration matrix
+   real, allocatable :: WoldA(:,:)          ! ies iteration matri for reducing steplength
+   real, allocatable :: YoldA(:,:)          ! ies predicted measurements for reducing steplength
+   real, allocatable :: XA(:,:)            ! The X matrix :-)
 
 
 ! other variables
    integer tini                            ! start time of an assimilation window
    integer tfin                            ! end   time of an assimilation window
    integer nrobs                           ! Total number of measurement per assimilation window
+   integer nrobsO
+   integer nrobsA
 
-   integer j,k,l,iter,ldw,iprt
+   integer j,k,l,iter,ldw,iprt,i,n
    real time
    real fac
    real :: dxsamp=1.0
@@ -112,10 +120,14 @@ program main
    allocate (rmse(0:nrt))
    allocate (rmss(0:nrt))
 
-   allocate (W(nrens,nrens))
-   allocate (X(nrens,nrens))
-   allocate (Wold(nrens,nrens))
-   allocate (Yold(nrens,nrens))
+   allocate (WO(nrens,nrens))
+   allocate (WA(nrens,nrens))
+   allocate (XO(nrens,nrens))
+   allocate (XA(nrens,nrens))
+   allocate (WoldO(nrens,nrens))
+   allocate (WoldA(nrens,nrens))
+   allocate (YoldO(nrens,nrens))
+   allocate (YoldA(nrens,nrens))
 
    allocate (obsoloc(nro))
    allocate (obsaloc(nra))
@@ -208,97 +220,203 @@ program main
 
 ! Counting the number of measurements in the current DA window
       nrobs=obscount(nrt,tini,tfin,obsotimes,obsatimes,nro,nra)
-      print '(tr5,a,i5)','main: Total number of measurements in the DA window= ',nrobs
+      nrobsA=obscount(nrt,tini,tfin,obsotimes,obsatimes,0,nra)
+      nrobsO=obscount(nrt,tini,tfin,obsotimes,obsatimes,nro,0)
+      print '(tr5,a,3i5)','main: Total number of measurements in the DA window= ',nrobs,nrobsA,nrobsO
       print *
 
       if (nrobs > 0) then
 ! Allocate DA variables
-         allocate(obs(nrobs))
-         allocate(E(nrobs,nrens))
-         allocate(D(nrobs,nrens))
-         allocate(DA(nrobs,nrens))
-         allocate(Y(nrobs,nrens))
-
-! oldana vars
-         allocate(S(nrobs,nrens))
-         allocate(meanS(nrobs))
-         allocate(innov(nrobs))
-         allocate(R(nrobs,nrobs))
+         if (nrobsO > 0) then
+            allocate(obsO(nrobsO))
+            allocate(EO(nrobsO,nrens))
+            allocate(DDO(nrobsO,nrens))
+            allocate(DAO(nrobsO,nrens))
+            allocate(YO(nrobsO,nrens))
+         endif
+         if (nrobsA > 0) then
+            allocate(obsA(nrobsA))
+            allocate(EA(nrobsA,nrens))
+            allocate(DDA(nrobsA,nrens))
+            allocate(DAA(nrobsA,nrens))
+            allocate(YA(nrobsA,nrens))
+         endif
 
 ! Generate the observations in obs and DA
          winref=refout(tini:tfin)
          print '(tr5,a)','main: -> Calling prepD to get DA'
-         call prepD(obs,DA,winref,nrobs,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes,iter)
-         print *
+         if (nrobsO > 0) call prepD(obsO,DAO,winref,nrobsO,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes,iter,&
+                                    nro,0,nrt,nrw,nrens,obsvar)
+         if (nrobsA > 0) call prepD(obsA,DAA,winref,nrobsA,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes,iter,&
+                                    0,nra,nrt,nrw,nrens,obsvar)
 
 ! Loop over nmda steps
          steplength=steplength0
-         W=0.0
+         WO=0.0
+         WA=0.0
          fac=1.0
          do iter=1,nmda
-            if (oldana) then
-               print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling enkf preprep'
-               ! Returns all matrices UNSCALED by sqrt(nrens-1) for use in analysis.F90
-               call enkfprep(mem,obs,Y,S,E,D,DA,meanS,R,innov,winref,win,nrobs,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
-               D=D-Y
-               print '(tr5,a,2(i3,a))','main: iter=',iter,' -> Calling analysis with mode: ',mode_analysis
-               call analysis(win, R, E, S, D, innov, ndim*(nrw+1), nrens, nrobs, .true., truncation, mode_analysis, &
-                           lrandrot, lupdate_randrot, lsymsqrt, inflate, infmult, 1)
-            else
-
-               if ((cmethod(1:3)=='MDA') .or. ((cmethod(1:3)=='IES').and.(iter==1))) then
+            print '(tr5,a,i3,a)','main: iter=',iter,' -> '
+            if ((cmethod(1:3)=='MDA') .or. ((cmethod(1:3)=='IES').and.(iter==1))) then
 !                 Using ESMDA: We simullate a new E for every DA step and then scale it with sqrt(nmda),
-!                              thus, D=DA+sqrt(nmda)*E is updated every MDA step.
-!                 Using IES  : We simulate E only in the first iteration and compute D=DA+E which we use unchanged
+!                              thus, D=DDA+sqrt(nmda)*E is updated every MDA step.
+!                 Using IES  : We simulate E only in the first iteration and compute D=DDA+E which we use unchanged
 !                              in all following IES iterations.  We are passing the predicted measurement Y and the
 !                              perturbed measurements D to IES
-                  call pertE(E,nrobs,l   ,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
-                  if (cmethod(1:3) == 'MDA') then
-                     E=sqrt(real(nmda))*E
-                     W=0.0
-                     steplength=1.0
-                  endif
-                  D=DA+E
-                  call scaling(D,E,nrobs,nrens)
+               print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling pertE'
+               if (nrobsO > 0) call pertE(EO,nrobsO,l   ,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes,nro,0,nrt,nrens,&
+                                          obsvar,covmodel,dx,rd,nrw)
+               if (nrobsA > 0) call pertE(EA,nrobsA,l   ,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes,0,nra,nrt,nrens,&
+                                          obsvar,covmodel,dx,rd,nrw)
+               if (cmethod(1:3) == 'MDA') then
+                  if (nrobsO > 0) EO=sqrt(real(nmda))*EO
+                  if (nrobsA > 0) EA=sqrt(real(nmda))*EA
+                  if (nrobsO > 0) WO=0.0
+                  if (nrobsA > 0) WA=0.0
+                  steplength=1.0
                endif
+            print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling D scaling'
+               if (nrobsO > 0) DDO=DAO+EO
+               if (nrobsA > 0) DDA=DAA+EA
+               if (nrobsO > 0) call scaling(DDO,EO,nrobsO,nrens)
+               if (nrobsA > 0) call scaling(DDA,EA,nrobsA,nrens)
+            endif
 
-               if ((cmethod(1:3)=='IES').and.LM) then
-               ! Levenberg–Marquardt algorithm with IES
-                  fac=10.0+100.0*exp(-10.0*real(iter-1)/(real(nmda)))
-               endif
+            if ((cmethod(1:3)=='IES').and.LM) then
+            ! Levenberg–Marquardt algorithm with IES
+               fac=10.0+100.0*exp(-10.0*real(iter-1)/(real(nmda)))
+            endif
 
-               call prepY(Y,win,nrobs,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
-               call scaling(Y,E,nrobs,nrens)
+            print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling prepY'
+            if (nrobsO > 0) call prepY(YO,win,nrobsO,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes,nro,0,nrt,nrw,nrens)
+            if (nrobsA > 0) call prepY(YA,win,nrobsA,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes,0,nra,nrt,nrw,nrens)
+            if (nrobsO > 0) call scaling(YO,EO,nrobsO,nrens)
+            if (nrobsA > 0) call scaling(YA,EA,nrobsA,nrens)
 
-               if (cmethod(1:3) == 'IES') then
-                  call ies_steplength(steplength,costf,nrwindows,nmda,W,Wold,D,Y,Yold,nrens,nrobs,iter,l)
-                  if (steplength < 0.01) exit
-               endif
+            if (cmethod(1:3) == 'IES') then
+               print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling steplength'
+               if (nrobsO > 0) call ies_steplength(steplength,costf,nrwindows,nmda,WO,WoldO,DDO,YO,YoldO,nrens,nrobsO,iter,l)
+               if (nrobsA > 0) call ies_steplength(steplength,costf,nrwindows,nmda,WA,WoldA,DDA,YA,YoldA,nrens,nrobsA,iter,l)
+               if (steplength < 0.01) exit
+            endif
 
-               print '(tr5,a,2(i3,a))','main: iter=',iter,' -> Calling ies with mode: ',mode_analysis
-               call ies(Y,D,W,nrens,nrobs,steplength,mode_analysis,fac)
+            print '(tr5,a,i3,a,i3)','main: iter=',iter,' -> Calling iesO with mode: ',mode_analysis
+            if (nrobsO > 0) call ies(YO,DDO,WO,nrens,nrobsO,steplength,mode_analysis,fac)
+            print '(tr5,a,i3,a,i3)','main: iter=',iter,' -> Calling iesA with mode: ',mode_analysis
+            if (nrobsA > 0) call ies(YA,DDA,WA,nrens,nrobsA,steplength,mode_analysis,fac)
 
-               if (cmethod(1:3) == 'IES') iprt=print_ies_status(fac,steplength,costf(iter,l),Wold,W,nrens,iter)
+            print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling print_ies_status'
+            if (cmethod(1:3) == 'IES') iprt=print_ies_status(fac,steplength,costf(iter,l),WoldO,WO,nrens,iter)
 
 ! X = I + W/sqrt(N-1)
-               X=W/sqrt(real(nrens-1))
+            if (nrobsO > 0) then
+               XO=WO/sqrt(real(nrens-1))
                do j=1,nrens
-                  X(j,j)=X(j,j)+1.0
+                  XO(j,j)=XO(j,j)+1.0
                enddo
+            endif
+            if (nrobsA > 0) then
+               XA=WA/sqrt(real(nrens-1))
+               do j=1,nrens
+                  XA(j,j)=XA(j,j)+1.0
+               enddo
+            endif
 
 ! Window update: for last iteration and in ES we are updating the whole window not just the intial condition.
 ! For linear dynamics, this doesn't change anything, but for strongly unstable dynamics it may give a better
 ! posterior estimate over the window, and better starting point for the next window.
-               write(*,'(tr5,a,i3,a)',advance='no')'main: iter=',iter,' -> Ensemble update'
-               if ((iter==nmda).and.(.not.lsim)) then
-                  ldw=ndim*(nrw+1)
-                  call dgemm('N','N',ldw,nrens,nrens,1.0,win0,ldw,X,nrens,0.0,win,ldw)
-               else
-                  ldw=ndim
-                  call dgemm('N','N',ldw,nrens,nrens,1.0,win0(0,:),ldw,X,nrens,0.0,win(0,:),ldw)
+            write(*,'(tr5,a,i3,a)',advance='no')'main: iter=',iter,' -> Ensemble update'
+            if ((iter==nmda).and.(.not.lsim)) then
+               print *,'YY'
+               ldw=nx*(nrw+1)
+               allocate( tmp1(ldw,nrens), tmp2(ldw,nrens) )
+! Ocean
+               if (nrobsO > 0) then
+                  do j=1,nrens
+                     do k=0,nrw
+                        do i=1,nx
+                           n=k*nx+i
+                           tmp1(n,j)=win0(k,j)%Ocean(i)
+                        enddo
+                     enddo
+                  enddo
+
+                  call dgemm('N','N',ldw,nrens,nrens,1.0,tmp1,ldw,XO,nrens,0.0,tmp2,ldw)
+
+                  do j=1,nrens
+                     do k=0,nrw
+                        do i=1,nx
+                           n=k*nx+i
+                           win(k,j)%Ocean(i)=tmp2(n,j)
+                        enddo
+                     enddo
+                  enddo
                endif
-               print '(a,i3,a)','..... done'
+! Atmos
+               if (nrobsA > 0) then
+                  do j=1,nrens
+                     do k=0,nrw
+                        do i=1,nx
+                           n=k*nx+i
+                           tmp1(n,j)=win0(k,j)%Atmos(i)
+                        enddo
+                     enddo
+                  enddo
+
+                  call dgemm('N','N',ldw,nrens,nrens,1.0,tmp1,ldw,XA,nrens,0.0,tmp2,ldw)
+
+                  do j=1,nrens
+                     do k=0,nrw
+                        do i=1,nx
+                           n=k*nx+i
+                           win(k,j)%Atmos(i)=tmp2(n,j)
+                        enddo
+                     enddo
+                  enddo
+               endif
+
+               deallocate(tmp1,tmp2)
+
+
+            else
+               allocate( tmp1(nx,nrens), tmp2(nx,nrens) )
+! Ocean
+               if (nrobsO > 0) then
+                  do j=1,nrens
+                     do i=1,nx
+                        tmp1(i,j)=win0(0,j)%Ocean(i)
+                     enddo
+                  enddo
+
+                  call dgemm('N','N',nx,nrens,nrens,1.0,tmp1,nx,XO,nrens,0.0,tmp2,nx)
+
+                  do j=1,nrens
+                     do i=1,nx
+                        win(0,j)%Ocean(i)=tmp2(i,j)
+                     enddo
+                  enddo
+               endif
+! Atmos
+               if (nrobsA > 0) then
+                  do j=1,nrens
+                     do i=1,nx
+                        tmp1(i,j)=win0(0,j)%Atmos(i)
+                     enddo
+                  enddo
+
+                  call dgemm('N','N',nx,nrens,nrens,1.0,tmp1,nx,XA,nrens,0.0,tmp2,nx)
+
+                  do j=1,nrens
+                     do i=1,nx
+                        win(0,j)%Atmos(i)=tmp2(i,j)
+                     enddo
+                  enddo
+               endif
+
+               deallocate(tmp1,tmp2)
+
             endif
+            print '(a,i3,a)','..... done'
 
 ! timestep loop over assimilation window
             if ((iter < nmda).or.lsim) then
@@ -312,7 +430,7 @@ program main
                   enddo
                enddo
 !$OMP END PARALLEL DO
-               print '(a,i3,a)','..... done'
+               print '(a)','..... done'
                print *
             else
                write(*,'(tr5,a,i3,a,i3,i5,a,i5)',advance='no')'main: iter=',iter,' -> post-update-NOSIM: window=',l,tini,'->',tfin
@@ -322,7 +440,11 @@ program main
             if (cmethod(1:3)=="MDA") win0=win
 
          enddo ! end loop over mda steps
-         deallocate(obs,Y,S,E,D,DA,meanS,R,innov)
+            print '(a)','..... p'
+         if (nrobsA > 0) deallocate(obsA,YA,EA,DDA,DAA)
+            print '(a)','..... pp'
+         if (nrobsO > 0) deallocate(obsO,YO,EO,DDO,DAO)
+            print '(a)','..... ppp'
       endif
 
 ! Continue integration in next assimilation window from final value of current window

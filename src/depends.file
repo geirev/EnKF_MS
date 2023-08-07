@@ -113,7 +113,6 @@ m_pertE.o:      mod_observation.o
 m_pertE.o:      mod_state.o
 m_pertE.o:      m_pseudo1D.o
 m_pertE.o:      m_random.o
-m_pertE.o:      m_readinfile.o
 m_prepD.o:      makefile
 m_prepD.o:      m_model.o
 m_prepD.o:      mod_dimensions.o
@@ -122,7 +121,6 @@ m_prepD.o:      mod_observation.o
 m_prepD.o:      mod_state.o
 m_prepD.o:      m_pseudo1D.o
 m_prepD.o:      m_random.o
-m_prepD.o:      m_readinfile.o
 m_prepY.o:      makefile
 m_prepY.o:      m_model.o
 m_prepY.o:      mod_dimensions.o
@@ -131,7 +129,6 @@ m_prepY.o:      mod_observation.o
 m_prepY.o:      mod_state.o
 m_prepY.o:      m_pseudo1D.o
 m_prepY.o:      m_random.o
-m_prepY.o:      m_readinfile.o
 m_print_ies_status.o:      makefile
 m_print_ies_status.o:      m_ansi_colors.o
 m_print_ies_status.o:      m_frobenius.o

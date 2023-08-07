@@ -1,2 +1,2 @@
-TARGET = multiscale
+TARGET = multiscale.sep
 
