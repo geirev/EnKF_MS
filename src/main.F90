@@ -350,7 +350,7 @@ program main
    if (cmethod == 'IES') then
       open(10,file=trim(outdir)//'/costf.dat')
          do iter=1,nmda
-            write(10,'(i5,100g12.4)')iter,costf(iter,1:nrwindows)
+            write(10,'(i5,1000g12.4)')iter,costf(iter,1:nrwindows)
          enddo
       close(10)
    endif
