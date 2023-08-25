@@ -1,6 +1,6 @@
 module m_pertE
 contains
-subroutine pertE(E,nrobs,lwin,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
+subroutine pertE(E,nrobs,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
    use mod_dimensions
    use mod_state
    use mod_observation
@@ -10,7 +10,6 @@ subroutine pertE(E,nrobs,lwin,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
    use m_model
    implicit none
    integer, intent(in) :: nrobs
-   integer, intent(in) :: lwin
    integer, intent(in) :: tini
    integer, intent(in) :: tfin
    integer, intent(in) :: obsoloc(nro)
@@ -26,8 +25,8 @@ subroutine pertE(E,nrobs,lwin,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
    m=0
    do i=1,nrt
       if (tini < obsotimes(i) .and. obsotimes(i) <= tfin .and. nro > 0) then
-         do k=1,nrw
-            if (obsotimes(i) == (lwin-1)*nrw+k ) then
+         do k=tini+1,tfin
+            if (obsotimes(i) ==  k ) then
                m1=m+1
                m2=m+nro
                do mm=1,nro
@@ -55,8 +54,8 @@ subroutine pertE(E,nrobs,lwin,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
       endif
 
       if (tini < obsatimes(i) .and. obsatimes(i) <= tfin .and. nra > 0) then
-         do k=1,nrw
-            if (obsatimes(i) == (lwin-1)*nrw+k ) then
+         do k=tini+1,tfin
+            if (obsatimes(i) == k ) then
 
                m1=m+1
                m2=m+nra

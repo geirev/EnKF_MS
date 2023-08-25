@@ -1,6 +1,6 @@
 module m_prepD
 contains
-subroutine prepD(obs,D,winref,nrobs,lwin,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes,iter)
+subroutine prepD(obs,D,winref,nrobs,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes,iter)
    use mod_dimensions
    use mod_state
    use mod_observation
@@ -9,9 +9,8 @@ subroutine prepD(obs,D,winref,nrobs,lwin,tini,tfin,obsoloc,obsaloc,obsotimes,obs
    use m_readinfile
    use m_model
    implicit none
-   type(state), intent(in) :: winref(0:nrw)
+   type(state), intent(in) :: winref(0:nrt)
    integer, intent(in) :: nrobs
-   integer, intent(in) :: lwin
    integer, intent(in) :: tini
    integer, intent(in) :: tfin
    integer, intent(in) :: obsoloc(nro)
@@ -31,8 +30,8 @@ subroutine prepD(obs,D,winref,nrobs,lwin,tini,tfin,obsoloc,obsaloc,obsotimes,obs
    m=0
    do i=1,nrt
       if (tini < obsotimes(i) .and. obsotimes(i) <= tfin .and. nro > 0) then
-         do k=1,nrw
-            if (obsotimes(i) == (lwin-1)*nrw+k ) then
+         do k=tini+1,tfin
+            if (obsotimes(i) == k ) then
                call random(tmpo,nro)
                m1=m+1
                m2=m+nro
@@ -49,8 +48,8 @@ subroutine prepD(obs,D,winref,nrobs,lwin,tini,tfin,obsoloc,obsaloc,obsotimes,obs
       endif
 
       if (tini < obsatimes(i) .and. obsatimes(i) <= tfin .and. nra > 0) then
-         do k=1,nrw
-            if (obsatimes(i) == (lwin-1)*nrw+k ) then
+         do k=tini+1,tfin
+            if (obsatimes(i) == k ) then
                call random(tmpa,nra)
 
                m1=m+1

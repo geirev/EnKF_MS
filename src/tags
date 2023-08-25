@@ -1,10 +1,20 @@
 !_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
 !_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
-!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
-!_TAG_PROGRAM_NAME	Exuberant Ctags	//
-!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
-!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+!_TAG_OUTPUT_EXCMD	mixed	/number, pattern, mixed, or combineV2/
+!_TAG_OUTPUT_FILESEP	slash	/slash or backslash/
+!_TAG_OUTPUT_MODE	u-ctags	/u-ctags or e-ctags/
+!_TAG_PATTERN_LENGTH_LIMIT	96	/0 for no limit/
+!_TAG_PROC_CWD	/home/geir/Dropbox/Programs/EnKF_MS/src/	//
+!_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
+!_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
+!_TAG_PROGRAM_URL	https://ctags.io/	/official site/
+!_TAG_PROGRAM_VERSION	5.9.0	//
+*	mod_state.F90	/^   interface operator(*)/;"	i	module:mod_state
++	mod_state.F90	/^   interface operator(+)/;"	i	module:mod_state
+-	mod_state.F90	/^   interface operator(-)/;"	i	module:mod_state
+/	mod_state.F90	/^   interface operator(\/)/;"	i	module:mod_state
 900	m_tecfld.F90	/^ 900 format(10(1x,e12.5))$/;"	l	subroutine:tecfld	file:
+=	mod_state.F90	/^   interface assignment(=)/;"	i	module:mod_state
 Atmos	mod_state.F90	/^      real Atmos$/;"	k	type:substate
 Atmos	mod_state.F90	/^      real Atmos(/;"	k	type:state
 D	main.F90	/^   real, allocatable :: D(/;"	v	program:main
@@ -25,6 +35,7 @@ advection	m_model.F90	/^   integer advection$/;"	v	module:m_model
 alpha	m_model.F90	/^   type(modpar) :: alpha,/;"	v	module:m_model
 assign_state	mod_state.F90	/^   subroutine assign_state(/;"	s	module:mod_state
 ave	main.F90	/^   type(state) ave /;"	v	program:main
+average	mod_state.F90	/^   interface average$/;"	i	module:mod_state
 average_state	mod_state.F90	/^   function average_state(/;"	f	module:mod_state
 c_black	m_ansi_colors.F90	/^  character(len=*), parameter :: c_black /;"	v	module:m_ansi_colors
 c_blue	m_ansi_colors.F90	/^  character(len=*), parameter :: c_blue /;"	v	module:m_ansi_colors
@@ -60,7 +71,6 @@ ensemblemean	m_ensemblemean.F90	/^subroutine ensemblemean(/;"	s	module:m_ensembl
 ensemblevariance	m_ensemblevariance.F90	/^subroutine ensemblevariance(/;"	s	module:m_ensemblevariance
 fac	main.F90	/^   real fac$/;"	v	program:main
 frobenius	m_frobenius.F90	/^real function frobenius(/;"	f	module:m_frobenius
-full	main.F90	/^   type(state), allocatable :: full(/;"	v	program:main
 fullave	m_statistics.F90	/^real, allocatable :: fullave(/;"	v	module:m_statistics
 fullcor	m_statistics.F90	/^real, allocatable :: fullcor(/;"	v	module:m_statistics
 fullcoroa	m_statistics.F90	/^real, allocatable :: fullcoroa(/;"	v	module:m_statistics
@@ -181,6 +191,7 @@ sh	m_readinfile.F90	/^   real, allocatable :: sh(/;"	v	module:m_readinfile
 shfact	mod_shapiro.F90	/^subroutine shfact(/;"	s	module:mod_shapiro
 shfilt	mod_shapiro.F90	/^subroutine shfilt(/;"	s	module:mod_shapiro
 shfilt2D	mod_shapiro.F90	/^subroutine shfilt2D(/;"	s	module:mod_shapiro
+sqrt	mod_state.F90	/^   interface sqrt$/;"	i	module:mod_state
 sqrt_state	mod_state.F90	/^   function sqrt_state(/;"	f	module:mod_state
 sqrt_substate	mod_state.F90	/^   function sqrt_substate(/;"	f	module:mod_state
 state	mod_state.F90	/^   type state$/;"	t	module:mod_state
@@ -208,5 +219,4 @@ vback	m_model.F90	/^      real vback /;"	k	type:modpar
 win	main.F90	/^   type(state), allocatable :: win(/;"	v	program:main
 win0	main.F90	/^   type(state), allocatable :: win0(/;"	v	program:main
 windowstat	m_windowstat.F90	/^subroutine windowstat(/;"	s	module:m_windowstat
-winref	main.F90	/^   type(state), allocatable :: winref(/;"	v	program:main
 xloc	mod_observation.F90	/^      integer xloc$/;"	k	type:observation

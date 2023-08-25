@@ -1,6 +1,6 @@
 module m_enkfprep
 contains
-subroutine enkfprep(mem,obs,Y,S,E,D,DA,meanY,R,innov,winref,win,nrobs,lwin,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
+subroutine enkfprep(mem,obs,Y,S,E,D,DA,meanY,R,innov,winref,win,nrobs,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
    use mod_dimensions
    use mod_state
    use mod_observation
@@ -10,10 +10,9 @@ subroutine enkfprep(mem,obs,Y,S,E,D,DA,meanY,R,innov,winref,win,nrobs,lwin,tini,
    use m_model
    implicit none
    type(state),    intent(inout) :: mem(nrens)
-   type(state),    intent(in) :: win(0:nrw,nrens)
-   type(state),    intent(in) :: winref(0:nrw)
+   type(state),    intent(in) :: win(0:nrt,nrens)
+   type(state),    intent(in) :: winref(0:nrt)
    integer, intent(in) :: nrobs
-   integer, intent(in) :: lwin
    integer, intent(in) :: tini
    integer, intent(in) :: tfin
    integer, intent(in) :: obsoloc(nro)
@@ -40,8 +39,8 @@ subroutine enkfprep(mem,obs,Y,S,E,D,DA,meanY,R,innov,winref,win,nrobs,lwin,tini,
    m=0
    do i=1,nrt
       if (tini < obsotimes(i) .and. obsotimes(i) <= tfin .and. nro > 0) then
-         do k=1,nrw
-            if (obsotimes(i) == (lwin-1)*nrw+k ) then
+         do k=tini+1,tfin
+            if (obsotimes(i) == k ) then
                call random(tmpo,nro)
                m1=m+1
                m2=m+nro
@@ -59,8 +58,8 @@ subroutine enkfprep(mem,obs,Y,S,E,D,DA,meanY,R,innov,winref,win,nrobs,lwin,tini,
       endif
 
       if (tini < obsatimes(i) .and. obsatimes(i) <= tfin .and. nra > 0) then
-         do k=1,nrw
-            if (obsatimes(i) == (lwin-1)*nrw+k ) then
+         do k=tini+1,tfin
+            if (obsatimes(i) == k ) then
                call random(tmpa,nra)
                m1=m+1
                m2=m+nra
@@ -86,8 +85,8 @@ subroutine enkfprep(mem,obs,Y,S,E,D,DA,meanY,R,innov,winref,win,nrobs,lwin,tini,
    m=0
    do i=1,nrt
       if (tini < obsotimes(i) .and. obsotimes(i) <= tfin .and. nro > 0) then
-         do k=1,nrw
-            if (obsotimes(i) == (lwin-1)*nrw+k ) then
+         do k=tini+1,tfin
+            if (obsotimes(i) == k ) then
                m1=m+1
                m2=m+nro
                do mm=1,nro
@@ -114,8 +113,8 @@ subroutine enkfprep(mem,obs,Y,S,E,D,DA,meanY,R,innov,winref,win,nrobs,lwin,tini,
       endif
 
       if (tini < obsatimes(i) .and. obsatimes(i) <= tfin .and. nra > 0) then
-         do k=1,nrw
-            if (obsatimes(i) == (lwin-1)*nrw+k ) then
+         do k=tini+1,tfin
+            if (obsatimes(i) == k ) then
                m1=m+1
                m2=m+nra
                do mm=1,nra

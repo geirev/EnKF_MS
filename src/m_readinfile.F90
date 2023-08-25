@@ -90,10 +90,10 @@ module m_readinfile
       read(10,*)nrens              ; print '(a,tr3,i5)','nrens=         ',nrens
       read(10,*)nrt                ; print '(a,tr3,i5)','nrt=           ',nrt
       read(10,*)nrw                ; print '(a,tr3,i5)','nrw=           ',nrw
-      nrwindows=nint(real(nrt)/real(nrw))
-      if (nrwindows*nrw < nrt) nrwindows=nrwindows+1
+      nrwindows=nint(real(nrt-50)/real(nrw))+1
+      if (50+(nrwindows-1)*nrw < nrt) nrwindows=nrwindows+1
                                      print '(a,tr3,i5)','nrwindows=     ',nrwindows
-      nrt=nrwindows*nrw            ; print '(a,tr3,i5)','nrt updated=   ',nrt
+      nrt=50+(nrwindows-1)*nrw            ; print '(a,tr3,i5)','nrt updated=   ',nrt
 
 
       read(10,'(1x,l1)')lglobstat  ; print '(a,tr7,l1)','lglobstat=     ',lglobstat
