@@ -33,10 +33,8 @@ program main
    use m_ansi_colors
    implicit none
 
-   type(state), allocatable :: full(:,:)   ! The ensemble of realizations over the whole simulation
    type(state), allocatable :: win(:,:)    ! The ensemble of realizations over an assimilation window.
    type(state), allocatable :: win0(:,:)   ! Initial ensemble of realizations over an assimilation window.
-   type(state), allocatable :: winref(:)   ! The reference solution over an assimilation window.
    type(state), allocatable :: mem(:)      ! The ensemble of realizations
    type(state), allocatable :: sysnoise(:) ! The ensemble of sampled system noise updated every timestep
    type(state) ref                         ! reference solution
@@ -97,10 +95,8 @@ program main
 !   call system('touch obsloca.dat obsloco.dat')
 
 ! Now that we know all dimensions, allocate the main arrays
-   if (lglobstat) allocate (full(0:nrt,nrens))
-   allocate (win(0:nrw,nrens))
-   allocate (win0(0:nrw,nrens))
-   allocate (winref(0:nrw))
+   allocate (win(0:nrt,nrens))
+   allocate (win0(0:nrt,nrens))
    allocate (refout(0:nrt))
    allocate (mean(0:nrt))
    allocate (stdt(0:nrt))
@@ -177,41 +173,45 @@ program main
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! Loop over assimilation windows
    print '(a)','---------------------------------------------------------------------------'
+   tfin=0
    do l=1,nrwindows                                   ! Integrate model over the assimilation window
-      tini=(l-1)*nrw                                  ! time at beginning of assimilation window
-      tfin=l*nrw                                      ! time at end of assimilation window
+      tini=tfin                                  ! time at beginning of assimilation window
+      if (l==1) then
+         tfin=50
+      else
+         tfin=tfin+nrw                                      ! time at end of assimilation window
+      endif
       print *
       print '(a)','---------------------------------------------------------------------------'
       print '(a,i3.3,a,i5.5,a,i5.5)','DA window number ',l,' running from ',tini,' to ',tfin
       print *
 
 ! Reference solution over assimilation window stored in refout
-      winref(0)=ref
-      do k=1,nrw
+      refout(tini)=ref
+      do k=tini+1,tfin
          call model(ref)
-         winref(k)=ref
+         refout(k)=ref
       enddo
-      refout(tini:tfin)=winref
 
-! prior ensemble integration over assimilation window
-      win(0,:)=mem(:)                                 ! store ensemble at tini in win
       print '(tr5,a,i3,a,f10.2,a,i3)','main: prior ensemble simulation:  window=',l
 !$OMP PARALLEL DO
       do j=1,nrens
-         do k=1,nrw
+         win(tini,j)=mem(j)                                 ! store ensemble at tini in win
+         do k=tini+1,tfin
             call model(mem(j))
             win(k,j)=mem(j)
          enddo
       enddo
 !$OMP END PARALLEL DO
-      win0=win ! Store prior ensemble over window for IES algorithm as win=win0*X
+
+      win0(tini:tfin,:)=win(tini:tfin,:) ! Store prior ensemble over window for IES algorithm as win=win0*X
 
 ! Counting the number of measurements in the current DA window
       nrobs=obscount(nrt,tini,tfin,obsotimes,obsatimes,nro,nra)
       print '(tr5,a,i5)','main: Total number of measurements in the DA window= ',nrobs
       print *
 
-      if (nrobs > 0) then
+      if ((nrobs > 0).and.(tini >= 50)) then
 ! Allocate DA variables
          allocate(obs(nrobs))
          allocate(E(nrobs,nrens))
@@ -226,10 +226,8 @@ program main
          allocate(R(nrobs,nrobs))
 
 ! Generate the observations in obs and DA
-         winref=refout(tini:tfin)
          print '(tr5,a)','main: -> Calling prepD to get DA'
-         call prepD(obs,DA,winref,nrobs,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes,iter)
-         print *
+         call prepD(obs,DA,refout,nrobs,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes,iter)
 
 ! Loop over nmda steps
          steplength=steplength0
@@ -239,10 +237,11 @@ program main
             if (oldana) then
                print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling enkf preprep'
                ! Returns all matrices UNSCALED by sqrt(nrens-1) for use in analysis.F90
-               call enkfprep(mem,obs,Y,S,E,D,DA,meanS,R,innov,winref,win,nrobs,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
+               call enkfprep(mem,obs,Y,S,E,D,DA,meanS,R,innov,refout,win,nrobs,&
+                             tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
                D=D-Y
                print '(tr5,a,2(i3,a))','main: iter=',iter,' -> Calling analysis with mode: ',mode_analysis
-               call analysis(win, R, E, S, D, innov, ndim*(nrw+1), nrens, nrobs, .true., truncation, mode_analysis, &
+               call analysis(win(tini:tfin,:), R, E, S, D, innov, ndim*(nrw+1), nrens, nrobs, .true., truncation, mode_analysis, &
                            lrandrot, lupdate_randrot, lsymsqrt, inflate, infmult, 1)
             else
 
@@ -252,7 +251,8 @@ program main
 !                 Using IES  : We simulate E only in the first iteration and compute D=DA+E which we use unchanged
 !                              in all following IES iterations.  We are passing the predicted measurement Y and the
 !                              perturbed measurements D to IES
-                  call pertE(E,nrobs,l   ,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
+                  print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling pertE to get E'
+                  call pertE(E,nrobs,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
                   if (cmethod(1:3) == 'MDA') then
                      E=sqrt(real(nmda))*E
                      W=0.0
@@ -267,7 +267,8 @@ program main
                   fac=10.0+100.0*exp(-10.0*real(iter-1)/(real(nmda)))
                endif
 
-               call prepY(Y,win,nrobs,l,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
+               print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling prepY to get Y'
+               call prepY(Y,win,nrobs,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
                call scaling(Y,E,nrobs,nrens)
 
                if (cmethod(1:3) == 'IES') then
@@ -292,10 +293,13 @@ program main
                write(*,'(tr5,a,i3,a)',advance='no')'main: iter=',iter,' -> Ensemble update'
                if ((iter==nmda).and.(.not.lsim)) then
                   ldw=ndim*(nrw+1)
-                  call dgemm('N','N',ldw,nrens,nrens,1.0,win0,ldw,X,nrens,0.0,win,ldw)
+                  call dgemm('N','N',ldw,nrens,nrens,1.0,win0(tini:tfin,:),ldw,X,nrens,0.0,win(tini:tfin,:),ldw)
+                  ! EnKF type solution
+                  !ldw=ndim
+                  !call dgemm('N','N',ldw,nrens,nrens,1.0,win0(tfin,:),ldw,X,nrens,0.0,win(tfin,:),ldw)
                else
                   ldw=ndim
-                  call dgemm('N','N',ldw,nrens,nrens,1.0,win0(0,:),ldw,X,nrens,0.0,win(0,:),ldw)
+                  call dgemm('N','N',ldw,nrens,nrens,1.0,win0(tini,:),ldw,X,nrens,0.0,win(tini,:),ldw)
                endif
                print '(a,i3,a)','..... done'
             endif
@@ -303,10 +307,10 @@ program main
 ! timestep loop over assimilation window
             if ((iter < nmda).or.lsim) then
                write(*,'(tr5,a,i3,a,i3,i5,a,i5)',advance='no')'main: iter=',iter,' -> post-update-RESIM: window=',l,tini,'->',tfin
-               mem(:)=win(0,:)
 !$OMP PARALLEL DO
                do j=1,nrens
-                  do k=1,nrw
+                  mem(j)=win(tini,j)
+                  do k=tini+1,tfin
                      call model(mem(j))
                      win(k,j)=mem(j)
                   enddo
@@ -319,21 +323,23 @@ program main
             endif
 
 ! update prior ensemble in MDA
-            if (cmethod(1:3)=="MDA") win0=win
+            if (cmethod(1:3)=="MDA") win0(tini:tfin,:)=win(tini:tfin,:)
 
          enddo ! end loop over mda steps
          deallocate(obs,Y,S,E,D,DA,meanS,R,innov)
       endif
 
 ! Continue integration in next assimilation window from final value of current window
-      mem(:)=win(nrw,:)
+      mem(:)=win(tfin,:)
 
-! Only needed to compute space-time covariances
-      if (lglobstat) full(tini:tfin,:)=win(0:nrw,:)
+   enddo ! End loop over assimilation windows
+
+
+
+
 
 ! Compute ensemble mean and variance over current DA window
-      call windowstat(win,nrw,nrens,mean(tini:tfin),stdt(tini:tfin))
-   enddo ! End loop over assimilation windows
+   call windowstat(win,nrt,nrens,mean,stdt)
 
 ! Compute root-mean-squared errors and std. dev.
    do k=0,nrt
@@ -360,8 +366,7 @@ program main
    call gnuplot('gnu_ave',mean,nrt,outdir)
    call gnuplot('gnu_std',stdt,nrt,outdir)
    if (lglobstat) then
-      print *,'calling full covariance statistics'
-      call covstat(full,nrt,nrens,mean,stdt,covo,cova,outdir)
+      call covstat(win,nrt,nrens,mean,stdt,covo,cova,outdir)
       call gnuplot('gnu_covo',covo,nrt,outdir)
       call gnuplot('gnu_cova',cova,nrt,outdir)
    endif
