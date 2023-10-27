@@ -6,6 +6,20 @@ test code not completed
 <img src="doc/example.png" width="600">
 </p>
 
+# MWR2023 code and cases
+The original version of the code used for the MWR2023 paper is stored on the branch MWR2023.
+After cloing the repository you need to fetch it and check it out to replicate the cases in the paper (as the main branch will continue 
+evolving and may become incosistent with the original input files.
+
+```bash
+git fetch upstream/MWR2023
+git switch MWR2023
+```
+The input files and scripts needed to run the experiments reside in the mwr2023cases catalog
+
+
+
+
 # Installation:
 
 ## 1. Building the Project
@@ -71,6 +85,7 @@ replaced with main.
 ```bash
 sudo apt-get update
 sudo apt-get install libblas-dev liblapack-dev libomp-dev libfftw3-dev gfortran
+sudo apt-get install gnuplot
 ```
 
 ### Mac
