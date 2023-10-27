@@ -182,15 +182,14 @@ set style line 10  lt 1 lw 4 pt 3 ps 0 linecolor rgb pack(217,95,2)     # 26 dar
 set autoscale
 set yrange [ 0 : 2.5 ] noreverse nowriteback
 set xrange [ 0 : 200 ] noreverse nowriteback
-set xlabel  "Time ()" font "Arial,50" offset 0,0.50
-set ylabel  "Residual ()" font "Arial,50" offset 1.5,0
 set style data linespoints
 set nogrid
 ## Last datafile plotted: "rmse.dat"
-set terminal pdfcairo enhanced font  "Arial,40" size 10in,7in lw 2.0 rounded
-set key font ",40"
+p 'KS-MDA-5X/rmse.dat' u 1:2 t "rmse Atmos"  linestyle 4,\
+  'KS-MDA-5X/rmse.dat' u 1:3 t "rmse Ocean"  linestyle 6,\
+  'KS-MDA-5X-AOsep/rmse.dat' u 1:2 t "rmse sep Atmos"  linestyle 3,\
+  'KS-MDA-5X-AOsep/rmse.dat' u 1:3 t "rmse sep Ocean"  linestyle 5
+pdfout=1
+if (pdfout == 1) {set terminal pdfcairo enhanced font  "Arial,25" size 10in,7in lw 1.0 rounded}
 set output 'rms.pdf'
-p 'rmse.dat' u 1:4 t "rmss Atmos"  linestyle 3,\
-  'rmse.dat' u 1:5 t "rmss Ocean"  linestyle 5,\
-  'rmse.dat' u 1:2 t "rmse Atmos"  linestyle 4,\
-  'rmse.dat' u 1:3 t "rmse Ocean"  linestyle 6
+rep

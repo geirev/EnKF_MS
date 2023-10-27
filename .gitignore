@@ -1,6 +1,1 @@
 build
-test/*
-!test/infile.in
-!test/rms.gnu
-!test/c.gnu
-!test/cpdf.gnu

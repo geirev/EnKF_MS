@@ -180,17 +180,108 @@ set style line  8  lt 1 lw 4 pt 3 ps 0 linecolor rgb pack(102,102,102)   # 32 da
 set style line  9  lt 1 lw 4 pt 3 ps 0 linecolor rgb pack(253,205,172)   # 42 light orange
 set style line 10  lt 1 lw 4 pt 3 ps 0 linecolor rgb pack(217,95,2)     # 26 dark orange
 set autoscale
-set yrange [ 0 : 2.5 ] noreverse nowriteback
-set xrange [ 0 : 200 ] noreverse nowriteback
-set xlabel  "Time ()" font "Arial,50" offset 0,0.50
-set ylabel  "Residual ()" font "Arial,50" offset 1.5,0
+set yrange [ 0 : 1.5 ] noreverse nowriteback
+set xrange [ 0 : 16 ] noreverse nowriteback
 set style data linespoints
 set nogrid
 ## Last datafile plotted: "rmse.dat"
 set terminal pdfcairo enhanced font  "Arial,40" size 10in,7in lw 2.0 rounded
 set key font ",40"
-set output 'rms.pdf'
-p 'rmse.dat' u 1:4 t "rmss Atmos"  linestyle 3,\
-  'rmse.dat' u 1:5 t "rmss Ocean"  linestyle 5,\
-  'rmse.dat' u 1:2 t "rmse Atmos"  linestyle 4,\
-  'rmse.dat' u 1:3 t "rmse Ocean"  linestyle 6
+
+set xlabel "Window lengths"
+set ylabel "RMS value"
+
+set output 'rmse-KS-ES.pdf'
+p 'rmse-KS-ES.dat' u 1:4 t "rmss Atmos"  linestyle 3,\
+  'rmse-KS-ES.dat' u 1:5 t "rmss Ocean"  linestyle 5,\
+  'rmse-KS-ES.dat' u 1:2 t "rmse Atmos"  linestyle 4,\
+  'rmse-KS-ES.dat' u 1:3 t "rmse Ocean"  linestyle 6
+
+set output 'rmse-KS-ESX.pdf'
+p 'rmse-KS-ESX.dat' u 1:4 t "rmss Atmos"  linestyle 3,\
+  'rmse-KS-ESX.dat' u 1:5 t "rmss Ocean"  linestyle 5,\
+  'rmse-KS-ESX.dat' u 1:2 t "rmse Atmos"  linestyle 4,\
+  'rmse-KS-ESX.dat' u 1:3 t "rmse Ocean"  linestyle 6
+
+set output 'rmse-KS-MDA.pdf'
+p 'rmse-KS-MDA.dat' u 1:4 t "rmss Atmos"  linestyle 3,\
+  'rmse-KS-MDA.dat' u 1:5 t "rmss Ocean"  linestyle 5,\
+  'rmse-KS-MDA.dat' u 1:2 t "rmse Atmos"  linestyle 4,\
+  'rmse-KS-MDA.dat' u 1:3 t "rmse Ocean"  linestyle 6
+
+set output 'rmse-KS-MDAX.pdf'
+p 'rmse-KS-MDAX.dat' u 1:4 t "rmss Atmos"  linestyle 3,\
+  'rmse-KS-MDAX.dat' u 1:5 t "rmss Ocean"  linestyle 5,\
+  'rmse-KS-MDAX.dat' u 1:2 t "rmse Atmos"  linestyle 4,\
+  'rmse-KS-MDAX.dat' u 1:3 t "rmse Ocean"  linestyle 6
+
+set output 'rmse-KS-IES.pdf'
+p 'rmse-KS-IES.dat' u 1:4 t "rmss Atmos"  linestyle 3,\
+  'rmse-KS-IES.dat' u 1:5 t "rmss Ocean"  linestyle 5,\
+  'rmse-KS-IES.dat' u 1:2 t "rmse Atmos"  linestyle 4,\
+  'rmse-KS-IES.dat' u 1:3 t "rmse Ocean"  linestyle 6
+
+set output 'rmse-KS-IES4X.pdf'
+p 'rmse-KS-IES4X.dat' u 1:4 t "rmss Atmos"  linestyle 3,\
+  'rmse-KS-IES4X.dat' u 1:5 t "rmss Ocean"  linestyle 5,\
+  'rmse-KS-IES4X.dat' u 1:2 t "rmse Atmos"  linestyle 4,\
+  'rmse-KS-IES4X.dat' u 1:3 t "rmse Ocean"  linestyle 6
+
+set output 'rmse-KS-IESX.pdf'
+p 'rmse-KS-IESX.dat' u 1:4 t "rmss Atmos"  linestyle 3,\
+  'rmse-KS-IESX.dat' u 1:5 t "rmss Ocean"  linestyle 5,\
+  'rmse-KS-IESX.dat' u 1:2 t "rmse Atmos"  linestyle 4,\
+  'rmse-KS-IESX.dat' u 1:3 t "rmse Ocean"  linestyle 6
+
+set xrange [ 0 : 10 ] noreverse nowriteback
+set yrange [ 0 : 1 ] noreverse nowriteback
+set xlabel "MDA steps"
+
+set output 'rmse-KS-MDAstep5.pdf'
+p 'rmse-KS-MDAstep5.dat' u 1:4 t "rmss Atmos"  linestyle 3,\
+  'rmse-KS-MDAstep5.dat' u 1:5 t "rmss Ocean"  linestyle 5,\
+  'rmse-KS-MDAstep5.dat' u 1:2 t "rmse Atmos"  linestyle 4,\
+  'rmse-KS-MDAstep5.dat' u 1:3 t "rmse Ocean"  linestyle 6
+
+
+
+set output 'rmse-KS-MDAstep10.pdf'
+p 'rmse-KS-MDAstep10.dat' u 1:4 t "rmss Atmos"  linestyle 3,\
+  'rmse-KS-MDAstep10.dat' u 1:5 t "rmss Ocean"  linestyle 5,\
+  'rmse-KS-MDAstep10.dat' u 1:2 t "rmse Atmos"  linestyle 4,\
+  'rmse-KS-MDAstep10.dat' u 1:3 t "rmse Ocean"  linestyle 6
+
+
+
+
+set output 'rmse-KS-MDAstep15.pdf'
+p 'rmse-KS-MDAstep15.dat' u 1:4 t "rmss Atmos"  linestyle 3,\
+  'rmse-KS-MDAstep15.dat' u 1:5 t "rmss Ocean"  linestyle 5,\
+  'rmse-KS-MDAstep15.dat' u 1:2 t "rmse Atmos"  linestyle 4,\
+  'rmse-KS-MDAstep15.dat' u 1:3 t "rmse Ocean"  linestyle 6
+
+
+
+
+set xtics 1.0
+set xrange [ 2 : 6 ] noreverse nowriteback
+set yrange [ 0 : 0.3 ] noreverse nowriteback
+set xlabel "Window lengths"
+
+set output 'rmse-KS-MDAC.pdf'
+p 'rmse-KS-MDA.dat' u 1:4 t "rmss Atmos"  linestyle 3,\
+  'rmse-KS-MDA.dat' u 1:5 t "rmss Ocean"  linestyle 5,\
+  'rmse-KS-MDA.dat' u 1:2 t "rmse Atmos"  linestyle 4,\
+  'rmse-KS-MDA.dat' u 1:3 t "rmse Ocean"  linestyle 6
+
+set output 'rmse-KS-IESXC.pdf'
+p 'rmse-KS-IESX.dat' u 1:4 t "rmss Atmos"  linestyle 3,\
+  'rmse-KS-IESX.dat' u 1:5 t "rmss Ocean"  linestyle 5,\
+  'rmse-KS-IESX.dat' u 1:2 t "rmse Atmos"  linestyle 4,\
+  'rmse-KS-IESX.dat' u 1:3 t "rmse Ocean"  linestyle 6
+
+set output 'rmse-KS-IES4XC.pdf'
+p 'rmse-KS-IES4X.dat' u 1:4 t "rmss Atmos"  linestyle 3,\
+  'rmse-KS-IES4X.dat' u 1:5 t "rmss Ocean"  linestyle 5,\
+  'rmse-KS-IES4X.dat' u 1:2 t "rmse Atmos"  linestyle 4,\
+  'rmse-KS-IES4X.dat' u 1:3 t "rmse Ocean"  linestyle 6

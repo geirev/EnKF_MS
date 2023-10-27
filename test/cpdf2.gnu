@@ -177,17 +177,17 @@ set palette defined (-3 "blue", 0 "white", 1 "red")
 set palette rgbformulae 22,13,-31
 set palette rgbformulae 33,13,10
 
-set xlabel "Space index" font "Arial,40" offset 0,0.5
-set ylabel "Time index" font "Arial,40" offset 1.0,0
+set xlabel "Space index" offset 0,0.50
+set ylabel "Time index" offset 1.5,0
 
 #set terminal qt 0 position 0,0  size 800,1000 noraise
 #set terminal pdfcairo enhanced font  "Arial,30" size 10in,7in lw 1.0 rounded
-set terminal pdfcairo enhanced font  "Arial,40" size 10in,9in lw 1.0 rounded
+set terminal pdfcairo enhanced font  "Arial,35" size 10in,9in lw 1.0 rounded
 
 set yrange [ 48 : 200 ] noreverse writeback
 
 set cbrange [-4:4]
-set title "Ocean average" offset 0,-0.5  font "Arial,60"
+set title "Ocean average" offset 0,-1.0  font "Arial,50"
 set output "aveo.pdf"
 plot 'gnu_aveo.dat' matrix nonuniform with image notitle,\
      'obsloco.dat' u 1:2 w points pt 6 pointsize 0.1 linecolor "black" notitle
@@ -218,31 +218,3 @@ set output "stda.pdf"
 set title "Atmos standard deviation"
 plot 'gnu_stda.dat' matrix nonuniform with image notitle,\
      'obsloca.dat' u 1:2 w points pt 6 pointsize 0.1 linecolor "black" notitle
-
-set terminal pdfcairo enhanced font  "Arial,45" size 10in,9in lw 1.0 rounded
-set xlabel "Space index" font "Arial,50" offset 0,0.5
-set ylabel "Time index" font "Arial,50" offset 1.0,0
-set cbrange [-1.0:1.0]
-set yrange [75:125]
-set xrange [200:800]
-
-set output "corOo.pdf"
-set title "OceanObs-Ocean correlation"
-plot 'gnu_covoo.dat' matrix nonuniform with image notitle,\
-     'obs.dat' u 1:2 w points pt 6 pointsize 2.0 linecolor "black"  t "Observation"
-
-set output "corAa.pdf"
-set title "AtmosObs-Atmos correlation"
-plot 'gnu_covaa.dat' matrix nonuniform with image notitle,\
-     'obs.dat' u 1:2 w points pt 6 pointsize 2.0 linecolor "black" t "Observation"
-
-set cbrange [-0.5:0.5]
-set output "corOa.pdf"
-set title "OceanObs-Atmos correlation"
-plot 'gnu_covoa.dat' matrix nonuniform with image notitle,\
-     'obs.dat' u 1:2 w points pt 6 pointsize 2.0 linecolor "black" t "Observation"
-
-set output "corAo.pdf"
-set title "AtmosObs-Ocean correlation"
-plot 'gnu_covao.dat' matrix nonuniform with image notitle,\
-     'obs.dat' u 1:2 w points pt 6 pointsize 2.0 linecolor "black" t "Observation"

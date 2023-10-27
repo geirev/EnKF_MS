@@ -10,6 +10,7 @@ test code not completed
 The original version of the code used for the MWR2023 paper is stored on the branch MWR2023.
 After cloing the repository you need to fetch it and check it out to replicate the cases in the paper (as the main branch will continue 
 evolving and may become incosistent with the original input files.
+Note that the seed.dat file assumes gfortran.
 
 ```bash
 git fetch upstream/MWR2023
