@@ -1,19 +1,21 @@
 # EnKF_MS
 
-test code not completed
+Example of multiscale DA with the Kuramoto-Sivashinsky equations
 
 <p align="center">
-<img src="doc/example.png" width="600">
+<img src="doc/avea.png" width="300">
+<img src="doc/aveo.png" width="300">
 </p>
 
 # MWR2023 code and cases
 The original version of the code used for the MWR2023 paper is stored on the branch MWR2023.
 After cloing the repository you need to fetch it and check it out to replicate the cases in the paper (as the main branch will continue 
 evolving and may become incosistent with the original input files.
-Note that the seed.dat file assumes gfortran.
+Note that the existing seed.dat file assumes gfortran.
+The separate uncoupled DA experiments with separate updating requires a modified code stored in the SeparateDA branch.
 
 ```bash
-git fetch upstream/MWR2023
+git fetch upstream MWR2023
 git switch MWR2023
 ```
 The input files and scripts needed to run the experiments reside in the mwr2023cases catalog
@@ -84,9 +86,10 @@ replaced with main.
 ### Linux
 
 ```bash
-sudo apt-get update
-sudo apt-get install libblas-dev liblapack-dev libomp-dev libfftw3-dev gfortran
-sudo apt-get install gnuplot
+sudo apt update
+sudo apt install libblas-dev liblapack-dev libomp-dev libfftw3-dev gfortran
+sudo apt install gnuplot
+sudo apt install ksh93u+m
 ```
 
 ### Mac
@@ -185,11 +188,13 @@ Navigate to the `test` directory of the `EnKF_MS` repository:
 cd EnKF_MS/test
 ```
 
-and run:
-
+then run the project:
 ```bash
-ms.exe
+cd EnKF_MS/test
+vi run.sh
+./run.sh
 ```
+edit the run.sh script to execute the code with the specified infiles.
 
 ### Mac
 
@@ -200,21 +205,24 @@ from anywhere on the local file system:
 mkdir -p /usr/local/bin
 ```
 
-then create a symlink for `$HOME/bin/ms.exe` to `/usr/local/bin`
+then create a symlink for `$HOME/bin/multiscale` to `/usr/local/bin`
 
 ```bash
-ln -s $HOME/bin/ms.exe /usr/local/bin/
+ln -s $HOME/bin/multiscale /usr/local/bin/
 ```
 
 then run the project:
-
 ```bash
 cd EnKF_MS/test
-ms.exe
+vi run.sh
+./run.sh
 ```
+edit the run.sh script to execute the code with the specified infiles.
+
 
 ## 7. Plotting
-Check the Solution/p.gnu file 
+The run.sh script also generates plots using gnuplot.
+
 
 ## 8. Code standards
 The code follows the standard  <a href="https://github.com/geirev/EnKF_seir#code-standards">Code standards</a>
