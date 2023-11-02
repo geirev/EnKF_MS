@@ -20,6 +20,7 @@ module m_model
    end type
 
    type(modpar) :: alpha,omega
+   real eps           ! Ocean timescale multiplier
 
 contains
 
@@ -99,9 +100,9 @@ subroutine model(mem)
          difa(i) =-alpha%d1*kappaa(i)**2 + alpha%d2*kappaa(i)**4    ! Diffusion operator in wave space
          difo(i) =-omega%d1*kappao(i)**2 + omega%d2*kappao(i)**4    ! Diffusion operator in wave space
          Aa(i)=1.0 + dt2*difa(i)
-         Ao(i)=1.0 + dt2*difo(i)
+         Ao(i)=1.0*eps + dt2*difo(i)
          Ba(i)=1.0/(1.0 - dt2*difa(i))
-         Bo(i)=1.0/(1.0 - dt2*difo(i))
+         Bo(i)=1.0/(1.0*eps - dt2*difo(i))
       enddo
    endif
 

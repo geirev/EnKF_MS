@@ -183,6 +183,8 @@ module m_readinfile
       read(10,*)omega%oa               ; print '(a,tr2,f8.4)','omega%oa       =',omega%oa
       read(10,*)omega%vback            ; print '(a,tr2,f8.4)','omega%vback    =',omega%vback
       read(10,*)omega%v                ; print '(a,tr2,f8.4)','omega%v        =',omega%v
+
+      read(10,*)eps                    ; print '(a,tr2,f8.4)','epsilon        =',eps
       print '(a)','--------------------------------------------------------------------------------'
 
       omega%vback=omega%vback*real(lxo)/real(lxa)
