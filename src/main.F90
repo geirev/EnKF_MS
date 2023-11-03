@@ -233,7 +233,11 @@ program main
          steplength=steplength0
          W=0.0
          fac=1.0
+            ! Compute correlation matrix between state and predicted measurements
+            ! Loop through state variables
+            ! Compute inversion using selected measurements subD
          do iter=1,nmda
+
             if (oldana) then
                print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling enkf preprep'
                ! Returns all matrices UNSCALED by sqrt(nrens-1) for use in analysis.F90

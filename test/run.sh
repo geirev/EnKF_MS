@@ -11,24 +11,17 @@ do
 
    if [ -f $i ]
    then
-       cp $i infile.in
-        if [ $sep == "sep"  ]
-        then
-           echo "WARNING: Running multiscale.sep"
-           sleep 2
-           multiscale.sep  | tee  ${exp}.log
-        else
-           multiscale   | tee  ${exp}.log
-        fi
-        RESULT=$?
-        if [ $RESULT == 0 ]; then
-           pushd $exp
-           gnuplot ../cpdf2.gnu
-           gnuplot ../rms.gnu
-           [[ -f costf.dat ]] &&  gnuplot ../costf.gnu
-           popd
-        else
-          echo failed 2
-        fi
+      cp $i infile.in
+      multiscale   | tee  ${exp}.log
+      RESULT=$?
+      if [ $RESULT == 0 ]; then
+         pushd $exp
+         gnuplot ../cpdf2.gnu
+         gnuplot ../rms.gnu
+         [[ -f costf.dat ]] &&  gnuplot ../costf.gnu
+         popd
+      else
+        echo failed 2
+      fi
    fi
 done

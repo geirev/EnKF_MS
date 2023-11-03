@@ -1,5 +1,5 @@
 #1.0 Version of infile.in ---------------------------------------------------------------------------------------
- KS-ES-5-2                        ! Output directory
+ ES-w05-d2                        ! Output directory
  1000                             ! Ensemble size
  200                              ! Number of timesteps
  5                                ! Number of timesteps within a DA window
@@ -51,3 +51,4 @@
    0.003                          ! omega%oa       Atmosphere to ocean coupling
    0.0                            ! omega%vback    Background ocean advection velocity
    1.0                            ! omega%v        Nonlinear ocean advection velocity coefficient
+   1.0                            ! epsilon        Timescale parameter for the ocean model
