@@ -67,7 +67,7 @@ subroutine prepD(obs,D,winref,nrobs,tini,tfin,obsoloc,obsaloc,obsotimes,obsatime
       endif
    enddo
 
-! Construct ensemble of measurements D=d+E
+! Construct ensemble of unperturbed measurements D=d
    do j=1,nrens
       do m=1,nrobs
          D(m,j)=obs(m)%d

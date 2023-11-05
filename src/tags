@@ -1,12 +1,14 @@
 add_state	mod_state.F90	/^   function add_state(A,B)$/
 assign_state	mod_state.F90	/^   subroutine assign_state(A,r)$/
+assimilation	m_assimilation.F90	/^subroutine assimilation(obs,win,win0,DA,E,D,Y,S,X,/
+assimilation_old	m_assimilation_old.F90	/^subroutine assimilation_old(obs,win,winref,DA,tini/
 average_state	mod_state.F90	/^   function average_state(A)$/
 color	m_ansi_colors.F90	/^  function color(str, code) result(out)$/
 costfunction	m_costfunction.F90	/^real function costfunction(W,H,nrens,nrobs)$/
 covstat	m_covstat.F90	/^subroutine covstat(full,nrt,nrens,mean,stdt,covo,c/
 debug	m_debug.F90	/^subroutine debug(mem,ref,nrens,outdir,lwin,iter)$/
 dumpsol	m_dumpsol.F90	/^subroutine dumpsol(time,ana,ave,var,cov,nx,dx,obs,/
-enkfprep	m_enkfprep.F90	/^subroutine enkfprep(mem,obs,Y,S,E,D,DA,meanY,R,inn/
+enkfprep	m_enkfprep.F90	/^subroutine enkfprep(obs,Y,S,E,D,DA,meanY,R,innov,w/
 ensemblecovariance	m_ensemblecovariance.F90	/^subroutine ensemblecovariance(A,ave,cov,nrens)$/
 ensemblemean	m_ensemblemean.F90	/^subroutine ensemblemean(A,ave,nrens)$/
 ensemblevariance	m_ensemblevariance.F90	/^subroutine ensemblevariance(A,ave,var,nrens)$/
@@ -22,7 +24,7 @@ obsxloc	m_obsxloc.F90	/^subroutine obsxloc(nr,obsloc)$/
 pertE	m_pertE.F90	/^subroutine pertE(E,nrobs,tini,tfin,obsoloc,obsaloc/
 prepD	m_prepD.F90	/^subroutine prepD(obs,D,winref,nrobs,tini,tfin,obso/
 prepY	m_prepY.F90	/^subroutine prepY(Y,win,nrobs,tini,tfin,obsoloc,obs/
-print_ies_status	m_print_ies_status.F90	/^integer function print_ies_status(fac,steplength,c/
+print_ies_status	m_print_ies_status.F90	/^integer function print_ies_status(steplength,costf/
 proj	m_ies.F90	/^function proj(X,n,nrens)$/
 readinfile	m_readinfile.F90	/^   subroutine readinfile$/
 real_state_mult	mod_state.F90	/^   function real_state_mult(B,A)$/

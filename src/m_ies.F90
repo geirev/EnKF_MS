@@ -1,6 +1,6 @@
 module m_ies
 contains
-subroutine ies(Y,D,W,nrens,nrobs,steplength,mode_analysis,fac)
+subroutine ies(Y,D,W,nrens,nrobs,steplength,mode_analysis)
    use mod_anafunc       ! from EnKF_analysis
    use m_scaling         ! to rescale matrices to measurement std dev
    implicit none
@@ -11,7 +11,6 @@ subroutine ies(Y,D,W,nrens,nrobs,steplength,mode_analysis,fac)
    real, intent(inout) :: W(nrens,nrens)   ! Coefficient matrix
    real, intent(in)    :: steplength       ! Steplength in update
    integer, intent(in) :: mode_analysis    !
-   real, intent(in)    :: fac              ! LM factor
 
    integer i
    real :: DB(nrobs,nrens)     ! D work array
@@ -33,12 +32,6 @@ subroutine ies(Y,D,W,nrens,nrobs,steplength,mode_analysis,fac)
 
    YB=Y
    DB=D
-   if (fac /= 1.0) then
-      E=sqrt(fac)*proj(DB,nrobs,nrens)*sqrt(real(nrens-1))
-      call scaling(YB,E,nrobs,nrens)
-      call scaling(DB,E,nrobs,nrens)
-   endif
-
 
 ! Y = Y*PI
    S=proj(YB,nrobs,nrens)
@@ -55,7 +48,7 @@ subroutine ies(Y,D,W,nrens,nrobs,steplength,mode_analysis,fac)
   call dgesv(nrens,nrobs,transpose(Omega),nrens,ipiv,transpose(S),nrens,info)
 
 ! H = S*W + D - Y
-   H=fac*(DB-YB)
+   H=DB-YB
 
 ! H=H+matmul(S,W)
    call dgemm('N','N',nrobs,nrens,nrens,1.0,S,nrobs,W,nrens,1.0,H,nrobs)
@@ -78,7 +71,7 @@ subroutine ies(Y,D,W,nrens,nrobs,steplength,mode_analysis,fac)
       allocate(Z(nrobs,nrmin))
       allocate(X3(nrobs,nrens))
 ! E = D*PI
-      E=sqrt(fac)*proj(DB,nrobs,nrens)
+      E=proj(DB,nrobs,nrens)
 
       call lowrankE(S,E,nrobs,nrens,nrmin,Z,eig,truncation,1)
 
@@ -95,7 +88,7 @@ subroutine ies(Y,D,W,nrens,nrobs,steplength,mode_analysis,fac)
       stop
    endif
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-   W = W - (steplength/fac)*(W - X5)
+   W = W - steplength*(W - X5)
 !   W = (1.0-steplength)*W + steplength*X5
 !   print '(a)','IES W: '
 !   print '(10f13.4)',W(1:10,1:10)

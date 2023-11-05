@@ -1,6 +1,6 @@
 module m_enkfprep
 contains
-subroutine enkfprep(mem,obs,Y,S,E,D,DA,meanY,R,innov,winref,win,nrobs,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
+subroutine enkfprep(obs,Y,S,E,D,DA,meanY,R,innov,winref,win,nrobs,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
    use mod_dimensions
    use mod_state
    use mod_observation
@@ -9,7 +9,6 @@ subroutine enkfprep(mem,obs,Y,S,E,D,DA,meanY,R,innov,winref,win,nrobs,tini,tfin,
    use m_readinfile
    use m_model
    implicit none
-   type(state),    intent(inout) :: mem(nrens)
    type(state),    intent(in) :: win(0:nrt,nrens)
    type(state),    intent(in) :: winref(0:nrt)
    integer, intent(in) :: nrobs
@@ -19,7 +18,7 @@ subroutine enkfprep(mem,obs,Y,S,E,D,DA,meanY,R,innov,winref,win,nrobs,tini,tfin,
    integer, intent(in) :: obsaloc(nra)
    integer, intent(in) :: obsotimes(nrt)
    integer, intent(in) :: obsatimes(nrt)
-   type(observation),  intent(out):: obs(nrobs)
+   type(observation),  intent(in):: obs(nrobs)
    real,  intent(out):: Y(nrobs,nrens)
    real,  intent(out):: S(nrobs,nrens)
    real,  intent(out):: E(nrobs,nrens)

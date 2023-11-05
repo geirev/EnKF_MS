@@ -16,6 +16,8 @@ program main
    use m_ensemblevariance                  ! Compute ensemble variance at current time (from mem)
    use m_ensemblecovariance                ! Compute ensemble covariance at current time (from mem)
    use m_enkfprep                          ! Setting up predicted measurements and matrices for analysis
+   use m_assimilation_old                  ! Old analysis assimilation step gathered in one routine
+   use m_assimilation                      ! New analysis assimilation step gathered in one routine
    use m_prepY                             ! Setting up predicted measurements for IES analysis
    use m_scaling                           ! Setting up predicted measurements for IES analysis
    use m_prepD                             ! Setting up predicted measurements for IES analysis
@@ -63,11 +65,8 @@ program main
    real, allocatable :: Y(:,:)             ! Predicted meaurements
    real, allocatable :: S(:,:)             ! Predicted meaurements anomalies
    real, allocatable :: E(:,:)             ! Measurement perturbations
-   real, allocatable :: D(:,:)             ! Innovations
-   real, allocatable :: DA(:,:)            ! Innovations
-   real, allocatable :: R(:,:)             ! Measurement error covariance matrix
-   real, allocatable :: meanS(:)           ! Mean of predicted measurements
-   real, allocatable :: innov(:)           ! Mean innovation
+   real, allocatable :: D(:,:)             ! Perturbed measurements/Innovations
+   real, allocatable :: DA(:,:)            ! Measurements
    real, allocatable :: W(:,:)             ! ies iteration matrix
    real, allocatable :: Wold(:,:)          ! ies iteration matri for reducing steplength
    real, allocatable :: Yold(:,:)          ! ies predicted measurements for reducing steplength
@@ -79,9 +78,8 @@ program main
    integer tfin                            ! end   time of an assimilation window
    integer nrobs                           ! Total number of measurement per assimilation window
 
-   integer j,k,l,iter,ldw,iprt
+   integer j,k,l,iter
    real time
-   real fac
    real :: dxsamp=1.0
    real :: steplength
    real, allocatable :: costf(:,:)
@@ -214,16 +212,11 @@ program main
       if ((nrobs > 0).and.(tini >= 50)) then
 ! Allocate DA variables
          allocate(obs(nrobs))
+         allocate(DA(nrobs,nrens))
          allocate(E(nrobs,nrens))
          allocate(D(nrobs,nrens))
-         allocate(DA(nrobs,nrens))
          allocate(Y(nrobs,nrens))
-
-! oldana vars
          allocate(S(nrobs,nrens))
-         allocate(meanS(nrobs))
-         allocate(innov(nrobs))
-         allocate(R(nrobs,nrobs))
 
 ! Generate the observations in obs and DA
          print '(tr5,a)','main: -> Calling prepD to get DA'
@@ -232,80 +225,18 @@ program main
 ! Loop over nmda steps
          steplength=steplength0
          W=0.0
-         fac=1.0
-            ! Compute correlation matrix between state and predicted measurements
-            ! Loop through state variables
-            ! Compute inversion using selected measurements subD
+
+         ! For localization compute correlation matrix between state and predicted measurements
          do iter=1,nmda
 
             if (oldana) then
-               print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling enkf preprep'
-               ! Returns all matrices UNSCALED by sqrt(nrens-1) for use in analysis.F90
-               call enkfprep(mem,obs,Y,S,E,D,DA,meanS,R,innov,refout,win,nrobs,&
-                             tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
-               D=D-Y
-               print '(tr5,a,2(i3,a))','main: iter=',iter,' -> Calling analysis with mode: ',mode_analysis
-               call analysis(win(tini:tfin,:), R, E, S, D, innov, ndim*(nrw+1), nrens, nrobs, .true., truncation, mode_analysis, &
-                           lrandrot, lupdate_randrot, lsymsqrt, inflate, infmult, 1)
+            ! Old analysis update for ES ans ESMDA
+               call assimilation_old(obs,win,refout,DA,tini,tfin,nrobs,iter,obsoloc,obsaloc,obsotimes,obsatimes)
             else
-
-               if ((cmethod(1:3)=='MDA') .or. ((cmethod(1:3)=='IES').and.(iter==1))) then
-!                 Using ESMDA: We simullate a new E for every DA step and then scale it with sqrt(nmda),
-!                              thus, D=DA+sqrt(nmda)*E is updated every MDA step.
-!                 Using IES  : We simulate E only in the first iteration and compute D=DA+E which we use unchanged
-!                              in all following IES iterations.  We are passing the predicted measurement Y and the
-!                              perturbed measurements D to IES
-                  print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling pertE to get E'
-                  call pertE(E,nrobs,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
-                  if (cmethod(1:3) == 'MDA') then
-                     E=sqrt(real(nmda))*E
-                     W=0.0
-                     steplength=1.0
-                  endif
-                  D=DA+E
-                  call scaling(D,E,nrobs,nrens)
-               endif
-
-               if ((cmethod(1:3)=='IES').and.LM) then
-               ! Levenberg–Marquardt algorithm with IES
-                  fac=10.0+100.0*exp(-10.0*real(iter-1)/(real(nmda)))
-               endif
-
-               print '(tr5,a,i3,a)','main: iter=',iter,' -> Calling prepY to get Y'
-               call prepY(Y,win,nrobs,tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
-               call scaling(Y,E,nrobs,nrens)
-
-               if (cmethod(1:3) == 'IES') then
-                  call ies_steplength(steplength,costf,nrwindows,nmda,W,Wold,D,Y,Yold,nrens,nrobs,iter,l)
-                  if (steplength < 0.01) exit
-               endif
-
-               print '(tr5,a,2(i3,a))','main: iter=',iter,' -> Calling ies with mode: ',mode_analysis
-               call ies(Y,D,W,nrens,nrobs,steplength,mode_analysis,fac)
-
-               if (cmethod(1:3) == 'IES') iprt=print_ies_status(fac,steplength,costf(iter,l),Wold,W,nrens,iter)
-
-! X = I + W/sqrt(N-1)
-               X=W/sqrt(real(nrens-1))
-               do j=1,nrens
-                  X(j,j)=X(j,j)+1.0
-               enddo
-
-! Window update: for last iteration and in ES we are updating the whole window not just the intial condition.
-! For linear dynamics, this doesn't change anything, but for strongly unstable dynamics it may give a better
-! posterior estimate over the window, and better starting point for the next window.
-               write(*,'(tr5,a,i3,a)',advance='no')'main: iter=',iter,' -> Ensemble update'
-               if ((iter==nmda).and.(.not.lsim)) then
-                  ldw=ndim*(nrw+1)
-                  call dgemm('N','N',ldw,nrens,nrens,1.0,win0(tini:tfin,:),ldw,X,nrens,0.0,win(tini:tfin,:),ldw)
-                  ! EnKF type solution
-                  !ldw=ndim
-                  !call dgemm('N','N',ldw,nrens,nrens,1.0,win0(tfin,:),ldw,X,nrens,0.0,win(tfin,:),ldw)
-               else
-                  ldw=ndim
-                  call dgemm('N','N',ldw,nrens,nrens,1.0,win0(tini,:),ldw,X,nrens,0.0,win(tini,:),ldw)
-               endif
-               print '(a,i3,a)','..... done'
+            ! New IES implmentation supporting ES, ESMDA and IES
+               call assimilation(obs,win,win0,DA,E,D,Y,S,X,W,Wold,Yold,costf,&
+                        tini,tfin,nrobs,iter,obsoloc,obsaloc,obsotimes,obsatimes,l,steplength)
+               if (steplength < 0.01) exit
             endif
 
 ! timestep loop over assimilation window
@@ -330,7 +261,7 @@ program main
             if (cmethod(1:3)=="MDA") win0(tini:tfin,:)=win(tini:tfin,:)
 
          enddo ! end loop over mda steps
-         deallocate(obs,Y,S,E,D,DA,meanS,R,innov)
+         deallocate(obs,Y,S,E,D,DA)
       endif
 
 ! Continue integration in next assimilation window from final value of current window
