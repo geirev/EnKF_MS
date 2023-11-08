@@ -13,6 +13,7 @@ ensemblecovariance	m_ensemblecovariance.F90	/^subroutine ensemblecovariance(A,av
 ensemblemean	m_ensemblemean.F90	/^subroutine ensemblemean(A,ave,nrens)$/
 ensemblevariance	m_ensemblevariance.F90	/^subroutine ensemblevariance(A,ave,var,nrens)$/
 frobenius	m_frobenius.F90	/^real function frobenius(A,m,n)$/
+getD	m_getD.F90	/^subroutine getD(D,subD,nrobs,nrens,lobs,nobs)$/
 gnuplot	m_gnuplot.F90	/^subroutine gnuplot(fname,variable,nrt,outdir)$/
 ies	m_ies.F90	/^subroutine ies(Y,D,W,nrens,nrobs,steplength,mode_a/
 ies_steplength	m_ies_steplength.F90	/^subroutine ies_steplength(steplength,costf,nrwindo/
@@ -42,3 +43,4 @@ statistics	m_statistics.F90	/^subroutine statistics(full,nrt,nrens,nrf)$/
 subtract_state	mod_state.F90	/^   function subtract_state(A,B)$/
 tecfld	m_tecfld.F90	/^subroutine tecfld(fname,ii,jj,nr,fld)$/
 windowstat	m_windowstat.F90	/^subroutine windowstat(win,nrt,nrens,mean,stdt)$/
+wtime	m_wtime.F90	/^    function wtime ( )$/

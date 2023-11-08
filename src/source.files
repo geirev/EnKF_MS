@@ -12,6 +12,7 @@ F90SOURCE = \
 	m_ensemblemean.F90\
 	m_ensemblevariance.F90\
 	m_frobenius.F90\
+	m_getD.F90\
 	m_gnuplot.F90\
 	m_ies.F90\
 	m_ies_steplength.F90\
@@ -33,5 +34,6 @@ F90SOURCE = \
 	m_set_random_seed2.F90\
 	m_statistics.F90\
 	m_tecfld.F90\
-	m_windowstat.F90
+	m_windowstat.F90\
+	m_wtime.F90
 

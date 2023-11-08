@@ -160,9 +160,12 @@ module m_readinfile
       read(10,'(1x,l1)')Rexact     ; print '(a,tr9,l1)',   'Rexact=      ',Rexact
       read(10,'(1x,l1)')lrandrot   ; print '(a,tr9,l1)',   'lrandrot=    ',lrandrot
       read(10,*)inflate,infmult    ; print '(a,tr5,i5,tr2,f6.3)','inflation=   ',inflate,infmult
-      read(10,*)local,obs_radius,obs_truncation; print '(a,tr5,i5,tr2,2f6.3)','localization=',local,obs_radius,obs_truncation
+      read(10,*)local,obs_radius,obs_truncation; print '(a,tr5,i5,tr2,2f8.3)','localization=',local,obs_radius,obs_truncation
+      if (obs_truncation==0.0) then
+         obs_truncation=3.0/sqrt(real(nrens))
+         print '(a,tr5,i5,tr2,2f8.3)','localization=',local,obs_radius,obs_truncation
+      endif
       print '(a)','--------------------------------------------------------------------------------'
-      call execute_command_line (cmd//outdir, exitstat=i)
 
       read(10,'(a)')ca
       if (ca /= '#5') then
@@ -191,6 +194,7 @@ module m_readinfile
       print *,'omega%vback corrected by factor (lxo/lxa): ',real(lxo)/real(lxa)
    close(10)
    print '(a)','--------------------------------------------------------------------------------'
+   call execute_command_line (cmd//outdir, exitstat=i)
 
    cpinfile='cp infile.in infile.'//trim(outdir)
    call execute_command_line (trim(cpinfile), exitstat=i)

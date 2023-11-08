@@ -25,8 +25,7 @@ subroutine assimilation_old(obs,win,winref,DA,tini,tfin,nrobs,iter,obsoloc,obsal
    real,  intent(in) :: DA(nrobs,nrens)
 
    real start,finish,cpu0,cpu1
-   logical, allocatable :: lobs(:,:)
-   integer, allocatable :: nobs(:)
+   logical, allocatable :: globobs(:,:)
 
    real, allocatable :: Y(:,:)
    real, allocatable :: S(:,:)
@@ -39,7 +38,8 @@ subroutine assimilation_old(obs,win,winref,DA,tini,tfin,nrobs,iter,obsoloc,obsal
    real, allocatable, dimension(:,:)   :: subS,subE,subD, subR
    real, allocatable, dimension(:)     :: subinnov,corrA,corrO
    real, allocatable, dimension(:,:,:)   :: subwin
-   integer i,j,l,m
+   logical, allocatable ::  lobs(:)           ! active measurements
+   integer nobs,i,j,l,m
    real stdA,aveA,stdO,aveO,stdS
 
 
@@ -50,6 +50,7 @@ subroutine assimilation_old(obs,win,winref,DA,tini,tfin,nrobs,iter,obsoloc,obsal
    allocate(R(nrobs,nrobs))
    allocate(meanS(nrobs))
    allocate(innov(nrobs))
+   allocate(lobs(nrobs))
 
 
 
@@ -59,10 +60,12 @@ subroutine assimilation_old(obs,win,winref,DA,tini,tfin,nrobs,iter,obsoloc,obsal
                  tini,tfin,obsoloc,obsaloc,obsotimes,obsatimes)
    D=D-Y
 
+   print *,'Analysis:',local
    cpu0=wtime()
-   call cpu_time(start)
+   call cpu_time(start); print '(a)','analysis start:'
+
    if (local==0) then
-      print '(tr5,a,2(i3,a))','        assimilation_old: iter=',iter,' -> Calling analysis with mode: ',mode_analysis
+      print '(tr5,a,2(i3,a))','main: iter=',iter,' -> Calling analysis with mode: ',mode_analysis
       allocate(subwin(ndim,tini:tfin,nrens))
       do j=1,nrens
       do l=tini,tfin
@@ -83,33 +86,31 @@ subroutine assimilation_old(obs,win,winref,DA,tini,tfin,nrobs,iter,obsoloc,obsal
       deallocate(subwin)
 
    else
-      print '(a,2i2,f10.2,f10.3)','        assimilation_old: calling local analysis with mode: '&
-                                           ,mode_analysis,local,obs_radius,obs_truncation
+      print '(a,2i2,f10.2)','       enkf: calling local analysis with mode: ',mode_analysis,local,obs_radius,obs_truncation
 
-      allocate(lobs(nx,nrobs),nobs(nx))
-      lobs(:,:)=.false.
-      nobs(:)=0
+      allocate(globobs(nx,nrobs))
+      globobs(:,:)=.false.
 
-! Distace based localization compute active measurements for each grid point
+! Distace based localization
       if (local == 1) then
-!$OMP PARALLEL DO
-         do m=1,nrobs
-            do i=1,nx
+         do i=1,nx
+            nobs(:)=0
+            lobs(:)=.false.
+
+            do m=1,nrobs
                if (real(abs(obs(m)%xloc-i)) < obs_radius) then
-                  lobs(i,m)=.true.
-                  nobs(i)=nobs(i)+1
+                  lobs(m)=.true.
+                  globobs(i,m)=.true.
+                  nobs=nobs+1
                endif
             enddo
-            if (i==nx/2)  print *,'        number of local measurements for i=',i,nobs(i)
+            if (i==nx/2)  print *,'number of local measurements for i=',i,nobs
          enddo
-!$OMP END PARALLEL DO
       endif
 
-! Adaptive localization compute active measurements for each grid point
-      if (local == 2) then
-         allocate(corrA(nrobs), corrO(nrobs))
-!!$OMP PARALLEL DO private(aveA,aveO,stdA,stdO,j,m,stdS,corrA,corrO)
-         do i=1,nx
+!! Adaptive localization
+         if (local == 2) then
+      if (local== 2) allocate(corrA(nrobs), corrO(nrobs))
             stdA=0.0
             aveA=0.0
             stdO=0.0
@@ -151,26 +152,24 @@ subroutine assimilation_old(obs,win,winref,DA,tini,tfin,nrobs,iter,obsoloc,obsal
 
             do m=1,nrobs
                if ((abs(corrA(m)) > obs_truncation) .or. (abs(corrO(m)) > obs_truncation)) then
-                  nobs(i)=nobs(i)+1
-                  lobs(i,m)=.true.
+                  lobs(m)=.true.
+                  nobs=nobs+1
+                  globobs(i,m)=1
                endif
             enddo
-            if (i==nx/2)  print *,'       assimilation_old: number of local measurements for i=',i,nobs(i)
-         enddo
-!!$OMP END PARALLEL DO
-      endif
+            if (i==nx/2)  print *,'number of local measurements for i=',i,nobs
+         endif
 
 
-      do i=1,nx
-         if (nobs(i) > 0) then
-            allocate(subD(nobs(i),nrens))
-            allocate(subE(nobs(i),nrens))
-            allocate(subS(nobs(i),nrens))
-            allocate(subinnov(nobs(i)))
-            allocate(subR(nobs(i),nobs(i)))
-            call getD(D,subD,nrobs,nrens,lobs(i,:),nobs(i)) ! the innovations
-            call getD(E,subE,nrobs,nrens,lobs(i,:),nobs(i)) ! the observation errors
-            call getD(S,subS,nrobs,nrens,lobs(i,:),nobs(i)) ! the HA'
+         if (nobs > 0) then
+            allocate(subD(nobs,nrens))
+            allocate(subE(nobs,nrens))
+            allocate(subS(nobs,nrens))
+            allocate(subinnov(nobs))
+            allocate(subR(nobs,nobs))
+            call getD(D,subD,nrobs,nrens,lobs,nobs) ! the innovations
+            call getD(E,subE,nrobs,nrens,lobs,nobs) ! the observation errors
+            call getD(S,subS,nrobs,nrens,lobs,nobs) ! the HA'
 
             allocate(subwin(2,tini:tfin,nrens))
             do j=1,nrens
@@ -180,7 +179,7 @@ subroutine assimilation_old(obs,win,winref,DA,tini,tfin,nrobs,iter,obsoloc,obsal
             enddo
             enddo
 
-             call analysis(subwin, subR, subE, subS, subD, subinnov, 2*(tfin-tini+1), nrens, nobs(i),&
+             call analysis(subwin, subR, subE, subS, subD, subinnov, 2*(tfin-tini+1), nrens, nobs,&
                            .false., truncation, mode_analysis, &
                            lrandrot, lupdate_randrot, lsymsqrt, inflate, infmult, 1)
 
@@ -193,17 +192,27 @@ subroutine assimilation_old(obs,win,winref,DA,tini,tfin,nrobs,iter,obsoloc,obsal
 
             deallocate(subD, subE, subS, subinnov, subR, subwin)
          endif
+
       enddo
-      print *,'       assimilation_old: local analysis done'
+
+      cpu1=wtime()
+      call cpu_time(finish); print '(a)','local finish:'
+      print '(2(a,f6.2))','local: cpu time=',finish-start,', wall-clock time=',cpu1-cpu0
 
       if (local== 2) deallocate(corrA, corrO)
-      deallocate(lobs,nobs)
-   endif
 
+!      if (local== 2) then
+!         open(10,file='globobs.dat')
+!            do i=1,nx
+!               write(10,'(1000i1)')globobs(i,:)
+!            enddo
+!         close(10)
+!         deallocate(globobs)
+!      endif
+
+
+   endif
    deallocate(Y,S,E,D,R,meanS,innov)
-   cpu1=wtime()
-   call cpu_time(finish)
-   print '(2(a,f6.2))','        assimilation_old: cpu time=',finish-start,', wall-clock time=',cpu1-cpu0
 
 end subroutine
 end module

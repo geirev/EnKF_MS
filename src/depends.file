@@ -37,11 +37,13 @@ m_ansi_colors.o:      makefile
 m_ansi_colors.o:      MODEL.CPP
 m_assimilation_old.o:      makefile
 m_assimilation_old.o:      m_enkfprep.o
+m_assimilation_old.o:      m_getD.o
 m_assimilation_old.o:      mod_dimensions.o
 m_assimilation_old.o:      MODEL.CPP
 m_assimilation_old.o:      mod_observation.o
 m_assimilation_old.o:      mod_state.o
 m_assimilation_old.o:      m_readinfile.o
+m_assimilation_old.o:      m_wtime.o
 m_assimilation.o:      makefile
 m_assimilation.o:      m_ies.o
 m_assimilation.o:      m_ies_steplength.o
@@ -90,6 +92,8 @@ m_ensemblevariance.o:      MODEL.CPP
 m_ensemblevariance.o:      mod_state.o
 m_frobenius.o:      makefile
 m_frobenius.o:      MODEL.CPP
+m_getD.o:      makefile
+m_getD.o:      MODEL.CPP
 m_gnuplot.o:      makefile
 m_gnuplot.o:      mod_dimensions.o
 m_gnuplot.o:      MODEL.CPP
@@ -177,3 +181,5 @@ m_windowstat.o:      makefile
 m_windowstat.o:      mod_dimensions.o
 m_windowstat.o:      MODEL.CPP
 m_windowstat.o:      mod_state.o
+m_wtime.o:      makefile
+m_wtime.o:      MODEL.CPP
