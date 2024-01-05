@@ -1,3 +1,4 @@
+abs_state	mod_state.F90	/^   function abs_state(A)$/
 add_state	mod_state.F90	/^   function add_state(A,B)$/
 assign_state	mod_state.F90	/^   subroutine assign_state(A,r)$/
 assimilation	m_assimilation.F90	/^subroutine assimilation(obs,win,win0,DA,E,D,Y,S,X,/

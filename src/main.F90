@@ -48,6 +48,7 @@ program main
    type(state), allocatable :: refout(:)   ! ensemble average as a function of space and time
    type(state), allocatable :: mean(:)     ! ensemble average as a function of space and time
    type(state), allocatable :: stdt(:)     ! ensemble std dev as a function of space and time
+   type(state), allocatable :: rest(:)     ! ensemble std dev as a function of space and time
    type(state), allocatable :: covo(:)     ! ensemble std dev as a function of space and time
    type(state), allocatable :: cova(:)     ! ensemble std dev as a function of space and time
    type(substate), allocatable :: rmse(:)  ! time series of rmse values (mean - referece)
@@ -98,6 +99,7 @@ program main
    allocate (refout(0:nrt))
    allocate (mean(0:nrt))
    allocate (stdt(0:nrt))
+   allocate (rest(0:nrt))
    allocate (covo(0:nrt))
    allocate (cova(0:nrt))
    allocate (mem(nrens))
@@ -300,6 +302,11 @@ program main
    call gnuplot('gnu_ref',refout,nrt,outdir)
    call gnuplot('gnu_ave',mean,nrt,outdir)
    call gnuplot('gnu_std',stdt,nrt,outdir)
+   do k=0,nrt
+      rest(k)=mean(k)-refout(k)
+      rest(k)=abs(rest(k))
+   enddo
+   call gnuplot('gnu_res',rest,nrt,outdir)
    if (lglobstat) then
       call covstat(win,nrt,nrens,mean,stdt,covo,cova,outdir)
       call gnuplot('gnu_covo',covo,nrt,outdir)

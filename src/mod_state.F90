@@ -2,7 +2,7 @@ module mod_state
 ! Model state definition
    use mod_dimensions
    private
-   public :: state, operator(+), operator(-), operator(*), operator(/), assignment(=), sqrt, average
+   public :: state, operator(+), operator(-), operator(*), operator(/), assignment(=), sqrt, average, abs
    public :: substate
 
    type substate
@@ -44,6 +44,10 @@ module mod_state
       module procedure sqrt_substate
    end interface
 
+   interface abs
+      module procedure abs_state
+   end interface
+
    interface average
       module procedure average_state
    end interface
@@ -64,6 +68,13 @@ contains
       average_state%Atmos       = sum(A%Atmos(:))/real(nx)
       average_state%Ocean       = sum(A%Ocean(:))/real(nx)
    end function average_state
+
+   function abs_state(A)
+      type(state) abs_state
+      type(state), intent(in) :: A
+      abs_state%Atmos       = abs(A%Atmos)
+      abs_state%Ocean       = abs(A%Ocean)
+   end function abs_state
 
    function sqrt_state(A)
       type(state) sqrt_state
