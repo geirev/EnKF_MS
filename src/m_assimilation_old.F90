@@ -92,7 +92,7 @@ subroutine assimilation_old(obs,win,winref,DA,tini,tfin,nrobs,iter,obsoloc,obsal
 
 ! Distace based localization compute active measurements for each grid point
       if (local == 1) then
-!$OMP PARALLEL DO
+!!$OMP PARALLEL DO !!!! Problem with this one
          do m=1,nrobs
             do i=1,nx
                if (real(abs(obs(m)%xloc-i)) < obs_radius) then
@@ -102,7 +102,7 @@ subroutine assimilation_old(obs,win,winref,DA,tini,tfin,nrobs,iter,obsoloc,obsal
             enddo
             if (i==nx/2)  print *,'        number of local measurements for i=',i,nobs(i)
          enddo
-!$OMP END PARALLEL DO
+!!$OMP END PARALLEL DO
       endif
 
 ! Adaptive localization compute active measurements for each grid point

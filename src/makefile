@@ -22,6 +22,10 @@ CPPFLAGS = -traditional -P $(CPPARCH) $(CPPMODEL)
 
 LIBS =    ./libenkfanalysis.a ./libsampling.a -lblas -lfftw3 -llapack
 
+# Femkes configuration
+#LIBDIR = -L /apps/noarch/software/fftw3 -L /cm/shared/apps/blas/gcc/3.8.0 -L /cm/shared/apps/lapack/gcc/64/3.9.0
+#LIBS = -Wl,--start-group ${MKLROOT}/lib/intel64/libmkl_gf_lp64.a ${MKLROOT}/lib/intel64/libmkl_sequential.a ${MKLROOT}/lib/intel64/libmkl_core.a /apps/noarch/software/fftw3/lib/libfftw3.a ./libenkfanalysis.a ./libsampling.a -Wl,--end-group -lpthread -lm -ldl
+
 BINDIR = $(HOME)/bin
 
 CPP = /usr/bin/cpp

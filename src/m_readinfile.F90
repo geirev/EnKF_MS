@@ -70,7 +70,7 @@ module m_readinfile
    logical ex
    character(len=9) :: cmd='mkdir -p '
    character(len=50) :: cpinfile
-   character(len=50) :: cpgnu
+!   character(len=50) :: cpgnu
    integer i
 
 ! reading input data
@@ -205,11 +205,11 @@ module m_readinfile
 !   cpgnu='./p.sh > '//trim(outdir)//'/p.gnu'
 !   call execute_command_line (trim(cpgnu), exitstat=i)
 
-   cpgnu='cp c.gnu '//trim(outdir)
-   call execute_command_line (trim(cpgnu), exitstat=i)
+!   cpgnu='cp c.gnu '//trim(outdir)
+!   call execute_command_line (trim(cpgnu), exitstat=i)
 
-   cpgnu='cp cpdf.gnu '//trim(outdir)
-   call execute_command_line (trim(cpgnu), exitstat=i)
+!   cpgnu='cp cpdf.gnu '//trim(outdir)
+!   call execute_command_line (trim(cpgnu), exitstat=i)
 
 ! We assume constant atmospheric velocity equal to one
    u%atmos=1.0
