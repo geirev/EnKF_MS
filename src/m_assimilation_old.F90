@@ -42,8 +42,7 @@ subroutine assimilation_old(obs,win,winref,DA,tini,tfin,nrobs,iter,obsoloc,obsal
    real, allocatable, dimension(:,:,:)   :: subwin
    integer i,j,l,m
    real stdA,aveA,stdO,aveO,stdS
-   real Einfl,truncdist
-   real lcovb
+   real Einfl,truncdist,beta,lcovb
 
 
    allocate(Y(nrobs,nrens))
@@ -179,11 +178,12 @@ subroutine assimilation_old(obs,win,winref,DA,tini,tfin,nrobs,iter,obsoloc,obsal
             call getD(S,subS,nrobs,nrens,lobs(i,:),nobs(i)) ! the HA'
 
             if (lcovsmooth) then
-               lcovb=truncdist/(2.0*log(obsdamping))
+               beta=0.5
+               lcovb=(1.0-beta)*truncdist/sqrt(log(obsdamping))
                call getD(dist(i,:),subdist,nrobs,1,lobs(i,:),nobs(i)) ! distances
                do m=1,nobs(i)
-                  if (subdist(m,1) > real(truncdist)/2.0 ) then
-                     Einfl=exp((subdist(m,1)-real(truncdist)/2.0)/lcovb)
+                  if (subdist(m,1) > beta*truncdist) then
+                     Einfl=exp( ((subdist(m,1)-beta*truncdist) / lcovb)**2 )
                      subE(m,:)=subE(m,:)*Einfl
                   endif
                enddo
