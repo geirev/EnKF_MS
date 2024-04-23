@@ -38,6 +38,8 @@ module m_readinfile
    integer local                         ! 0-no localization, 1-distance based, 2-adaptive
    real obs_radius                       ! Number of grid cells for including measurements (distance based)
    real obs_truncation                   ! Correlations for truncating measurements in adaptive scheme
+   logical lcovsmooth                    ! Additional damping of furthest local measurements
+   real obsdamping                       ! Max inflation for furthest measurements
 
 ! parameters for analysis scheme
    real truncation                       ! Truncation of singular values
@@ -147,29 +149,38 @@ module m_readinfile
          print *,'#4: error in infile.in'
          stop
       endif
-      read(10,*)oldana             ; print '(a,tr9,l1)',   'oldana=      ',oldana
-      read(10,*)cmethod            ; print '(a,tr7,a)',    'cmethod=     ',cmethod
-      read(10,*)nmda               ; print '(a,tr7,i3 )',  'nmda=        ',nmda
-      read(10,*)steplength0        ; print '(a,tr4,f6.2)', 'steplength=  ',steplength0
-      read(10,*)mode_analysis      ; print '(a,tr8,i2)',   'mode_ana=    ',mode_analysis
-      read(10,'(1x,l1)')lm         ; print '(a,tr9,l1)',   'Leveberg M=  ',lm
-      read(10,'(1x,l1)')lsim       ; print '(a,tr9,l1)',   'lsim      =  ',lsim
-      read(10,*)truncation         ; print '(a,tr4,f6.3)', 'truncation=  ',truncation
-      read(10,'(1x,a)')covmodel    ; print '(a,tr2,a)',    'covmodel=    ',trim(covmodel)
-      read(10,*)rd                 ; print '(a,tr4,f6.2)', 'rd=          ',rd
-      read(10,'(1x,l1)')Rexact     ; print '(a,tr9,l1)',   'Rexact=      ',Rexact
-      read(10,'(1x,l1)')lrandrot   ; print '(a,tr9,l1)',   'lrandrot=    ',lrandrot
+      read(10,*)oldana             ; print '(a,tr9,l1)',   'oldana=          ',oldana
+      read(10,*)cmethod            ; print '(a,tr7,a)',    'cmethod=         ',cmethod
+      read(10,*)nmda               ; print '(a,tr7,i3 )',  'nmda=            ',nmda
+      read(10,*)steplength0        ; print '(a,tr4,f6.2)', 'steplength=      ',steplength0
+      read(10,*)mode_analysis      ; print '(a,tr8,i2)',   'mode_ana=        ',mode_analysis
+      read(10,'(1x,l1)')lm         ; print '(a,tr9,l1)',   'Leveberg M=      ',lm
+      read(10,'(1x,l1)')lsim       ; print '(a,tr9,l1)',   'lsim      =      ',lsim
+      read(10,*)truncation         ; print '(a,tr4,f6.3)', 'truncation=      ',truncation
+      read(10,'(1x,a)')covmodel    ; print '(a,tr2,a)',    'covmodel=        ',trim(covmodel)
+      read(10,*)rd                 ; print '(a,tr4,f6.2)', 'rd=              ',rd
+      read(10,'(1x,l1)')Rexact     ; print '(a,tr9,l1)',   'Rexact=          ',Rexact
+      read(10,'(1x,l1)')lrandrot   ; print '(a,tr9,l1)',   'lrandrot=        ',lrandrot
       read(10,*)inflate,infmult    ; print '(a,tr5,i5,tr2,f6.3)','inflation=   ',inflate,infmult
-      read(10,*)local,obs_radius,obs_truncation; print '(a,tr5,i5,tr2,2f8.3)','localization=',local,obs_radius,obs_truncation
+      read(10,'(a)')ca
+      if (ca /= '#5') then
+         print *,'#5: error in infile.in'
+         stop
+      endif
+      read(10,*)local              ; print '(a,tr8,i2)',   'localization=    ',local
+      read(10,*)obs_radius         ; print '(a,tr4,f6.2)', 'obs_radius=      ',obs_radius
+      read(10,*)obs_truncation     ; print '(a,tr4,f6.2)', 'obs_truncation=  ',obs_truncation
+      read(10,*)lcovsmooth         ; print '(a,tr9,l1)',   'lcovsmooth=      ',lcovsmooth
+      read(10,*)obsdamping         ; print '(a,tr4,f6.2)', 'max obs damping= ',obsdamping
       if (obs_truncation==0.0) then
          obs_truncation=3.0/sqrt(real(nrens))
-         print '(a,tr5,i5,tr2,2f8.3)','localization=',local,obs_radius,obs_truncation
+                                          print '(a,f8.3)','adaptive trunc=  ',obs_truncation
       endif
       print '(a)','--------------------------------------------------------------------------------'
 
       read(10,'(a)')ca
-      if (ca /= '#5') then
-         print *,'#5: error in infile.in'
+      if (ca /= '#6') then
+         print *,'#6: error in infile.in'
          stop
       endif
 

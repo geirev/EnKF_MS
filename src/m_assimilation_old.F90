@@ -28,6 +28,7 @@ subroutine assimilation_old(obs,win,winref,DA,tini,tfin,nrobs,iter,obsoloc,obsal
    logical, allocatable :: lobs(:,:)
    integer, allocatable :: nobs(:)
 
+   real, allocatable :: dist(:,:) ! Distance between obs and grid point
    real, allocatable :: Y(:,:)
    real, allocatable :: S(:,:)
    real, allocatable :: E(:,:)
@@ -36,11 +37,13 @@ subroutine assimilation_old(obs,win,winref,DA,tini,tfin,nrobs,iter,obsoloc,obsal
    real, allocatable :: meanS(:)
    real, allocatable :: innov(:)
 
-   real, allocatable, dimension(:,:)   :: subS,subE,subD, subR
+   real, allocatable, dimension(:,:)   :: subS,subE,subD, subR, subdist
    real, allocatable, dimension(:)     :: subinnov,corrA,corrO
    real, allocatable, dimension(:,:,:)   :: subwin
    integer i,j,l,m
    real stdA,aveA,stdO,aveO,stdS
+   real Einfl,truncdist
+   real lcovb
 
 
    allocate(Y(nrobs,nrens))
@@ -86,27 +89,28 @@ subroutine assimilation_old(obs,win,winref,DA,tini,tfin,nrobs,iter,obsoloc,obsal
       print '(a,2i2,f10.2,f10.3)','        assimilation_old: calling local analysis with mode: '&
                                            ,mode_analysis,local,obs_radius,obs_truncation
 
-      allocate(lobs(nx,nrobs),nobs(nx))
+      allocate(lobs(nx,nrobs),nobs(nx),dist(nx,nrobs))
       lobs(:,:)=.false.
       nobs(:)=0
 
 ! Distace based localization compute active measurements for each grid point
       if (local == 1) then
-!!$OMP PARALLEL DO !!!! Problem with this one
+         truncdist=obs_radius
          do m=1,nrobs
             do i=1,nx
-               if (real(abs(obs(m)%xloc-i)) < obs_radius) then
+               dist(i,m)=real(abs(obs(m)%xloc-i))
+               if (dist(i,m) < truncdist) then
                   lobs(i,m)=.true.
                   nobs(i)=nobs(i)+1
                endif
             enddo
             if (i==nx/2)  print *,'        number of local measurements for i=',i,nobs(i)
          enddo
-!!$OMP END PARALLEL DO
       endif
 
 ! Adaptive localization compute active measurements for each grid point
       if (local == 2) then
+         truncdist=1.0-obs_truncation
          allocate(corrA(nrobs), corrO(nrobs))
 !!$OMP PARALLEL DO private(aveA,aveO,stdA,stdO,j,m,stdS,corrA,corrO)
          do i=1,nx
@@ -153,6 +157,7 @@ subroutine assimilation_old(obs,win,winref,DA,tini,tfin,nrobs,iter,obsoloc,obsal
                if ((abs(corrA(m)) > obs_truncation) .or. (abs(corrO(m)) > obs_truncation)) then
                   nobs(i)=nobs(i)+1
                   lobs(i,m)=.true.
+                  dist(i,m)=1.0-max(abs(corrA(m)),abs(corrO(m)))
                endif
             enddo
             if (i==nx/2)  print *,'       assimilation_old: number of local measurements for i=',i,nobs(i)
@@ -164,6 +169,7 @@ subroutine assimilation_old(obs,win,winref,DA,tini,tfin,nrobs,iter,obsoloc,obsal
       do i=1,nx
          if (nobs(i) > 0) then
             allocate(subD(nobs(i),nrens))
+            allocate(subdist(nobs(i),1))
             allocate(subE(nobs(i),nrens))
             allocate(subS(nobs(i),nrens))
             allocate(subinnov(nobs(i)))
@@ -171,6 +177,17 @@ subroutine assimilation_old(obs,win,winref,DA,tini,tfin,nrobs,iter,obsoloc,obsal
             call getD(D,subD,nrobs,nrens,lobs(i,:),nobs(i)) ! the innovations
             call getD(E,subE,nrobs,nrens,lobs(i,:),nobs(i)) ! the observation errors
             call getD(S,subS,nrobs,nrens,lobs(i,:),nobs(i)) ! the HA'
+
+            if (lcovsmooth) then
+               lcovb=truncdist/(2.0*log(obsdamping))
+               call getD(dist(i,:),subdist,nrobs,1,lobs(i,:),nobs(i)) ! distances
+               do m=1,nobs(i)
+                  if (subdist(m,1) > real(truncdist)/2.0 ) then
+                     Einfl=exp((subdist(m,1)-real(truncdist)/2.0)/lcovb)
+                     subE(m,:)=subE(m,:)*Einfl
+                  endif
+               enddo
+            endif
 
             allocate(subwin(2,tini:tfin,nrens))
             do j=1,nrens
@@ -191,13 +208,14 @@ subroutine assimilation_old(obs,win,winref,DA,tini,tfin,nrobs,iter,obsoloc,obsal
             enddo
             enddo
 
-            deallocate(subD, subE, subS, subinnov, subR, subwin)
+            deallocate(subD, subE, subS, subinnov, subR, subwin, subdist)
          endif
       enddo
       print *,'       assimilation_old: local analysis done'
 
       if (local== 2) deallocate(corrA, corrO)
       deallocate(lobs,nobs)
+      if (allocated(dist)) deallocate(dist)
    endif
 
    deallocate(Y,S,E,D,R,meanS,innov)
