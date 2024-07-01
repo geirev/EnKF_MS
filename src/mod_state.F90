@@ -18,7 +18,8 @@ module mod_state
 
 ! Overloaded and generic operators
    interface operator(+)
-      module procedure add_state
+      module procedure add_state,&
+                       add_substate
    end interface
 
    interface operator(-)
@@ -28,15 +29,18 @@ module mod_state
    interface operator(*)
       module procedure state_real_mult,&
                        real_state_mult,&
-                       state_state_mult
+                       state_state_mult,&
+                       substate_substate_mult
    end interface
 
    interface operator(/)
-      module procedure state_state_div
+      module procedure state_state_div,&
+                       substate_real_div
    end interface
 
    interface assignment(=)
       module procedure assign_state
+      module procedure assign_substate
    end interface
 
    interface sqrt
@@ -100,6 +104,14 @@ contains
       add_state%Ocean       = A%Ocean  + B%Ocean
    end function add_state
 
+   function add_substate(A,B)
+      type(substate) add_substate
+      type(substate), intent(in) :: A
+      type(substate), intent(in) :: B
+      add_substate%Atmos       = A%Atmos  + B%Atmos
+      add_substate%Ocean       = A%Ocean  + B%Ocean
+   end function add_substate
+
    function subtract_state(A,B)
       type(state) subtract_state
       type(state), intent(in) :: A
@@ -132,6 +144,14 @@ contains
       state_state_mult%Ocean       = A%Ocean  * B%Ocean
    end function state_state_mult
 
+   function substate_substate_mult(A,B)
+      type(substate) substate_substate_mult
+      type(substate), intent(in) :: A
+      type(substate), intent(in) :: B
+      substate_substate_mult%Atmos       = A%Atmos  * B%Atmos
+      substate_substate_mult%Ocean       = A%Ocean  * B%Ocean
+   end function substate_substate_mult
+
    function state_state_div(A,B)
       type(state) state_state_div
       type(state), intent(in) :: A
@@ -144,6 +164,14 @@ contains
    end function state_state_div
 
 
+   function substate_real_div(A,r)
+      type(substate) substate_real_div
+      type(substate), intent(in) :: A
+      real, intent(in) :: r
+      substate_real_div%Atmos       = A%Atmos / r
+      substate_real_div%Ocean       = A%Ocean / r
+   end function substate_real_div
+
    subroutine assign_state(A,r)
       type(state), intent(out) :: A
       real, intent(in) :: r
@@ -151,6 +179,12 @@ contains
       A%Ocean       = r
    end subroutine assign_state
 
+   subroutine assign_substate(A,r)
+      type(substate), intent(out) :: A
+      real, intent(in) :: r
+      A%Atmos       = r
+      A%Ocean       = r
+   end subroutine assign_substate
 
 end module mod_state
 

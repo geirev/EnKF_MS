@@ -1,6 +1,8 @@
 abs_state	mod_state.F90	/^   function abs_state(A)$/
 add_state	mod_state.F90	/^   function add_state(A,B)$/
+add_substate	mod_state.F90	/^   function add_substate(A,B)$/
 assign_state	mod_state.F90	/^   subroutine assign_state(A,r)$/
+assign_substate	mod_state.F90	/^   subroutine assign_substate(A,r)$/
 assimilation	m_assimilation.F90	/^subroutine assimilation(obs,win,win0,DA,E,D,Y,S,X,/
 assimilation_old	m_assimilation_old.F90	/^subroutine assimilation_old(obs,win,winref,DA,tini/
 average_state	mod_state.F90	/^   function average_state(A)$/
@@ -41,6 +43,8 @@ state_real_mult	mod_state.F90	/^   function state_real_mult(A,B)$/
 state_state_div	mod_state.F90	/^   function state_state_div(A,B)$/
 state_state_mult	mod_state.F90	/^   function state_state_mult(A,B)$/
 statistics	m_statistics.F90	/^subroutine statistics(full,nrt,nrens,nrf)$/
+substate_real_div	mod_state.F90	/^   function substate_real_div(A,r)$/
+substate_substate_mult	mod_state.F90	/^   function substate_substate_mult(A,B)$/
 subtract_state	mod_state.F90	/^   function subtract_state(A,B)$/
 tecfld	m_tecfld.F90	/^subroutine tecfld(fname,ii,jj,nr,fld)$/
 windowstat	m_windowstat.F90	/^subroutine windowstat(win,nrt,nrens,mean,stdt)$/

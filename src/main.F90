@@ -52,7 +52,9 @@ program main
    type(state), allocatable :: covo(:)     ! ensemble std dev as a function of space and time
    type(state), allocatable :: cova(:)     ! ensemble std dev as a function of space and time
    type(substate), allocatable :: rmse(:)  ! time series of rmse values (mean - referece)
-   type(substate), allocatable :: rmss(:)  ! time series of rms std values
+   type(substate), allocatable :: rmss(:)  ! time series of rms std.dev values
+   type(substate) rmset(1)                  ! Total rmse value (mean - referece)
+   type(substate) rmsst(1)                  ! Total rmss value rms of std.dev.
 
 ! Observation location variables
    integer, allocatable :: obsoloc(:)      ! location of ocean observations in space
@@ -279,14 +281,26 @@ program main
    call windowstat(win,nrt,nrens,mean,stdt)
 
 ! Compute root-mean-squared errors and std. dev.
+   rmset(1)=0.0
+   rmsst(1)=0.0
    do k=0,nrt
       rmse(k)=sqrt(average((mean(k)-refout(k))*(mean(k)-refout(k))))
       rmss(k)=sqrt(average(stdt(k)*stdt(k)))
+      if (k > 200) rmset(1)=rmset(1)+rmse(k)*rmse(k)
+      if (k > 200) rmsst(1)=rmsst(1)+rmss(k)*rmss(k)
    enddo
+   rmset(1)=rmset(1)/real(nrt-200)
+   rmsst(1)=rmsst(1)/real(nrt-200)
+   rmset(1)=sqrt(rmset(1))
+   rmsst(1)=sqrt(rmsst(1))
+
    open(10,file=trim(outdir)//'/rmse.dat')
       do k=0,nrt
          write(10,'(i5,1024g12.4)')k,rmse(k)%Atmos,rmse(k)%Ocean,rmss(k)%Atmos,rmss(k)%Ocean
       enddo
+   close(10)
+   open(10,file=trim(outdir)//'/rmset.dat')
+      write(10,'(10g12.4)')rmset%Atmos,rmset%Ocean,rmsst%Atmos,rmsst%Ocean
    close(10)
 
 ! Print the cost functions values for each window.
