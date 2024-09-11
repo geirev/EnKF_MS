@@ -38,6 +38,8 @@ module m_readinfile
    integer local                         ! 0-no localization, 1-distance based, 2-adaptive
    real obs_radius                       ! Number of grid cells for including measurements (distance based)
    real obs_truncation                   ! Correlations for truncating measurements in adaptive scheme
+   real, parameter :: default_trunc_std=3.0    ! Default adaptive localization truncation at 3 std devs
+   real trunc_std                        ! Adaptive localization truncation at trunc_std std devs
    logical lcovsmooth                    ! Additional damping of furthest local measurements
    real obsdamping                       ! Max inflation for furthest measurements
 
@@ -169,13 +171,14 @@ module m_readinfile
       endif
       read(10,*)local              ; print '(a,tr8,i2)',   'localization=    ',local
       read(10,*)obs_radius         ; print '(a,tr4,f6.2)', 'obs_radius=      ',obs_radius
-      read(10,*)obs_truncation     ; print '(a,tr4,f6.2)', 'obs_truncation=  ',obs_truncation
+      read(10,*)trunc_std          ; print '(a,tr4,f6.2)', 'trunc_std=       ',trunc_std
+      if (trunc_std .le. 0.0) then
+         trunc_std=default_trunc_std
+         print '(a,tr4,f6.2)', 'Running with default trunc_std= ',trunc_std
+      endif
       read(10,*)lcovsmooth         ; print '(a,tr9,l1)',   'lcovsmooth=      ',lcovsmooth
       read(10,*)obsdamping         ; print '(a,tr4,f6.2)', 'max obs damping= ',obsdamping
-      if (obs_truncation==0.0) then
-         obs_truncation=3.0/sqrt(real(nrens))
-                                          print '(a,f8.3)','adaptive trunc=  ',obs_truncation
-      endif
+      obs_truncation=trunc_std/sqrt(real(nrens));  print '(a,f8.3)','adaptive trunc=  ',obs_truncation
       print '(a)','--------------------------------------------------------------------------------'
 
       read(10,'(a)')ca

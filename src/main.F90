@@ -313,6 +313,7 @@ program main
    endif
 
 ! Dumping reference solution, mean and standard deviations for plotting
+   if (lglobstat) then
    call gnuplot('gnu_ref',refout,nrt,outdir)
    call gnuplot('gnu_ave',mean,nrt,outdir)
    call gnuplot('gnu_std',stdt,nrt,outdir)
@@ -321,7 +322,6 @@ program main
       rest(k)=abs(rest(k))
    enddo
    call gnuplot('gnu_res',rest,nrt,outdir)
-   if (lglobstat) then
       call covstat(win,nrt,nrens,mean,stdt,covo,cova,outdir)
       call gnuplot('gnu_covo',covo,nrt,outdir)
       call gnuplot('gnu_cova',cova,nrt,outdir)
