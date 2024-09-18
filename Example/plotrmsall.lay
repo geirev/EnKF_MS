@@ -1,0 +1,1007 @@
+#!MC 1410
+$!VarSet |LFDSFN1| = '"rms_all_Adaptive-1.0-100.dat" "rms_all_Adaptive-2.0-100.dat" "rms_all_Adaptive-4.0-100.dat" "rms_all_Adaptive-8.0-100.dat" "rms_all_Adaptive-16.0-100.dat" "rms_all_Distance-1.0-100.dat" "rms_all_Distance-2.0-100.dat" "rms_all_Distance-4.0-100.dat" "rms_all_Distance-8.0-100.dat"'
+$!VarSet |LFDSVL1| = '"Trunc" "nrens" "rmseA" "rmseO" "rmssA" "rmssO"'
+$!SetStyleBase Factory
+$!BasicColor 
+  Custom1
+    {
+    R = 119
+    G = 119
+    B = 119
+    }
+  Custom2
+    {
+    R = 238
+    G = 238
+    B = 238
+    }
+  Custom3
+    {
+    R = 254
+    G = 229
+    B = 217
+    }
+  Custom4
+    {
+    R = 255
+    B = 212
+    }
+  Custom5
+    {
+    R = 237
+    G = 248
+    B = 233
+    }
+  Custom6
+    {
+    R = 240
+    G = 249
+    B = 232
+    }
+  Custom7
+    {
+    R = 239
+    G = 243
+    }
+  Custom8
+    {
+    R = 242
+    G = 240
+    B = 247
+    }
+  Custom9
+    {
+    R = 102
+    G = 102
+    B = 102
+    }
+  Custom10
+    {
+    R = 221
+    G = 221
+    B = 221
+    }
+  Custom11
+    {
+    R = 252
+    G = 187
+    B = 161
+    }
+  Custom12
+    {
+    R = 254
+    G = 227
+    B = 145
+    }
+  Custom13
+    {
+    R = 199
+    G = 233
+    B = 192
+    }
+  Custom14
+    {
+    R = 204
+    G = 235
+    B = 197
+    }
+  Custom15
+    {
+    R = 198
+    G = 219
+    B = 239
+    }
+  Custom16
+    {
+    R = 218
+    G = 218
+    B = 235
+    }
+  Custom17
+    {
+    B = 85
+    }
+  Custom18
+    {
+    R = 204
+    G = 204
+    B = 204
+    }
+  Custom19
+    {
+    R = 252
+    G = 146
+    B = 114
+    }
+  Custom20
+    {
+    R = 254
+    G = 196
+    B = 79
+    }
+  Custom21
+    {
+    R = 161
+    G = 217
+    B = 155
+    }
+  Custom22
+    {
+    R = 168
+    G = 221
+    B = 181
+    }
+  Custom23
+    {
+    R = 158
+    G = 202
+    B = 225
+    }
+  Custom24
+    {
+    R = 188
+    G = 189
+    B = 220
+    }
+  Custom25
+    {
+    R = 68
+    G = 68
+    B = 68
+    }
+  Custom26
+    {
+    R = 187
+    G = 187
+    B = 187
+    }
+  Custom27
+    {
+    R = 251
+    G = 106
+    B = 74
+    }
+  Custom28
+    {
+    R = 254
+    G = 153
+    B = 41
+    }
+  Custom29
+    {
+    R = 116
+    G = 196
+    B = 118
+    }
+  Custom30
+    {
+    R = 123
+    G = 204
+    B = 196
+    }
+  Custom31
+    {
+    R = 107
+    G = 174
+    B = 214
+    }
+  Custom32
+    {
+    R = 158
+    G = 154
+    B = 200
+    }
+  Custom33
+    {
+    R = 51
+    G = 51
+    B = 51
+    }
+  Custom34
+    {
+    G = 170
+    B = 170
+    }
+  Custom35
+    {
+    R = 239
+    G = 59
+    B = 44
+    }
+  Custom36
+    {
+    R = 236
+    G = 112
+    B = 20
+    }
+  Custom37
+    {
+    R = 65
+    G = 171
+    B = 93
+    }
+  Custom38
+    {
+    R = 78
+    G = 179
+    B = 211
+    }
+  Custom39
+    {
+    R = 66
+    G = 146
+    B = 198
+    }
+  Custom40
+    {
+    R = 128
+    G = 125
+    B = 186
+    }
+  Custom41
+    {
+    R = 34
+    G = 34
+    B = 34
+    }
+  Custom42
+    {
+    R = 153
+    G = 153
+    B = 153
+    }
+  Custom43
+    {
+    R = 203
+    G = 24
+    B = 29
+    }
+  Custom44
+    {
+    R = 204
+    G = 76
+    B = 2
+    }
+  Custom45
+    {
+    R = 35
+    G = 139
+    B = 69
+    }
+  Custom46
+    {
+    R = 43
+    G = 140
+    B = 190
+    }
+  Custom47
+    {
+    R = 33
+    G = 113
+    B = 181
+    }
+  Custom48
+    {
+    R = 106
+    G = 81
+    B = 163
+    }
+  Custom49
+    {
+    R = 17
+    G = 17
+    B = 17
+    }
+  Custom50
+    {
+    R = 136
+    G = 136
+    B = 136
+    }
+  Custom51
+    {
+    R = 153
+    G = 0
+    B = 13
+    }
+  Custom52
+    {
+    R = 140
+    G = 45
+    B = 4
+    }
+  Custom53
+    {
+    R = 0
+    G = 90
+    B = 50
+    }
+  Custom54
+    {
+    R = 8
+    G = 88
+    B = 158
+    }
+  Custom55
+    {
+    R = 8
+    G = 69
+    B = 148
+    }
+  Custom56
+    {
+    R = 74
+    G = 20
+    B = 134
+    }
+$!GlobalPaper 
+  PaperSizeInfo
+    {
+    Letter
+      {
+      Width = 8.5
+      Height = 11
+      LeftHardClipOffset = 0.125
+      RightHardClipOffset = 0.125
+      TopHardClipOffset = 0.125
+      BottomHardClipOffset = 0.125
+      }
+    }
+$!Page 
+  Name = 'Untitled'
+  PaperAttributes
+    {
+    BackgroundColor = White
+    IsTransparent = Yes
+    OrientPortrait = No
+    ShowGrid = Yes
+    ShowRuler = No
+    ShowPaper = No
+    PaperSize = Letter
+    RulerSpacing = OneInch
+    PaperGridSpacing = HalfInch
+    RegionInWorkArea
+      {
+      X1 = -1.987
+      Y1 = 0.06965
+      X2 = 12.25
+      Y2 = 8.412
+      }
+    }
+### Frame Number 1 ###
+
+## The Solution time must be set ahead of any possible data journal entries in the frame
+$!GlobalTime 
+  SolutionTime = 0
+$!ReadDataSet  '|LFDSFN1|'
+  InitialPlotType = XYLine
+  IncludeText = No
+  IncludeGeom = No
+  AssignStrandIDs = Yes
+  VarLoadMode = ByName
+  VarNameList = '|LFDSVL1|'
+$!RemoveVar |LFDSVL1|
+$!RemoveVar |LFDSFN1|
+$!FrameLayout 
+  ShowHeader = No
+  HeaderColor = Red
+  XYPos
+    {
+    X = -1.9866
+    Y = 0.069651
+    }
+  Width = 14.234
+  Height = 8.3427
+$!ThreeDAxis 
+  AspectRatioLimit = 25
+  BoxAspectRatioLimit = 25
+$!PlotType  = XYLine
+$!FrameName  = 'Frame 001'
+$!GlobalTime 
+  SolutionTime = 0
+$!DeleteLineMaps 
+$!ActiveLineMaps  =  [1-16]
+$!GlobalLinePlot 
+  DataLabels
+    {
+    DistanceSkip = 5
+    }
+  Legend
+    {
+    Show = Yes
+    TextShape
+      {
+      Height = 4
+      }
+    Box
+      {
+      BoxType = None
+      }
+    XYPos
+      {
+      X = 93.491
+      Y = 94.986
+      }
+    }
+$!LineMap  [1]
+  Name = '&DV&'
+  Assign
+    {
+    Zone = 9
+    XAxisVar = 1
+    YAxisVar = 3
+    }
+  Lines
+    {
+    Color = Custom55
+    LineThickness = 0.4
+    }
+  Symbols
+    {
+    SymbolShape
+      {
+      GeomShape = Circle
+      }
+    Color = Custom55
+    FillMode = UseLineColor
+    FillColor = Yellow
+    Size = 1
+    }
+  BarCharts
+    {
+    Color = Green
+    FillColor = Green
+    }
+  ErrorBars
+    {
+    Color = Green
+    }
+$!LineMap  [2]
+  Name = '&DV&'
+  Assign
+    {
+    Zone = 9
+    XAxisVar = 1
+    YAxisVar = 4
+    }
+  Lines
+    {
+    Color = Custom51
+    LineThickness = 0.4
+    }
+  Symbols
+    {
+    SymbolShape
+      {
+      GeomShape = Circle
+      }
+    Color = Custom51
+    FillMode = UseLineColor
+    FillColor = Yellow
+    Size = 1
+    }
+  BarCharts
+    {
+    Color = Blue
+    FillColor = Blue
+    }
+  ErrorBars
+    {
+    Color = Blue
+    }
+$!LineMap  [3]
+  Name = '&DV&'
+  Assign
+    {
+    Zone = 9
+    XAxisVar = 1
+    YAxisVar = 5
+    }
+  Lines
+    {
+    Color = Custom31
+    LinePattern = Dashed
+    LineThickness = 0.4
+    }
+  Symbols
+    {
+    SymbolShape
+      {
+      GeomShape = Circle
+      }
+    Color = Custom31
+    FillMode = UseLineColor
+    FillColor = Yellow
+    Size = 1
+    }
+  BarCharts
+    {
+    Color = Custom1
+    FillColor = Custom1
+    }
+  ErrorBars
+    {
+    Color = Custom1
+    }
+$!LineMap  [4]
+  Name = '&DV&'
+  Assign
+    {
+    Zone = 9
+    XAxisVar = 1
+    YAxisVar = 6
+    }
+  Lines
+    {
+    Color = Custom27
+    LinePattern = Dashed
+    LineThickness = 0.4
+    }
+  Symbols
+    {
+    SymbolShape
+      {
+      GeomShape = Circle
+      }
+    Color = Custom27
+    FillMode = UseLineColor
+    FillColor = Yellow
+    Size = 1
+    }
+  BarCharts
+    {
+    Color = Custom3
+    FillColor = Custom3
+    }
+  ErrorBars
+    {
+    Color = Custom3
+    }
+$!LineMap  [5]
+  Name = '&DV&'
+  Assign
+    {
+    Zone = 8
+    XAxisVar = 1
+    YAxisVar = 3
+    }
+  Lines
+    {
+    Color = Custom55
+    LineThickness = 0.4
+    }
+  Symbols
+    {
+    SymbolShape
+      {
+      GeomShape = Circle
+      }
+    Color = Custom55
+    FillMode = UseLineColor
+    FillColor = Yellow
+    Size = 1
+    }
+  BarCharts
+    {
+    Color = Green
+    FillColor = Green
+    }
+  ErrorBars
+    {
+    Color = Green
+    }
+$!LineMap  [6]
+  Name = '&DV&'
+  Assign
+    {
+    Zone = 8
+    XAxisVar = 1
+    YAxisVar = 4
+    }
+  Lines
+    {
+    Color = Custom51
+    LineThickness = 0.4
+    }
+  Symbols
+    {
+    SymbolShape
+      {
+      GeomShape = Circle
+      }
+    Color = Custom51
+    FillMode = UseLineColor
+    FillColor = Yellow
+    Size = 1
+    }
+  BarCharts
+    {
+    Color = Blue
+    FillColor = Blue
+    }
+  ErrorBars
+    {
+    Color = Blue
+    }
+$!LineMap  [7]
+  Name = '&DV&'
+  Assign
+    {
+    Zone = 8
+    XAxisVar = 1
+    YAxisVar = 5
+    }
+  Lines
+    {
+    Color = Custom31
+    LinePattern = Dashed
+    LineThickness = 0.4
+    }
+  Symbols
+    {
+    SymbolShape
+      {
+      GeomShape = Circle
+      }
+    Color = Custom31
+    FillMode = UseLineColor
+    FillColor = Yellow
+    Size = 1
+    }
+  BarCharts
+    {
+    Color = Custom1
+    FillColor = Custom1
+    }
+  ErrorBars
+    {
+    Color = Custom1
+    }
+$!LineMap  [8]
+  Name = '&DV&'
+  Assign
+    {
+    Zone = 8
+    XAxisVar = 1
+    YAxisVar = 6
+    }
+  Lines
+    {
+    Color = Custom27
+    LinePattern = Dashed
+    LineThickness = 0.4
+    }
+  Symbols
+    {
+    SymbolShape
+      {
+      GeomShape = Circle
+      }
+    Color = Custom27
+    FillMode = UseLineColor
+    FillColor = Yellow
+    Size = 1
+    }
+  BarCharts
+    {
+    Color = Custom3
+    FillColor = Custom3
+    }
+  ErrorBars
+    {
+    Color = Custom3
+    }
+$!LineMap  [9]
+  Name = '&DV&'
+  Assign
+    {
+    Zone = 7
+    XAxisVar = 1
+    YAxisVar = 3
+    }
+  Lines
+    {
+    Color = Custom55
+    LineThickness = 0.4
+    }
+  Symbols
+    {
+    SymbolShape
+      {
+      GeomShape = Circle
+      }
+    Color = Custom55
+    FillMode = UseLineColor
+    FillColor = Yellow
+    Size = 1
+    }
+  BarCharts
+    {
+    Color = Green
+    FillColor = Green
+    }
+  ErrorBars
+    {
+    Color = Green
+    }
+$!LineMap  [10]
+  Name = '&DV&'
+  Assign
+    {
+    Zone = 7
+    XAxisVar = 1
+    YAxisVar = 4
+    }
+  Lines
+    {
+    Color = Custom51
+    LineThickness = 0.4
+    }
+  Symbols
+    {
+    SymbolShape
+      {
+      GeomShape = Circle
+      }
+    Color = Custom51
+    FillMode = UseLineColor
+    FillColor = Yellow
+    Size = 1
+    }
+  BarCharts
+    {
+    Color = Blue
+    FillColor = Blue
+    }
+  ErrorBars
+    {
+    Color = Blue
+    }
+$!LineMap  [11]
+  Name = '&DV&'
+  Assign
+    {
+    Zone = 7
+    XAxisVar = 1
+    YAxisVar = 5
+    }
+  Lines
+    {
+    Color = Custom31
+    LinePattern = Dashed
+    LineThickness = 0.4
+    }
+  Symbols
+    {
+    SymbolShape
+      {
+      GeomShape = Circle
+      }
+    Color = Custom31
+    FillMode = UseLineColor
+    FillColor = Yellow
+    Size = 1
+    }
+  BarCharts
+    {
+    Color = Custom1
+    FillColor = Custom1
+    }
+  ErrorBars
+    {
+    Color = Custom1
+    }
+$!LineMap  [12]
+  Name = '&DV&'
+  Assign
+    {
+    Zone = 7
+    XAxisVar = 1
+    YAxisVar = 6
+    }
+  Lines
+    {
+    Color = Custom27
+    LinePattern = Dashed
+    LineThickness = 0.4
+    }
+  Symbols
+    {
+    SymbolShape
+      {
+      GeomShape = Circle
+      }
+    Color = Custom27
+    FillMode = UseLineColor
+    FillColor = Yellow
+    Size = 1
+    }
+  BarCharts
+    {
+    Color = Custom3
+    FillColor = Custom3
+    }
+  ErrorBars
+    {
+    Color = Custom3
+    }
+$!LineMap  [13]
+  Name = '&DV&'
+  Assign
+    {
+    Zone = 6
+    XAxisVar = 1
+    YAxisVar = 3
+    }
+  Lines
+    {
+    Color = Custom55
+    LineThickness = 0.4
+    }
+  Symbols
+    {
+    SymbolShape
+      {
+      GeomShape = Circle
+      }
+    Color = Custom55
+    FillMode = UseLineColor
+    FillColor = Yellow
+    Size = 1
+    }
+  BarCharts
+    {
+    Color = Green
+    FillColor = Green
+    }
+  ErrorBars
+    {
+    Color = Green
+    }
+$!LineMap  [14]
+  Name = '&DV&'
+  Assign
+    {
+    Zone = 6
+    XAxisVar = 1
+    YAxisVar = 4
+    }
+  Lines
+    {
+    Color = Custom51
+    LineThickness = 0.4
+    }
+  Symbols
+    {
+    SymbolShape
+      {
+      GeomShape = Circle
+      }
+    Color = Custom51
+    FillMode = UseLineColor
+    FillColor = Yellow
+    Size = 1
+    }
+  BarCharts
+    {
+    Color = Blue
+    FillColor = Blue
+    }
+  ErrorBars
+    {
+    Color = Blue
+    }
+$!LineMap  [15]
+  Name = '&DV&'
+  Assign
+    {
+    Zone = 6
+    XAxisVar = 1
+    YAxisVar = 5
+    }
+  Lines
+    {
+    Color = Custom31
+    LinePattern = Dashed
+    LineThickness = 0.4
+    }
+  Symbols
+    {
+    SymbolShape
+      {
+      GeomShape = Circle
+      }
+    Color = Custom31
+    FillMode = UseLineColor
+    FillColor = Yellow
+    Size = 1
+    }
+  BarCharts
+    {
+    Color = Custom1
+    FillColor = Custom1
+    }
+  ErrorBars
+    {
+    Color = Custom1
+    }
+$!LineMap  [16]
+  Name = '&DV&'
+  Assign
+    {
+    Zone = 6
+    XAxisVar = 1
+    YAxisVar = 6
+    }
+  Lines
+    {
+    Color = Custom27
+    LinePattern = Dashed
+    LineThickness = 0.4
+    }
+  Symbols
+    {
+    SymbolShape
+      {
+      GeomShape = Circle
+      }
+    Color = Custom27
+    FillMode = UseLineColor
+    FillColor = Yellow
+    Size = 1
+    }
+  BarCharts
+    {
+    Color = Custom3
+    FillColor = Custom3
+    }
+  ErrorBars
+    {
+    Color = Custom3
+    }
+$!XYLineAxis 
+  DepXToYRatio = 1
+  GridArea
+    {
+    DrawBorder = Yes
+    }
+  ViewportPosition
+    {
+    X1 = 8.2268
+    Y1 = 8.5229
+    X2 = 98.382
+    Y2 = 98.447
+    }
+  ViewportTopSnapTarget = 98.4469574583
+$!XYLineAxis 
+  XDetail 1
+    {
+    CoordScale = Linear
+    RangeMin = 0
+    RangeMax = 160
+    GRSpacing = 20
+    Title
+      {
+      TitleMode = UseText
+      Text = 'Truncation distance'
+      }
+    }
+$!XYLineAxis 
+  YDetail 1
+    {
+    CoordScale = Linear
+    RangeMin = 0
+    RangeMax = 2
+    GRSpacing = 0.5
+    Title
+      {
+      TitleMode = UseText
+      Text = 'Root Mean Square Errors'
+      Offset = 5
+      }
+    }
+$!LinePlotLayers 
+  ShowSymbols = Yes
+$!FrameControl ActivateByNumber
+  Frame = 1
+$!SetStyleBase Config

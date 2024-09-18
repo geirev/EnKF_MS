@@ -11,6 +11,10 @@ Example of multiscale DA with the Kuramoto-Sivashinsky equations
 Note that this latest version (Nov 3, 2023 and onwards) needs an additional last line in infile.in defining the
 time scale of the ocean model.  Check the test/infile.in for an example.
 
+# MWR2025 code and cases
+To access the code used in the localization paper:
+git checkout vlocal
+
 # MWR2023 code and cases
 The original version of the code used for the MWR2023 paper is stored on the branch MWR2023.  After cloning the
 repository you need to fetch it and check it out to replicate the cases in the paper as the main branch will

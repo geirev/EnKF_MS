@@ -177,7 +177,7 @@ subroutine assimilation_old(obs,win,winref,DA,tini,tfin,nrobs,iter,obsoloc,obsal
             call getD(E,subE,nrobs,nrens,lobs(i,:),nobs(i)) ! the observation errors
             call getD(S,subS,nrobs,nrens,lobs(i,:),nobs(i)) ! the HA'
 
-            if (lcovsmooth) then
+            if (lcovsmooth .and. obsdamping /= 1.0) then
                beta=0.5
                lcovb=(1.0-beta)*truncdist/sqrt(log(obsdamping))
                call getD(dist(i,:),subdist,nrobs,1,lobs(i,:),nobs(i)) ! distances
